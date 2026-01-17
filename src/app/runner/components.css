@@ -1,0 +1,32 @@
+.map-list-container {
+	border: 1px solid hsl(var(--border));
+	padding: 0.25rem;
+	overflow-y: auto;
+	flex-grow: 1;
+	min-width: 15rem;
+	max-width: 30vw;
+	overflow-y: auto;
+	background-color: hsl(var(--background));
+}
+
+.map-list-item {
+	width: 100%;
+	gap: 0.5rem;
+	padding: 0.2rem 1rem;
+	color: hsl(var(--secondary-foreground));
+	transition: 0.1s;
+	user-select: none;
+
+	overflow-x: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.map-list-item:not(.selected):hover {
+	background-color: hsl(var(--secondary));
+}
+.map-list-item.selected {
+	background-color: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	font-weight: 600;
+}

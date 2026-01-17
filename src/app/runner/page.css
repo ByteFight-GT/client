@@ -1,0 +1,42 @@
+.runner-container {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-family: var(--font-mono);
+	height: 100%;
+	width: 100%;
+	padding: 8rem;
+
+	background-image: radial-gradient(
+		circle at 50% 100%,
+		hsl(var(--gold) / 0.2) 0%,
+		hsl(var(--gold-dark) / 0.1) 40%,
+		hsl(var(--background)) 80%
+	);
+}
+
+.runner-container-bg-art {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	height: 100%;
+	object-fit: contain;
+	opacity: 0.1;
+	pointer-events: none;
+	user-select: none;
+	z-index: -1;
+}
+
+.runner-container h1 {
+	font-size: 2rem;
+	font-weight: 600;
+}
+.runner-container h3 {
+	font-size: 1rem;
+	font-weight: 500;
+	color: hsl(var(--secondary-foreground));
+	text-transform: uppercase;
+}
