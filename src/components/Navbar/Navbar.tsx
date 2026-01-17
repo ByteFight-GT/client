@@ -8,13 +8,18 @@ import React from 'react';
 const NAVBAR_LINKS = [
   {
     icon: 'board',
-    label: 'Play',
+    label: 'Game',
     link: '/player',
   },
   {
     icon: 'book',
     label: 'History',
     link: '/replayer',
+  },
+  {
+    icon: 'run',
+    label: 'Run',
+    link: '/runner',
   },
   {
     icon: 'map',
