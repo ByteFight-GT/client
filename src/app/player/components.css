@@ -1,14 +1,17 @@
 .CollapsibleDocker-container:last-of-type {
 	border-bottom: 2px solid hsl(var(--border));
+	flex-grow: 1;
 }
 .CollapsibleDocker-header-bar {
 	display: flex;
 	align-items: center;
 	gap: 0.5em;
 	width: 100%;
+	user-select: none;
 
 	justify-content: space-between;
-	padding: 0.5rem 1rem;
+	font-size: 0.9em;
+	padding: 0.2rem 1rem;
 	
 	color: hsl(var(--muted-foreground));
 	background-color: hsl(var(--secondary));
@@ -64,17 +67,11 @@
 }
 .Console-tab.blue {
 	color: hsl(var(--team-blue-color));
-	border-right: 2px solid hsl(var(--border));
-}
-.Console-tab.blue.selected {
-	border-right: 2px solid transparent;
+	border-right: 1px solid hsl(var(--border));
 }
 .Console-tab.green {
 	color: hsl(var(--team-green-color));
-	border-left: 2px solid hsl(var(--border));
-}
-.Console-tab.green.selected {
-	border-left: 2px solid transparent;
+	border-left: 1px solid hsl(var(--border));
 }
 
 .Console-tab-icon {
@@ -90,7 +87,7 @@
 	padding: 0.5rem;
 	background-color: hsl(var(--themecolor));
 	color: hsl(var(--foreground));
-	height: 100%;
+	height: 30rem;
 }
 
 

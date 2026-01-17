@@ -11,7 +11,7 @@ type CollapsibleDockerProps = {
 
 export const CollapsibleDocker = (props: CollapsibleDockerProps) => {
 
-	const { getCollapseProps, getToggleProps, isExpanded } = useCollapse({defaultExpanded: true});
+	const { getCollapseProps, getToggleProps, isExpanded } = useCollapse({defaultExpanded: true, duration: 100});
 
 	return (
 		<div className='CollapsibleDocker-container'>
