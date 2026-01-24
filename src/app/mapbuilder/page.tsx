@@ -1,6 +1,10 @@
 "use client";
 
 import React from 'react';
+import MapBuilder from './components/MapBuilder'
+import { MapbuilderSidebar } from './components/MapbuilderSidebar';
+
+import './style.css'
 
 type MatchPlayerPageProps = {
 	
@@ -8,8 +12,9 @@ type MatchPlayerPageProps = {
 
 const MapBuilderPage = (props: MatchPlayerPageProps) => {
 	return (
-		<div>
-			<h1>Map Builder</h1>
+		<div className='mapbuilder-container'>
+			<MapbuilderSidebar />
+			<h1>test</h1>
 		</div>
 	);
 };

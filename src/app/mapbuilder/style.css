@@ -1,0 +1,24 @@
+.mapbuilder-container {
+	display: grid;
+	grid-template-columns: min(50%, 25rem) 1fr;
+	font-family: var(--font-mono);
+	height: 100vh;
+	width: 100%;
+	overflow: hidden;
+}
+.mapbuilder-container h1 {
+	font-size: 2rem;
+	font-weight: 600;
+}
+.mapbuilder-container h2 {
+	font-size: 1.5rem;
+	font-weight: 500;
+}
+
+.mapbuilder-sidebar {
+	display: flex;
+	flex-direction: column;
+	border-right: 2px solid hsl(var(--border));
+	overflow-y: auto;
+}
+
