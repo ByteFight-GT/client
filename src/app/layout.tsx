@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "@/components/Input/Input.css";
-import "@/components/Button/Button.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar/Navbar";

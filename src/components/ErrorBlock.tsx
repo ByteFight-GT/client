@@ -3,24 +3,27 @@
 import React from 'react';
 import { XIcon } from 'lucide-react';
 
-import "./ErrorBlock.css";
+import { cn } from "@/lib/utils";
 
 type ErrorBlockProps = {
 	text?: string;
-  outerStyle?: React.CSSProperties;
   loaderStyle?: React.CSSProperties;
   loadTextStyle?: React.CSSProperties;
-};
+} & React.ComponentProps<"div">;
 
-export const ErrorBlock = (props: ErrorBlockProps) => {
+export const ErrorBlock = ({ text, loaderStyle, loadTextStyle, className, ...props }: ErrorBlockProps) => {
 	return (
 		<div
-    className="error-block"
-    style={props.outerStyle}>
+    className={cn(
+      "flex flex-col items-center justify-center gap-1 p-4 w-full h-full",
+      className
+    )}
+    {...props}>
       <XIcon className="text-[4em] mx-auto text-destructive" />
       <p className="text-secondary-foreground text-center">
-        {props.text ?? 'An error occurred!'}
+        {text ?? 'An error occurred!'}
       </p>
     </div>
 	);
 };
+
