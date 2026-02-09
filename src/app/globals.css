@@ -109,7 +109,7 @@
 }
 
 body {
-  font-family: var(--font-normal);
+  font-family: var(--font-mono);
 }
 
 /*
@@ -147,6 +147,9 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    background-image: url("/bg.webp");
+    background-repeat: repeat;
+    background-attachment: fixed;
   }
 }
 
