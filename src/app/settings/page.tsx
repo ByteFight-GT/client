@@ -55,7 +55,7 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 	}
 
 	const draftSettings = React.useMemo(() => {
-		const updatedSettings = { ...frozenSettings};
+		const updatedSettings = {...frozenSettings};
 		for (const [key, value] of Object.entries(draftChanges)) {
 			updatedSettings[key] = {
 				...updatedSettings[key],
@@ -90,7 +90,7 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 					<ErrorBlock />
 				:
 					<div className='settings-list'>
-						{draftSettings?
+						{Object.keys(draftSettings || {}).length > 0?
 							Object.entries(draftSettings).map(([key, setting]) => (
 								<SettingsItem 
 								key={key} 
@@ -116,7 +116,7 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 									: null}
 								</SettingsItem>
 							))
-						: <p className='text-center text-muted-foreground'>No config options yet!</p>}
+						: <p className='text-center text-muted-foreground'>Loading config...</p>}
 						<SaveBar 
 						nUnsavedChanges={Object.keys(draftChanges).length}
 						saveChanges={saveSettings} 
