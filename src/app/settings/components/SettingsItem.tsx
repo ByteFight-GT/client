@@ -4,8 +4,9 @@ import React from 'react';
 
 type SettingsItemProps = {
 	name: string,
-	desc?: string,
-	children?: React.ReactNode
+	desc: string,
+	unsaved: boolean,
+	children: React.ReactNode
 };
 
 /**
@@ -15,13 +16,13 @@ type SettingsItemProps = {
 export const SettingsItem = (props: SettingsItemProps) => {
 
 	return (
-		<div className='settings-item'>
+		<div className={`settings-item${props.unsaved ? ' unsaved' : ''}`}>
 			<div className='flex-1'>
 				<h2 className='font-medium text-wrap'>{props.name}</h2>
 				{props.desc && <p className='text-sm text-muted-foreground text-wrap'>{props.desc}</p>}
 			</div>
 
-			<div className='flex-shrink-0'>
+			<div className='flex-shrink-0 flex items-center'>
 				{props.children}
 			</div>
 
