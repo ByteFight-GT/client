@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className="flex antialiased">
         <Navbar />
         
-        <div className="w-full">
+        <div className="w-full h-screen overflow-auto">
           {children}
         </div>
 

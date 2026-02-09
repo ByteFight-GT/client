@@ -84,44 +84,46 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 	}, [draftChanges]);
 
 	return (
-		<GenericPage className='flex flex-col pb-8' titleEle={<span className='text-primary leading-normal'>Config</span>} variant="thin">
+		<GenericPage className='relative flex flex-col pb-8' titleEle={<span className='text-primary leading-normal'>Config</span>} variant="thin">
 
 				{error?
 					<ErrorBlock />
 				:
-					<div className='settings-list'>
-						{Object.keys(draftSettings || {}).length > 0?
-							Object.entries(draftSettings).map(([key, setting]) => (
-								<SettingsItem 
-								key={key} 
-								name={key} 
-								desc={setting.__desc}
-								unsaved={key in draftChanges}>
-									{setting.__type === "string"?
-										<Input className='w-64' placeholder={setting.__placeholder} value={setting.value} onChange={(e) => {
-											updateSetting(key, e.target.value);
-										}} />
-									: setting.__type === "toggle"?
-										<Checkbox checked={setting.value} onCheckedChange={(checked) => {
-											updateSetting(key, checked);
-										}} />
-									: setting.__type === "select"?
-										<select value={setting.value} onChange={(e) => {
-											updateSetting(key, e.target.value);
-										}}>
-											{setting.options?.map((option: any) => (
-												<option key={option.value} value={option.value}>{option.label}</option>
-											))}
-										</select>
-									: null}
-								</SettingsItem>
-							))
-						: <p className='text-center text-muted-foreground'>Loading config...</p>}
+					<>
+						<div className='settings-list'>
+							{Object.keys(draftSettings || {}).length > 0?
+								Object.entries(draftSettings).map(([key, setting]) => (
+									<SettingsItem 
+									key={key} 
+									name={key} 
+									desc={setting.__desc}
+									unsaved={key in draftChanges}>
+										{setting.__type === "string"?
+											<Input className='w-64' placeholder={setting.__placeholder} value={setting.value} onChange={(e) => {
+												updateSetting(key, e.target.value);
+											}} />
+										: setting.__type === "toggle"?
+											<Checkbox checked={setting.value} onCheckedChange={(checked) => {
+												updateSetting(key, checked);
+											}} />
+										: setting.__type === "select"?
+											<select value={setting.value} onChange={(e) => {
+												updateSetting(key, e.target.value);
+											}}>
+												{setting.__options?.map((option: any) => (
+													<option key={option.value} value={option.value}>{option.label}</option>
+												))}
+											</select>
+										: null}
+									</SettingsItem>
+								))
+							: <p className='text-center text-muted-foreground'>Loading config...</p>}
+						</div>
 						<SaveBar 
 						nUnsavedChanges={Object.keys(draftChanges).length}
 						saveChanges={saveSettings} 
 						discardChanges={() => setDraftChanges({})} />
-					</div>
+					</>
 				}
 					
 		</GenericPage>

@@ -1,8 +1,9 @@
 .settings-list {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
+	gap: 1rem;
 	flex-grow: 1;
+	margin-bottom: 2rem;
 }
 
 .settings-item {
@@ -21,13 +22,16 @@
 
 .settings-save-bar {
 	display: flex;
+	position: sticky;
 	justify-content: flex-end;
 	align-items: center;
 	gap: 0.5rem;
 	padding: 0.5rem;
+	bottom: 2rem;
 	margin-top: auto;
 	background-color: hsl(var(--secondary));
 	border: 1px solid hsl(var(--border));
+	box-shadow: 0 1rem 2rem 2rem hsl(var(--background) / 0.6);
 }
 .settings-save-bar.unsaved-changes {
 	border: 1px solid hsl(var(--primary));

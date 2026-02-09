@@ -149,6 +149,11 @@ hr {
   outline-offset: 2px;
 }
 
+*::selection {
+  background-color: hsl(var(--complementary) / 0.5);
+  color: hsl(var(--foreground));
+}
+
 .vert-divider {
   height: 1em;
   width: 0;

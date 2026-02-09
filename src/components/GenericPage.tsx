@@ -11,7 +11,7 @@ interface GenericPageProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const GENERIC_PAGE_VARIANTS = {
 	wide: 'py-24 min-h-full w-11/12 mx-auto',
-	thin: 'py-24 min-h-full px-6 max-w-11/12 lg:max-w-5xl mx-auto',
+	thin: 'py-24 min-h-full w-11/12 lg:max-w-5xl mx-auto',
 } as const;
 
 export const GenericPage = ({
