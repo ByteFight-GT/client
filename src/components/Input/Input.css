@@ -1,0 +1,29 @@
+.bytefight-input {
+	width: 100%;
+	border: 1px solid hsl(var(--border));
+	background-color: hsl(var(--secondary));
+	font-size: 0.9rem;
+	padding: 0.25rem 0.75rem;
+	transition: 0.1s;
+}
+
+.bytefight-input::file-selector-button {
+	border: 0;
+	background: transparent;
+	font-weight: 500;
+	color: hsl(var(--foreground));
+}
+
+.bytefight-input::placeholder {
+	color: hsl(var(--muted-foreground));
+}
+
+.bytefight-input:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px hsl(var(--primary));
+}
+
+.bytefight-input:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}

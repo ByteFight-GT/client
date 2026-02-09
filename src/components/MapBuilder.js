@@ -4,7 +4,7 @@ import ShowSpawn from './ShowSpawn';
 import MapBuilderVis from './MapBuilderVis';
 import CellSelector from './CellSelector'
 import SymmetrySelector from './SymmetrySelector'
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components';
 import Selector from './Selector';
 import { useToast } from '@/hooks/use-toast'
 

@@ -1,0 +1,10 @@
+.error-block {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+	padding: 1rem;
+	width: 100%;
+	height: 100%;
+}

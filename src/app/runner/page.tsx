@@ -6,7 +6,7 @@ import './page.css';
 import './components.css';
 
 import { BotSelector } from './components/BotSelector';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components';
 import { MapList } from './components/MapList';
 import { LoaderPinwheel, RefreshCcw, Settings } from 'lucide-react';
 

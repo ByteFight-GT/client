@@ -8,7 +8,7 @@ import { processData } from "../replay/process_replay"
 
 import MatchSelector from './MatchSelector'
 import PlayerStats from './PlayerStats'
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components';
 import { useToast } from '@/hooks/use-toast'
 
 

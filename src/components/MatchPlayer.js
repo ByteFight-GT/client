@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { getMap, processData } from "../replay/process_replay"
 import GameOutputs from './GameOutputs';
 import PlayerStats from './PlayerStats';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components';
 import { Bot } from 'lucide-react';
 
 import path from 'path';
