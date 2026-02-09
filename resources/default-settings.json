@@ -1,0 +1,13 @@
+{
+	"Python Path": {
+		"__type": "string",
+		"__placeholder": "e.g. C:/Python/python.exe...",
+		"__desc": "Path to the Python executable to use for running bots and the game engine",
+		"value": ""
+	},
+	"ToggleTest": {
+		"__type": "toggle",
+		"__desc": "Toggle!",
+		"value": false
+	}
+}

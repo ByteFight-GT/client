@@ -1,4 +1,4 @@
-const { ipcRenderer, contextBridge, shell } = require('electron');
+const { ipcRenderer, contextBridge, shell } = require("electron");
 
 contextBridge.exposeInMainWorld('electron', {
 
@@ -73,7 +73,6 @@ contextBridge.exposeInMainWorld('electron', {
 });
 
 contextBridge.exposeInMainWorld('settings', {
-    // settings handlers
     get: () => ipcRenderer.invoke('settings:get'),
     set: (settings) => ipcRenderer.invoke('settings:set', settings),
 });

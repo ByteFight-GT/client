@@ -8,8 +8,8 @@ const erbNodeModulesPath = path.join(erbPath, 'node_modules');
 const dllPath = path.join(__dirname, '../dll');
 
 const srcPath = path.join(rootPath, 'src');
-const srcMainPath = path.join(srcPath, 'main');
-const srcRendererPath = path.join(srcPath, 'renderer');
+const electronPath = path.join(srcPath, 'electron');
+const rendererPath = path.join(srcPath, 'app');
 
 const releasePath = path.join(rootPath, 'release');
 const appPath = path.join(releasePath, 'app');
@@ -18,8 +18,8 @@ const appNodeModulesPath = path.join(appPath, 'node_modules');
 const srcNodeModulesPath = path.join(srcPath, 'node_modules');
 
 const distPath = path.join(appPath, 'dist');
-const distMainPath = path.join(distPath, 'main');
-const distRendererPath = path.join(distPath, 'renderer');
+const distMainPath = path.join(distPath, 'electron');
+const distRendererPath = path.join(distPath, 'app');
 
 const buildPath = path.join(releasePath, 'build');
 
@@ -28,8 +28,8 @@ export default {
   erbNodeModulesPath,
   dllPath,
   srcPath,
-  srcMainPath,
-  srcRendererPath,
+  electronPath,
+  rendererPath,
   releasePath,
   appPath,
   appPackagePath,

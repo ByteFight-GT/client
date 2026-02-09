@@ -4,11 +4,12 @@ import { promises as fs } from 'fs';
 import * as remoteMain from '@electron/remote/main/index.js';
 remoteMain.initialize();
 
-import { setupAllHandlers } from './ipc/index.ts';
-import { closePython, closeTCPClient } from './ipc/pythonHandlers.ts';
+import { setupAllHandlers } from './setup.ts';
+import { closePython, closeTCPClient } from './pythonHandlers.ts';
 
 // no __dir name in modules... sad
 import { fileURLToPath } from 'url';
+import { loadSettings } from './settings.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -76,7 +77,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.ts'),
         },
         autoHideMenuBar: true,
     });
@@ -101,6 +102,7 @@ app.on('ready', async () => {
     const Store = (await import('electron-store')).default;
     store = new Store();
 
+    await loadSettings();
     await initMaps();
     await initMetadata();
 
