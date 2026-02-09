@@ -1,5 +1,6 @@
-export { Input } from "./Input";
-export { Button } from "./Button";
-export { ErrorBlock } from "./ErrorBlock";
-export { GenericPage } from "./GenericPage";
-export { Checkbox } from "./Checkbox";
+export * from "./Input";
+export * from "./Button";
+export * from "./ErrorBlock";
+export * from "./GenericPage";
+export * from "./Checkbox";
+export * from "./Select";

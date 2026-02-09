@@ -145,13 +145,18 @@ hr {
 }
 
 *:focus-visible {
-  outline: 2px solid hsl(var(--complementary));
-  outline-offset: 2px;
+  outline: 1px solid hsl(var(--complementary));
+  outline-offset: 1px;
 }
 
 *::selection {
   background-color: hsl(var(--complementary) / 0.5);
   color: hsl(var(--foreground));
+}
+
+*::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 1;
 }
 
 .vert-divider {
