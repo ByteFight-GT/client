@@ -1,7 +1,7 @@
-"use client";
+"use server";
 
-const HomePage = () => {
-	return null;
+import { redirect } from "next/navigation";
+
+export default function HomePage() {
+	redirect("/player");
 };
-
-export default HomePage;
