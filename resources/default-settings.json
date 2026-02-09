@@ -47,7 +47,7 @@
 			{ "label": "Option 2", "value": "option2" },
 			{ "label": "Option 3", "value": "option3" }
 		],
-		"__placeholder": "e.g. C:/Python/python.exe...",
+		"__placeholder": "selectplaceholder",
 		"__desc": "Path to the Python executable to use for running bots and the game engine",
 		"value": ""
 	},
@@ -58,9 +58,9 @@
 			{ "label": "Option 2", "value": "option2" },
 			{ "label": "Option 3", "value": "option3" }
 		],
-		"__placeholder": "e.g. C:/Python/python.exe...",
+		"__placeholder": "selectplaceholder",
 		"__desc": "Path to the Python executable to use for running bots and the game engine",
-		"value": ""
+		"value": "option3"
 	},
 	"Test8 select": {
 		"__type": "select",
@@ -69,9 +69,9 @@
 			{ "label": "Option 2", "value": "option2" },
 			{ "label": "Option 3", "value": "option3" }
 		],
-		"__placeholder": "e.g. C:/Python/python.exe...",
+		"__placeholder": "selectplaceholder",
 		"__desc": "Path to the Python executable to use for running bots and the game engine",
-		"value": ""
+		"value": "option1"
 	},
 	"ToggleTest 2": {
 		"__type": "toggle",

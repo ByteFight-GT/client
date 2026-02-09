@@ -1,13 +1,14 @@
 "use client";
 
 import React from 'react';
-import { Checkbox, GenericPage } from '@/components';
+import { Checkbox, GenericPage, SelectContent, SelectTrigger, SelectValue } from '@/components';
 import { SettingsItem } from './components/SettingsItem';
 
 import "./page.css";
 import { ErrorBlock, Input } from '@/components';
 import { SaveBar } from './components/SaveBar';
 import { Settings } from '../../../common/settingsBridge';
+import { Select, SelectItem } from '@/components';
 
 type MatchPlayerPageProps = {
 	
@@ -107,13 +108,16 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 												updateSetting(key, checked);
 											}} />
 										: setting.__type === "select"?
-											<select value={setting.value} onChange={(e) => {
-												updateSetting(key, e.target.value);
-											}}>
-												{setting.__options?.map((option: any) => (
-													<option key={option.value} value={option.value}>{option.label}</option>
-												))}
-											</select>
+											<Select value={setting.value} onValueChange={(value) => updateSetting(key, value)}>
+												<SelectTrigger className='w-48'>
+													<SelectValue placeholder={setting.__placeholder} />
+												</SelectTrigger>
+												<SelectContent>
+													{setting.__options?.map((option: any) => (
+														<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
 										: null}
 									</SettingsItem>
 								))
