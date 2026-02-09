@@ -1,4 +1,4 @@
-import { ipcMain, dialog } from 'electron';
+import { app, ipcMain, dialog } from 'electron';
 import ElectronStore from 'electron-store';
 import { promises as fs } from 'fs';
 import { join } from 'path';
@@ -18,6 +18,8 @@ export function setupElectronStoreHandlers(store: ElectronStore) {
 		delete maps[map];
 		store.set("maps", maps);
 	});
+
+	
 
 	/*
 	// [27dec2025 / michael]: idt we need this, im planning on allowing users to just one-click delete maps
@@ -59,6 +61,33 @@ export function setupFileHandlers() {
 			properties: ['openDirectory'],
 		});
 		return result.filePaths[0];
+	});
+}
+
+/** registers ipcMain handlers for reading/writing a JSON settings file */
+export function setupSettingsHandlers() {
+	const settingsFilePath = join(app.getPath('userData'), 'settings.json');
+
+	ipcMain.handle('settings:get', async () => {
+		try {
+			const data = await fs.readFile(settingsFilePath, { encoding: 'utf8' });
+			return JSON.parse(data);
+		} catch (err: any) {
+			if (err?.code === 'ENOENT') {
+				return {};
+			}
+			throw new Error(`Failed to read settings: ${err.message}`);
+		}
+	});
+
+	ipcMain.handle('settings:set', async (event, settings) => {
+		try {
+			const data = JSON.stringify(settings ?? {}, null, 2);
+			await fs.writeFile(settingsFilePath, data, { encoding: 'utf8' });
+			return true;
+		} catch (err: any) {
+			throw new Error(`Failed to write settings: ${err.message}`);
+		}
 	});
 }
 

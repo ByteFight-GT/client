@@ -71,3 +71,9 @@ contextBridge.exposeInMainWorld('electron', {
         return () => ipcRenderer.removeListener('stream-error-full', handler);
     },
 });
+
+contextBridge.exposeInMainWorld('settings', {
+    // settings handlers
+    get: () => ipcRenderer.invoke('settings:get'),
+    set: (settings) => ipcRenderer.invoke('settings:set', settings),
+});
