@@ -1,22 +1,28 @@
 "use client";
 
 import React from 'react';
-import MapBuilder from './components/MapBuilder'
 import { MapbuilderSidebar } from './components/MapbuilderSidebar';
 
-import './style.css'
+import './page.css'
+import { type MapData } from '@/gametypes';
 
-type MatchPlayerPageProps = {
-	
-};
+import _DEFAULT_MAP_DATA from './defaultMapData.json';
+const DEFAULT_MAP_DATA = _DEFAULT_MAP_DATA as MapData;
 
-const MapBuilderPage = (props: MatchPlayerPageProps) => {
+export default function MapBuilderPage() {
+
+	const [mapData, setMapData] = React.useState<MapData>(DEFAULT_MAP_DATA);
+
 	return (
 		<div className='mapbuilder-container'>
-			<MapbuilderSidebar />
-			<h1>test</h1>
+			<MapbuilderSidebar mapData={mapData} setMapData={setMapData} />
+			<div className='mapbuilder-gamerenderer'>
+				<p>
+					eventually GameRenderer will go here and can just take mapData. for now though...
+					<br />
+					{JSON.stringify(mapData, null, 2)}
+				</p>
+			</div>
 		</div>
 	);
 };
-
-export default MapBuilderPage;
