@@ -1,7 +1,6 @@
 "use client";
 
-import { Select } from '@/components/ui/select';
-import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@radix-ui/react-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components';
 import React from 'react';
 
 type BotSelectorProps = {
