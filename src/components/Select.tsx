@@ -10,16 +10,7 @@ const Select = SelectPrimitive.Root
 
 const SelectGroup = SelectPrimitive.Group
 
-const SelectValue = React.forwardRef<
-	React.ComponentRef<typeof SelectPrimitive.Value>,
-	React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>
->(({ className, children, ...props }, ref) => (
-	<SelectPrimitive.Value
-		ref={ref}
-		className={cn("text-muted-foreground", className)}
-		{...props}
-	/>
-))
+const SelectValue = SelectPrimitive.Value
 
 const SelectTrigger = React.forwardRef<
 	React.ComponentRef<typeof SelectPrimitive.Trigger>,
