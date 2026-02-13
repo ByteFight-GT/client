@@ -19,12 +19,13 @@ npm install
 ### Run the development server
 
 ```bash
-npm run electron:serve
+npm run dev
 ```
+This concurrently runs both electron and next
 
 ^ If this doesn't open an electron window on your desktop, try using two terminal tabs and run:
-- `npm run dev`
-- `npm run electron:start`
+- `npm run next:dev` (nextjs)
+- `npm run electron:start` (electron)
 
 ## Technologies Used
 
