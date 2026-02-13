@@ -6,17 +6,22 @@
   "homepage": "./",
   "description": "Bytefight 2026 Desktop Client",
   "author": "Henry Liao <hliao62@gatech.edu>",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "concurrently \"cross-env BROWSER=none npm run next:dev\" \"npm run electron:start\"",
+    "next:dev": "next dev",
+    "electron:start": "npm run compile-preload && wait-on tcp:3000 && electron .",
+
+    "next:build": "next build",
+    "next:start": "next start",
+    "next:lint": "next lint",
+
     "fixindex": "node update-index.js",
+    
     "package": "next build && npm run fixindex && electron-builder build --publish never && npm run build:dll",
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
-    "electron:serve": "concurrently \"cross-env BROWSER=none npm run dev\" \"npm run electron:start\"",
-    "electron:build": "next build && npm run fixindex && electron-builder",
-    "electron:start": "wait-on tcp:3000 && electron ."
+    "compile-preload": "esbuild electron/preload.ts --bundle --platform=node --outfile=build/preload.js --external:electron",
+    "electron:build": "next build && npm run fixindex && electron-builder"
   },
   "dependencies": {
     "@electron/asar": "^4.0.1",
@@ -55,6 +60,7 @@
     "cross-env": "^10.1.0",
     "electron": "^39.2.7",
     "electron-builder": "^25.1.8",
+    "esbuild": "^0.27.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",

@@ -77,7 +77,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            preload: path.join(__dirname, 'preload.ts'),
+            preload: path.join(__dirname, '../build/preload.js'),
         },
         autoHideMenuBar: true,
     });
@@ -88,7 +88,6 @@ function createWindow() {
     if (!app.isPackaged) {
         win.loadURL('http://localhost:3000')  // URL served by your dev server (like React's dev server)
     } else {
-        console.log(`file://${path.join(__dirname, 'index.html')}`)
         win.loadURL(`file://${path.join(__dirname, 'index.html')}`);
     }
 

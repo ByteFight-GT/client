@@ -11,6 +11,7 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "noImplicitAny": false, // ANNOYING ASF SYBAU
     "allowImportingTsExtensions": true,
     "module": "node16",
     "moduleResolution": "node16",
