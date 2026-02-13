@@ -12,6 +12,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "allowImportingTsExtensions": true,
+    "noImplicitAny": false,
     "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,

@@ -24,7 +24,7 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 
 	// > SETTINGS DATA
 	function getSettings() {
-		window.settings.get().then((settings) => {
+		window.electron.invoke('settings:get').then((settings) => {
 			setFrozenSettings(settings);
 			setError(null);
 		}).catch((err: any) => {
@@ -35,7 +35,7 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 
 	function saveSettings() {
 		console.log("Saving settings: ", draftChanges);
-		window.settings.set(draftSettings)
+		window.electron.invoke('settings:set', draftSettings)
 		.then(updated => {
 			setFrozenSettings(updated); 
 			setDraftChanges({}); 

@@ -1,7 +1,9 @@
-const { ipcRenderer, contextBridge, shell } = require("electron");
+import { ipcRenderer, contextBridge, shell } from "electron";
 
 contextBridge.exposeInMainWorld('electron', {
 
+    invoke: ipcRenderer.invoke,
+    /*
     openExternal: (url) => shell.openExternal(url),
 
     //electron handlers
@@ -70,9 +72,5 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.on('stream-error-full', handler);
         return () => ipcRenderer.removeListener('stream-error-full', handler);
     },
-});
-
-contextBridge.exposeInMainWorld('settings', {
-    get: () => ipcRenderer.invoke('settings:get'),
-    set: (settings) => ipcRenderer.invoke('settings:set', settings),
+    */
 });

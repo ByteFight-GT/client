@@ -7,7 +7,6 @@ export const USER_SETTINGS_PATH = path.join(
   app.getPath("userData"),
   "settings.json"
 );
-console.log(`User settings path: ${USER_SETTINGS_PATH}`);
 
 export const DEFAULT_SETTINGS_PATH = path.join(
   app.getAppPath(),
@@ -24,7 +23,7 @@ let cachedSettings: Settings | null = null;
  * - writes that merged result into the file
  * - updates memory cache (cachedSettings) as well
  */
-export async function loadSettings() {
+export async function initSettings() {
   try {
     // read default settings
     const defaultData = await fs.promises.readFile(DEFAULT_SETTINGS_PATH, { encoding: 'utf8' });
@@ -70,7 +69,7 @@ export function setupSettingsHandlers() {
     } catch (err: any) {
       if (err?.code === 'ENOENT') {
         // hmm, did they fkin delete their settings file WHILE on the page??? bruh. recreate
-        await loadSettings();
+        await initSettings();
         return cachedSettings;
       }
       throw new Error(`Failed to save settings: ${err.message}`);

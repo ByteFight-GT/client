@@ -9,7 +9,8 @@ import { closePython, closeTCPClient } from './pythonHandlers.ts';
 
 // no __dir name in modules... sad
 import { fileURLToPath } from 'url';
-import { loadSettings } from './settings.ts';
+import { initSettings } from './settings.ts';
+import { initMaps } from './maps.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -25,24 +26,6 @@ if (app.isPackaged) {
 } else {
     enginePath = path.join(app.getAppPath(), 'engine');
     //enginePath = path.join(app.getAppPath(), '../engine/2026/engine'); // for michael's local
-}
-
-
-async function initMaps() {
-    // initialize maps
-    let mapPairs = {}
-    if(store.has('maps')){
-        mapPairs = store.get('maps')
-    }
-
-    let ogResponse = await fs.readFile(path.join(enginePath, 'config', 'maps.json'));
-    let originalMaps = JSON.parse(ogResponse);
-
-    Object.keys(originalMaps).forEach(key => {
-        mapPairs[key] = originalMaps[key];
-    });
-
-    store.set("maps", mapPairs)
 }
 
 async function initMetadata() {
@@ -101,7 +84,7 @@ app.on('ready', async () => {
     const Store = (await import('electron-store')).default;
     store = new Store();
 
-    await loadSettings();
+    await initSettings();
     await initMaps();
     await initMetadata();
 
