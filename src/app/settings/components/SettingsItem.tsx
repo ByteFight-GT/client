@@ -17,7 +17,7 @@ export const SettingsItem = (props: SettingsItemProps) => {
 
 	return (
 		<div className={`settings-item${props.unsaved ? ' unsaved' : ''}`}>
-			<div className='flex-1'>
+			<div className='settings-item-info'>
 				<h2 className='font-medium text-wrap'>{props.name}</h2>
 				{props.desc && <p className='text-sm text-muted-foreground text-wrap'>{props.desc}</p>}
 			</div>

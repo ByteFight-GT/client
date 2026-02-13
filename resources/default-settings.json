@@ -2,8 +2,13 @@
 	"Python Path": {
 		"__type": "string",
 		"__placeholder": "e.g. C:/Python/python.exe...",
-		"__desc": "Path to the Python executable to use for running bots and the game engine",
+		"__desc": "Path to the Python executable to use for running bots and the game engine.",
 		"value": ""
+	},
+	"Reload Default Maps on Startup": {
+		"__type": "toggle",
+		"__desc": "Whether default maps should always be re-populated upon app startup, even if you've deleted them before. This does NOT overwrite any edits made to default maps, only restores deleted ones.",
+		"value": true
 	},
 	"ToggleTest": {
 		"__type": "toggle",

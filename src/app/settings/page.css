@@ -12,6 +12,10 @@
 	justify-content: space-between;
 	gap: 2rem;
 }
+.settings-item-info {
+	flex-grow: 1;
+	max-width: min(50rem, 60%);
+}
 .settings-item > * {
 	flex-shrink: 0;
 }
