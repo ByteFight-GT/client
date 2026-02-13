@@ -1,5 +1,3 @@
-import { SettingsBridgeAPI } from "../common/settingsBridge.ts";
-
 export {};
 
 declare global {
