@@ -1,18 +1,26 @@
 "use client";
 
-import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components';
-import { type MapData, Symmetry, TileType } from '@/gametypes';
 import React from 'react';
-import { MapbuilderSidebarItem } from './MapbuilderSidebarItem';
 import Image from 'next/image';
 import { DownloadIcon } from 'lucide-react';
+
+import { 
+	Button, 
+	Input, 
+	Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components';
+import { useToast } from '@/hooks/use-toast';
+import { type MapData, Symmetry, TileType } from '@/gametypes';
+import { MapbuilderSidebarItem } from './MapbuilderSidebarItem';
+import { MapList } from './MapList';
+import { OverwriteEditorDialog } from './OverwriteEditorDialog';
+import { DeleteMapsDialog } from './DeleteMapsDialog';
 
 type MapbuilderSidebarProps = {
 	mapData: MapData;
 	setMapData: React.Dispatch<React.SetStateAction<MapData>>;
 };
 
-const NEW_MAP_VALUE = "__new"; // no way someone names their map this right???
 const TILE_TYPE_DESCS = {
 	EMPTY: {
 		name: "Empty",
@@ -42,6 +50,8 @@ const TILE_TYPE_DESCS = {
 
 export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
+	const { toast } = useToast();
+
 	const [editorState, setEditorState] = React.useState<{
 		selectedTileType: keyof typeof TileType;
 		erasing: boolean;
@@ -50,31 +60,120 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 		erasing: false,
 	});
 
-	const [editingExistingMap, setEditingExistingMap] = React.useState<string | null>(null);
-	const [existingMaps, setExistingMaps] = React.useState<string[]>(["Example Map 1", "Example Map 2"]);
-	// TODO - fetch existing maps from electron
+	// TODO - use context lol.
+	const [mapList, setMapList] = React.useState<string[]>([]);
+	const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
+	const [deleteMapsDialogOpen, setDeleteMapsDialogOpen] = React.useState(false);
+	const [askingToLoadMapToEditor, setAskingToLoadMapToEditor] = React.useState<string | null>(null);
+
+	// initial fetch of maps list
+	React.useEffect(() => {
+		window.electron.invoke('maps:list').then(res => {
+			if (res.success) {
+				setMapList(res.maps);
+			} else {
+				toast({
+					title: "Failed to load maps",
+					description: res.error,
+				});
+			}
+		});
+	}, []);
+
+	async function handleDeleteMaps() {
+		const res = await window.electron.invoke('maps:delete', Array.from(selectedMaps))
+		if (res.success) {
+			setMapList(prev => {
+				return prev.filter(mapName => !res.deleted.includes(mapName));
+			});
+			setSelectedMaps(new Set());
+		} else {
+			toast({
+				title: "Failed to delete maps",
+				description: res.error,
+			});
+			setSelectedMaps(prev => {
+				const newSelected = new Set(prev);
+				for (const mapName of res.deleted) {
+					newSelected.delete(mapName);
+				}				
+				return newSelected;
+			});
+		}
+	}
+
+	async function handleLoadMapToEditor(mapName: string) {
+		const res = await window.electron.invoke('maps:read', mapName);
+		if (res.success) {
+			props.setMapData(res.mapData);
+			setAskingToLoadMapToEditor(null);
+		} else {
+			toast({
+				title: "Failed to load map",
+				description: res.error,
+			});
+		}
+	}
+
+	function handleSaveMap() {
+		window.electron.invoke('maps:write', props.mapData.name, JSON.stringify(props.mapData, null, 2)).then(res => {
+			if (res.success) {
+				toast({
+					title: "Map Saved",
+					description: `Successfully saved map "${props.mapData.name}"`,
+				});
+				if (!mapList.includes(props.mapData.name)) {
+					setMapList(prev => [...prev, props.mapData.name]);
+				}
+			} else {
+				toast({
+					title: "Failed to save map",
+					description: res.error,
+				});
+			}
+		});
+	}
+
+	function handleImportMaps(mapNames: string[]) {
+		if (mapNames.length > 0) {
+			// can just blindly add because electron wont overwrite dupes
+			// ^ (altho maybe we can add handling for this (popup) in the future?)
+			setMapList(prev => [...prev, ...mapNames]);
+			toast({
+				title: "Maps Imported",
+				description: `Successfully imported ${mapNames.length} map(s)!`,
+			});
+		}
+	}
 
 	return (
 		<div className='mapbuilder-sidebar'>
+
+			<OverwriteEditorDialog
+			askingToLoadMapToEditor={askingToLoadMapToEditor}
+			onCancel={() => setAskingToLoadMapToEditor(null)}
+			onConfirm={(mapName) => {
+				setAskingToLoadMapToEditor(null);
+				handleLoadMapToEditor(mapName)
+			}} />
+
+			<DeleteMapsDialog
+			open={deleteMapsDialogOpen}
+			nSelectedMaps={selectedMaps.size}
+			selectedMaps={selectedMaps}
+			onCancel={() => setDeleteMapsDialogOpen(false)}
+			onConfirm={() => handleDeleteMaps().then(() => setDeleteMapsDialogOpen(false))} />
+
 			<h2>Map Builder</h2>
 
-			<MapbuilderSidebarItem label="Load Existing Map">
-				<div className='flex gap-2'>
-					<Select onValueChange={val => setEditingExistingMap(val === NEW_MAP_VALUE? null : val)}>
-						<SelectTrigger>
-							<SelectValue className={editingExistingMap === null? 'text-muted-foreground' : ''} placeholder="Edit existing..." />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem className='text-muted-foreground' value={NEW_MAP_VALUE}>(Create new...)</SelectItem>
-							{existingMaps.map((mapName) => (
-								<SelectItem key={mapName} value={mapName}>{mapName}</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-					<Input type="file" accept=".json" className='mapbuilder-file-input' onChange={(e) => {
-						console.log(e.target.files);
-					}} />
-				</div>
+			<MapbuilderSidebarItem label="All Maps">
+				<MapList 
+				mapList={mapList}
+				selectedMaps={selectedMaps}
+				setSelectedMaps={setSelectedMaps}
+				askToLoadMapToEditor={(mapName) => setAskingToLoadMapToEditor(mapName)}
+				askToDeleteMaps={() => setDeleteMapsDialogOpen(true)}
+				onImportMaps={handleImportMaps} />
 			</MapbuilderSidebarItem>
 
 			<MapbuilderSidebarItem label="Build">
@@ -100,7 +199,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			<MapbuilderSidebarItem label="Symmetry">
 				<Select onValueChange={(val: keyof typeof Symmetry) => props.setMapData({...props.mapData, symmetry: val})} value={props.mapData.symmetry}>
 					<SelectTrigger>
-						<SelectValue className={editingExistingMap === null? 'text-muted-foreground' : ''} placeholder="Edit existing..." />
+						<SelectValue placeholder="Select symmetry..." />
 					</SelectTrigger>
 					<SelectContent>
 						{Object.entries(Symmetry).map(([k, v]) => (
@@ -120,17 +219,18 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 				</div>
 			</MapbuilderSidebarItem>
 
-
 			<hr />
 			
 			<MapbuilderSidebarItem label="Map Name">
-				<Input value={props.mapData.name} onChange={(e) => props.setMapData({...props.mapData, name: e.target.value})} />
+				<Input 
+				value={props.mapData.name} 
+				onChange={(e) => props.setMapData({...props.mapData, name: e.target.value})} />
 			</MapbuilderSidebarItem>
 
 			<MapbuilderSidebarItem label="Save">
 				<div className="flex gap-2">
-					<Button className='w-1/2'>Save</Button>
-					<Button variant='secondary' className='w-1/2'><DownloadIcon /> Download...</Button>
+					<Button className='w-1/2' onClick={handleSaveMap}>Save</Button>
+					<Button variant='secondary' className='w-1/2'><DownloadIcon /> Export</Button>
 				</div>
 			</MapbuilderSidebarItem>
 

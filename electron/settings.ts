@@ -1,7 +1,7 @@
 import { app, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { type Settings } from '../common/settingsBridge.ts';
+import { type Settings } from '../common/types.ts';
 
 export const USER_SETTINGS_PATH = path.join(
   app.getPath("userData"),

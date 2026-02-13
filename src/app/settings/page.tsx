@@ -7,7 +7,7 @@ import { SettingsItem } from './components/SettingsItem';
 import "./page.css";
 import { ErrorBlock, Input } from '@/components';
 import { SaveBar } from './components/SaveBar';
-import { Settings } from '../../../common/settingsBridge';
+import { Settings } from '../../../common/types';
 import { Select, SelectItem } from '@/components';
 
 type MatchPlayerPageProps = {
