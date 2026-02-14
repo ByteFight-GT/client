@@ -1,7 +1,7 @@
 /**
  * Stores gamestate data corresponding to a player during the game, like their stamina, paint, etc.
  */
-type PlayerGameState_t = {
+export type PlayerGameState = {
 	totalPaint: number; // sum of all # of layers of paint on all tiles
 	uniquePaintedCells: number; // # of UNIQUE tiles painted (ignores multi-layered)
 	

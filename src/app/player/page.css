@@ -7,9 +7,125 @@
 	overflow: hidden;
 }
 
-.matchplayer-dockers {
+.matchplayer-sidebar {
 	display: flex;
 	flex-direction: column;
 	border-right: 2px solid hsl(var(--border));
+	background-color: hsl(var(--background));
 	overflow-y: auto;
 }
+.matchplayer-sidebar-tabs {
+	display: flex;
+	border-bottom: 2px solid hsl(var(--border));
+}
+.matchplayer-sidebar-tab {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+	padding: 0.5rem 0;
+	width: 100%;
+	color: hsl(var(--muted-foreground));
+}
+.matchplayer-sidebar-tab:hover {
+	background-color: hsl(var(--secondary));
+}
+.matchplayer-sidebar-tab.selected {
+	background-color: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	font-weight: 600;
+}
+
+.CollapsibleDocker-container:last-of-type {
+	border-bottom: 2px solid hsl(var(--border));
+	flex-grow: 1;
+}
+.CollapsibleDocker-header-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	width: 100%;
+	user-select: none;
+
+	justify-content: space-between;
+	font-size: 0.9em;
+	padding: 0.2rem 1rem;
+	
+	color: hsl(var(--muted-foreground));
+	background-color: hsl(var(--secondary));
+	border-bottom: 2px solid hsl(var(--border));
+	transition: color 0.1s;
+}
+.CollapsibleDocker-header-bar:hover {
+	color: hsl(var(--secondary-foreground));
+}
+.CollapsibleDocker-header-bar.isExpanded {
+	color: hsl(var(--foreground));
+}
+
+.CollapsibleDocker-toggle-icon {
+	font-size: 1.25em;
+	transition: transform 0.1s;
+}
+.CollapsibleDocker-header-bar.isExpanded .CollapsibleDocker-toggle-icon {
+	transform: rotate(180deg);
+}
+
+.CollapsibleDocker-body {
+	border-top: 2px solid hsl(var(--border));
+}
+
+.GameWindow-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: hsl(var(--background));
+}
+
+.Console-tabs-bar {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	width: 100%;
+}
+.Console-tab {
+	font-size: 0.8em;
+	width: 100%;
+	padding: 0.5em 0.8em;
+	border-bottom: 2px solid hsl(var(--border));
+	cursor: pointer;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	transition: background-color 0.1s;
+}
+.Console-tab.selected {
+	background-color: hsl(var(--themecolor));
+	border-bottom-color: hsl(var(--themecolor));
+	font-weight: 600;
+}
+.Console-tab.blue {
+	color: hsl(var(--team-blue-color));
+	border-right: 1px solid hsl(var(--border));
+}
+.Console-tab.green {
+	color: hsl(var(--team-green-color));
+	border-left: 1px solid hsl(var(--border));
+}
+
+.Console-tab-icon {
+	display: inline;
+	vertical-align: middle;
+	width: 1em;
+}
+
+
+.Console-body {
+	font-size: 0.8em;
+	line-height: 1.2;
+	padding: 0.5rem;
+	background-color: hsl(var(--themecolor));
+	color: hsl(var(--foreground));
+	height: 30rem;
+}
+
+
