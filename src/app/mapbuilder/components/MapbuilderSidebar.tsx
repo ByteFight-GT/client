@@ -11,7 +11,7 @@ import {
 } from '@/components';
 import { useToast } from '@/hooks/use-toast';
 import { type MapData, Symmetry, TileType } from '@/gametypes';
-import { MapbuilderSidebarItem } from './MapbuilderSidebarItem';
+import { SidebarItem } from '@/components/SidebarItem';
 import { MapList } from './MapList';
 import { OverwriteEditorDialog } from './OverwriteEditorDialog';
 import { DeleteMapsDialog } from './DeleteMapsDialog';
@@ -166,7 +166,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 			<h2>Map Builder</h2>
 
-			<MapbuilderSidebarItem label="All Maps">
+			<SidebarItem label="All Maps">
 				<MapList 
 				mapList={mapList}
 				selectedMaps={selectedMaps}
@@ -174,9 +174,9 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 				askToLoadMapToEditor={(mapName) => setAskingToLoadMapToEditor(mapName)}
 				askToDeleteMaps={() => setDeleteMapsDialogOpen(true)}
 				onImportMaps={handleImportMaps} />
-			</MapbuilderSidebarItem>
+			</SidebarItem>
 
-			<MapbuilderSidebarItem label="Build">
+			<SidebarItem label="Build">
 				<div className='mapbuilder-sidebar-selected-tile'>
 					<Image className='w-24 h-24' src={`/mapbuilder/${editorState.selectedTileType}.png`} alt={editorState.selectedTileType} width={96} height={96} />
 					<div>
@@ -194,9 +194,9 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 						</div>
 					))}
 				</div>
-			</MapbuilderSidebarItem>
+			</SidebarItem>
 
-			<MapbuilderSidebarItem label="Symmetry">
+			<SidebarItem label="Symmetry">
 				<Select onValueChange={(val: keyof typeof Symmetry) => props.setMapData({...props.mapData, symmetry: val})} value={props.mapData.symmetry}>
 					<SelectTrigger>
 						<SelectValue placeholder="Select symmetry..." />
@@ -207,9 +207,9 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 						))}
 					</SelectContent>
 				</Select>
-			</MapbuilderSidebarItem>
+			</SidebarItem>
 
-			<MapbuilderSidebarItem label="Map Size">
+			<SidebarItem label="Map Size">
 				<div className='flex items-center gap-1'>
 					<span className='text-sm text-muted-foreground'>X:</span>
 					<Input type="number" value={props.mapData.width} onChange={(e) => props.setMapData({...props.mapData, width: parseInt(e.target.value)})} />
@@ -217,22 +217,22 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<span className='text-sm text-muted-foreground'>Y:</span>
 					<Input type="number" value={props.mapData.height} onChange={(e) => props.setMapData({...props.mapData, height: parseInt(e.target.value)})} />
 				</div>
-			</MapbuilderSidebarItem>
+			</SidebarItem>
 
 			<hr />
 			
-			<MapbuilderSidebarItem label="Map Name">
+			<SidebarItem label="Map Name">
 				<Input 
 				value={props.mapData.name} 
 				onChange={(e) => props.setMapData({...props.mapData, name: e.target.value})} />
-			</MapbuilderSidebarItem>
+			</SidebarItem>
 
-			<MapbuilderSidebarItem label="Save">
+			<SidebarItem label="Save">
 				<div className="flex gap-2">
 					<Button className='w-1/2' onClick={handleSaveMap}>Save</Button>
 					<Button variant='secondary' className='w-1/2'><DownloadIcon /> Export</Button>
 				</div>
-			</MapbuilderSidebarItem>
+			</SidebarItem>
 
 		</div>
 	);
