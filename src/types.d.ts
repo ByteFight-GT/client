@@ -2,6 +2,8 @@ export {};
 
 declare global {
   interface Window {
-    electron: any;
+    electron: {
+      invoke: (channel: string, ...args: any[]) => Promise<any>;
+    };
   }
 }
