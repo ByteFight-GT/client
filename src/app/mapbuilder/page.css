@@ -25,17 +25,6 @@
 	background-color: hsl(var(--background));
 }
 
-.mapbuilder-sidebar-item {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-}
-.mapbuilder-sidebar-item h3 {
-	color: hsl(var(--secondary-foreground));
-	font-size: 0.875rem;
-	font-weight: 500;
-}
-
 .mapbuilder-sidebar-selected-tile  {
 	display: flex;
 	align-items: center;
