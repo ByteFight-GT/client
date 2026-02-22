@@ -1,21 +1,27 @@
 {
 	"Python Path": {
 		"__type": "string",
-		"__placeholder": "e.g. C:/Python/python.exe",
-		"__desc": "Path to the Python executable to use for running bots and the game engine.",
-		"value": ""
+		"__placeholder": "e.g. python3",
+		"__desc": "Path to the Python executable to use for running games. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"value": "python"
 	},
 	"Bots Directory": {
 		"__type": "string",
-		"__placeholder": "e.g. C:/bytefight/bots",
-		"__desc": "Directory to search in when looking for bots.",
-		"value": ""
+		"__placeholder": "$/bots",
+		"__desc": "Directory to search in when looking for bots. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"value": "$/bots"
 	},
 	"Maps Directory": {
 		"__type": "string",
-		"__placeholder": "e.g. C:/bytefight/maps",
-		"__desc": "Directory to search in when looking for maps. Attempts to parse all json files.",
-		"value": ""
+		"__placeholder": "$/maps",
+		"__desc": "Directory to search in when looking for maps. Attempts to parse all json files. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"value": "$/maps"
+	},
+	"Matches Directory": {
+		"__type": "string",
+		"__placeholder": "$/matches",
+		"__desc": "Directory to save to and load matches from. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"value": "$/matches"
 	},
 	"Reload Default Maps on Startup": {
 		"__type": "toggle",
