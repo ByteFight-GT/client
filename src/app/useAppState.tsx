@@ -98,7 +98,6 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
 
   // INITIAL SETUP
   React.useEffect(() => {
-    console.log("AppContextProvider mounted, fetching initial data...");
     fetchSettings();
     fetchMapList();
     fetchBotsList();

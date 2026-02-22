@@ -11,7 +11,7 @@ import { useAppState } from '@/app/useAppState';
 
 export const RunMatchTab = () => {
 
-  const { maps } = useAppState();
+  const { maps, bots } = useAppState();
   const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
 
   const [selectedGreenTeam, setSelectedGreenTeam] = React.useState<string | null>(null);
@@ -51,7 +51,7 @@ export const RunMatchTab = () => {
         </span>
       }>
         <BotSelector 
-        botNames={["test", "test2", "hi", "recent1", "recent2", ...Array.from({length: 20}, (_, i) => `bot${i}`)]}
+        botNames={bots}
         recents={["recent1", "recent2dfdsafsafsXX*X*X***XYUYZUYZ*&28372183789000423-4-234-"]} 
         onChange={(name) => setSelectedGreenTeam(name)} />
       </SidebarItem>
@@ -74,7 +74,7 @@ export const RunMatchTab = () => {
         </span>
       }>
         <BotSelector 
-        botNames={["test", "test2", "hi", "recent1", "recent2"]} 
+        botNames={bots}
         recents={["recent1", "recent2"]} 
         onChange={(name) => setSelectedBlueTeam(name)} />
       </SidebarItem>
