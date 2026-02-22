@@ -25,7 +25,7 @@ export const BotSelector = (props: BotSelectorProps) => {
 			<h3 className='text-sm text-muted-foreground mb-1'>Select Bot</h3>
 			<Select value={props.value} onValueChange={props.onChange}>
 				<SelectTrigger className="w-full">
-					<SelectValue placeholder="Select a bot" />
+					<SelectValue placeholder="Select..." />
 				</SelectTrigger>
 				<SelectContent>
 					{botNames.map((_, i) => (
