@@ -46,7 +46,7 @@ export const MapList = (props: MapListProps) => {
 					props.mapList.map(mapName => (
 						<div 
 						key={mapName} 
-						className='mapbuilder-map-list-item' 
+						className={`mapbuilder-map-list-item ${props.selectedMaps.has(mapName)? "selected" : ""}`}
 						onClick={() => setMapSelected(mapName, !props.selectedMaps.has(mapName))}
 						onDoubleClick={() => props.askToLoadMapToEditor(mapName)}>
 							

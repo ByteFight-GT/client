@@ -76,4 +76,8 @@
 	gap: 0.5rem;
 	cursor: default;
 	transition: 0.1s;
+	color: hsl(var(--muted-foreground));
+}
+.mapbuilder-map-list-item.selected {
+	color: hsl(var(--foreground));
 }

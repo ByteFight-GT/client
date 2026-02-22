@@ -157,6 +157,10 @@
 	gap: 0.5rem;
 	cursor: default;
 	transition: 0.1s;
+	color: hsl(var(--muted-foreground));
+}
+.matchplayer-map-list-item.selected {
+	color: hsl(var(--foreground));
 }
 
 .matchplayer-run-again-button {

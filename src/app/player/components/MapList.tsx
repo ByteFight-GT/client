@@ -39,7 +39,7 @@ export const MapList = (props: MapListProps) => {
 					maps.map(mapName => (
 						<div 
 						key={mapName} 
-						className='matchplayer-map-list-item' 
+						className={`matchplayer-map-list-item ${props.selectedMaps.has(mapName)? "selected" : ""}`}
 						onClick={() => setMapSelected(mapName, !props.selectedMaps.has(mapName))}>
 							
 							<Checkbox
