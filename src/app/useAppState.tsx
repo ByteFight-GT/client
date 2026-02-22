@@ -9,9 +9,18 @@ export type AppStateValue = {
   maps: string[];
   bots: string[];
   settings: Settings;
+  matchHistory: MatchMetadata[];
+
   setMaps: React.Dispatch<React.SetStateAction<string[]>>;
   setBots: React.Dispatch<React.SetStateAction<string[]>>;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+  setMatchHistory: React.Dispatch<React.SetStateAction<MatchMetadata[]>>;
+
+  fetchMapList: () => void;
+  fetchBotList: () => void;
+  fetchSettings: () => void;
+  fetchMatchHistory: () => void;
+
   errors: Record<string, Error>;
   loadings: Record<string, boolean>;
   handleImportMaps: () => void;
@@ -79,20 +88,20 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     });
   }, [loadings]);
 
-  const fetchBotsList = React.useCallback(() => {
-    if (loadings["fetchBotsList"]) return;
+  const fetchBotList = React.useCallback(() => {
+    if (loadings["fetchBotList"]) return;
 
-    toggleLoading("fetchBotsList", true);
+    toggleLoading("fetchBotList", true);
 
     window.electron.invoke('bots:list')
     .then(res => {
       if (res.success) {
         setBots(res.bots);
       } else {
-        addError("fetchBotsList", res.error);
+        addError("fetchBotList", res.error);
       }
     }).finally(() => {
-      toggleLoading("fetchBotsList", false);
+      toggleLoading("fetchBotList", false);
     });
   }, [loadings]);
 
@@ -119,7 +128,7 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
   React.useEffect(() => {
     fetchSettings();
     fetchMapList();
-    fetchBotsList();
+    fetchBotList();
     fetchMatchHistory();
   }, []);
 
@@ -168,22 +177,34 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     bots,
     matchHistory,
     settings,
+
     setMaps,
     setBots,
     setSettings,
     setMatchHistory,
+    
+    fetchMapList,
+    fetchBotList,
+    fetchSettings,
+    fetchMatchHistory,
+
     errors,
     loadings,
     handleImportMaps,
-    handleImportBots
+    handleImportBots,
   }), [
     maps,
     bots,
+    matchHistory,
     settings,
+    fetchMapList,
+    fetchBotList,
+    fetchSettings,
+    fetchMatchHistory,
     errors,
     loadings,
     handleImportMaps,
-    handleImportBots
+    handleImportBots,
   ]);
 
   return (
