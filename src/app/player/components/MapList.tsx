@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppState } from '@/app/appStateHook';
+import { useAppState } from '@/app/useAppState';
 import { Button, Checkbox } from '@/components';
 import Link from 'next/link';
 import React from 'react';

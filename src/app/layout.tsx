@@ -3,7 +3,7 @@ import "./globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar/Navbar";
-import { AppContextProvider } from "./appStateHook";
+import { AppContextProvider } from "./useAppState";
 
 export const metadata: Metadata = {
   title: "Bytefight Client 2026",

@@ -7,7 +7,7 @@ import { BotSelector } from './BotSelector';
 import Image from 'next/image';
 import { Button } from '@/components';
 import { ArrowLeftRightIcon, ImportIcon, PlayIcon, RefreshCwIcon, SwordsIcon } from 'lucide-react';
-import { useAppState } from '@/app/appStateHook';
+import { useAppState } from '@/app/useAppState';
 
 export const RunMatchTab = () => {
 
