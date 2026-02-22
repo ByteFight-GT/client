@@ -69,7 +69,7 @@ export const MapList = (props: MapListProps) => {
 				<Button 
 				variant="outline"
 				onClick={() => handleSelectMany(false)}>
-					- All
+					- None
 				</Button>
 				<Button 
 				variant="outline"

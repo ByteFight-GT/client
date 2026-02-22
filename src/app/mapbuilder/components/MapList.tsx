@@ -95,7 +95,7 @@ export const MapList = (props: MapListProps) => {
 				<Button 
 				variant="secondary"
 				onClick={() => handleSelectMany(false)}>
-					- All
+					- None
 				</Button>
 				<Button
 				variant="destructive"
