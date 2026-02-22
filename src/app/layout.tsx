@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar/Navbar";
+import { AppContextProvider } from "./appStateHook";
 
 export const metadata: Metadata = {
   title: "Bytefight Client 2026",
@@ -18,13 +19,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
       <body className="flex antialiased">
-        <Navbar />
-        
-        <div className="w-full h-screen overflow-auto">
-          {children}
-        </div>
+        <AppContextProvider>
+          
+          <Navbar />
 
-        <Toaster />
+          <div className="w-full h-screen overflow-auto">
+            {children}
+          </div>
+
+          <Toaster />
+        
+        </AppContextProvider>
       </body>
     </html>
   );
