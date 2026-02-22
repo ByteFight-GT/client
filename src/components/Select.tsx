@@ -91,7 +91,11 @@ const SelectContent = React.forwardRef<
 						"h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
 				)}
 			>
-				{children}
+				{(!children || (children instanceof Array && children.length === 0))?
+					<p className="text-center text-xs text-muted-foreground">So empty...</p>
+				: 
+					children
+				}
 			</SelectPrimitive.Viewport>
 			<SelectScrollDownButton />
 		</SelectPrimitive.Content>
