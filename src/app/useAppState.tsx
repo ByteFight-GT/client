@@ -3,6 +3,7 @@
 import React from 'react';
 import { Settings } from '../../common/types';
 import { useToast } from '@/hooks/use-toast';
+import { MatchMetadata } from '@/gametypes';
 
 export type AppStateValue = {
   maps: string[];
@@ -23,6 +24,7 @@ const AppContext = React.createContext<AppStateValue | undefined>(undefined);
 export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [maps, setMaps] = React.useState<string[]>([]);
   const [bots, setBots] = React.useState<string[]>([]);
+  const [matchHistory, setMatchHistory] = React.useState<MatchMetadata[]>([]);
   const [settings, setSettings] = React.useState<Settings>({});
 
   const [loadings, setLoadings] = React.useState<Record<string, boolean>>({});
@@ -94,6 +96,23 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     });
   }, [loadings]);
 
+  const fetchMatchHistory = React.useCallback(() => {
+    if (loadings["fetchMatchHistory"]) return;
+
+    toggleLoading("fetchMatchHistory", true);
+
+    window.electron.invoke('matchHistory:list')
+    .then(res => {
+      if (res.success) {
+        setMatchHistory(res.history);
+      } else {
+        addError("fetchMatchHistory", res.error);
+      }
+    }).finally(() => {
+      toggleLoading("fetchMatchHistory", false);
+    });
+  }, [loadings]);
+
   // <<< END FETCHERS
 
   // INITIAL SETUP
@@ -101,6 +120,7 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     fetchSettings();
     fetchMapList();
     fetchBotsList();
+    fetchMatchHistory();
   }, []);
 
   // >>> HANDLERS
@@ -146,10 +166,12 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
   const value = React.useMemo(() => ({
     maps,
     bots,
+    matchHistory,
     settings,
     setMaps,
     setBots,
     setSettings,
+    setMatchHistory,
     errors,
     loadings,
     handleImportMaps,

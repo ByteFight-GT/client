@@ -56,3 +56,26 @@ export type MapData = {
 	healthPowerupSpawns: PowerupSpawn[];
 	staminaPowerupSpawns: PowerupSpawn[];
 }
+
+/**
+ * All information about a match (which can have multiple games),
+ * except for the actual game data (like gamestates, moves, etc.).
+ *
+ * can also be used to represent queued or in-progress matches.
+ */
+export type MatchMetadata = {
+	id: string;
+	queuedTimestamp: number; // when the match entered the queue
+	startTimestamp?: number; // start time of first game
+	finishTimestamp?: number; // end time of last game
+	notes?: string; // user-written notes for their reference!
+
+	maps: string[]; // names of maps played (or to play)
+
+	resultFiles: string[]; // filepaths to pgns for each game
+
+	teamGreen: string; // green bot name
+	teamBlue: string; // blue bot name
+	greenWins: {map: string, reason: string, numRounds: number}[];
+	blueWins: {map: string, reason: string, numRounds: number}[];
+}
