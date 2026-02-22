@@ -7,9 +7,11 @@ import { BotSelector } from './BotSelector';
 import Image from 'next/image';
 import { Button } from '@/components';
 import { ArrowLeftRightIcon, ImportIcon, PlayIcon, RefreshCwIcon, SwordsIcon } from 'lucide-react';
+import { useAppState } from '@/app/appStateHook';
 
 export const RunMatchTab = () => {
 
+  const { maps } = useAppState();
   const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
 
   return (
@@ -27,7 +29,7 @@ export const RunMatchTab = () => {
         </button>
       </div>
 
-      <SidebarItem label="Select Maps">
+      <SidebarItem label={`Select Maps • ${selectedMaps.size}/${maps.length}`}>
         <MapList
         selectedMaps={selectedMaps}
         setSelectedMaps={setSelectedMaps} />
