@@ -1,4 +1,7 @@
-export type Settings = Record<string, Record<string, any>>; 
+export type Settings = Record<string, {
+	value: any;
+	[key: `__${string}`]: any; // for __type, __desc, __placeholder, etc.
+}>; 
 
 /**
  * Represents all data about a map.
@@ -59,6 +62,8 @@ export const TileType = {
 	GREEN_SPAWN: 'GREEN_SPAWN',
 } as const;
 
+export type MatchStatus = 'queued' | 'in-progress' | 'terminated' | 'completed';
+
 /**
  * All information about a match (which can have multiple games),
  * except for the actual game data (like gamestates, moves, etc.).
@@ -66,19 +71,21 @@ export const TileType = {
  * can also be used to represent queued or in-progress matches.
  */
 export type MatchMetadata = {
-	id: string;
+	matchId: string;
 	queuedTimestamp: number; // when the match entered the queue
-	startTimestamp?: number; // start time of first game
-	finishTimestamp?: number; // end time of last game
-	notes?: string; // user-written notes for their reference!
+	startTimestamp: number | null; // start time of first game
+	finishTimestamp: number | null; // end time of last game
+	notes: string | null; // user-written notes for their reference!
 
 	maps: string[]; // names of maps played (or to play)
 
-	resultFiles: string[]; // filepaths to pgns for each game
+	resultFiles: string[]; // filepaths to pgns for each game. SAME ORDER AS maps array!
 
 	teamGreen: string; // green bot name
 	teamBlue: string; // blue bot name
 	greenWins: {map: string, reason: string, numRounds: number}[];
 	blueWins: {map: string, reason: string, numRounds: number}[];
+
+	status: MatchStatus;
 }
 
