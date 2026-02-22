@@ -11,6 +11,7 @@ import { closePython, closeTCPClient } from './pythonHandlers.ts';
 import { fileURLToPath } from 'url';
 import { initSettings } from './settings.ts';
 import { initMaps } from './maps.ts';
+import { initBots } from './bots.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -84,9 +85,13 @@ app.on('ready', async () => {
     const Store = (await import('electron-store')).default;
     store = new Store();
 
-    await initSettings();
-    await initMaps();
-    await initMetadata();
+    // initialize stuff
+    await Promise.all([
+        initSettings(),
+        initMaps(),
+        initMetadata(),
+        initBots(),
+    ]);
 
     // Setup all IPC handlers
     setupAllHandlers(store, enginePath, matchPath);
