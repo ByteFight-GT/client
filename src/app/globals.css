@@ -12,20 +12,20 @@
   :root {
     --themecolor: 0 0% 0%; /* black */
     --background: 20 6% 6%;
-    --foreground: 60 9% 95%;
+    --foreground: 60 0% 95%;
     --card: 20 14% 4%;
-    --card-foreground: 60 9% 95%;
+    --card-foreground: 60 0% 95%;
     --popover: 20 14% 4%;
-    --popover-foreground: 60 9% 95%;
+    --popover-foreground: 60 0% 95%;
     --primary: 48 96% 55%;
     --primary2: 32 88% 40%;
-    --primary-foreground: 26 83% 14%;
+    --primary-foreground: 26 50% 14%;
     --secondary: 20 2% 10%;
-    --secondary-foreground: 60 5% 75%;
+    --secondary-foreground: 320 0% 70%;
     --muted: 12 6% 15%;
-    --muted-foreground: 320 2% 50%;
+    --muted-foreground: 320 0% 50%;
     --accent: 12 6.5% 15%;
-    --accent-foreground: 60 9% 95%;
+    --accent-foreground: 60 0% 95%;
     --destructive: 0 60% 35%;
     --destructive-foreground: 60 10% 95%;
     --border: 12 6% 18%;
