@@ -38,45 +38,51 @@ export const RunMatchTab = () => {
         </button>
       </div>
 
-      <SidebarItem label={`Select Maps • ${selectedMaps.size}/${maps.length}`}>
-        <MapList
-        selectedMaps={selectedMaps}
-        setSelectedMaps={setSelectedMaps} />
-      </SidebarItem>
+      <div className='grid grid-cols-2 gap-2'>
+          <SidebarItem 
+          disableDefaultHeader
+          label={
+            <span className='text-center text-sm text-[hsl(var(--team-green-color))]'>
+              <Image src="/green_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
+              &nbsp;Green Team
+            </span>
+          }>
+            <BotSelector 
+            botNames={bots}
+            recents={["recent1", "recent2dfdsafsafsXX*X*X***XYUYZUYZ*&28372183789000423-4-234-"]} 
+            onChange={(name) => setSelectedGreenTeam(name)} />
+          </SidebarItem>
+        
+          <SidebarItem 
+          disableDefaultHeader
+          label={
+            <span className='text-center text-sm text-[hsl(var(--team-blue-color))]'>
+              <Image src="/blue_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
+              &nbsp;Blue Team
+            </span>
+          }>
+            <BotSelector 
+            botNames={bots}
+            recents={["recent1", "recent2"]} 
+            onChange={(name) => setSelectedBlueTeam(name)} />
+          </SidebarItem>
+      </div>
 
-      <SidebarItem label={
-        <span className='text-[hsl(var(--team-green-color))]'>
-          <Image src="/green_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
-          &nbsp;Green Team
-        </span>
-      }>
-        <BotSelector 
-        botNames={bots}
-        recents={["recent1", "recent2dfdsafsafsXX*X*X***XYUYZUYZ*&28372183789000423-4-234-"]} 
-        onChange={(name) => setSelectedGreenTeam(name)} />
-      </SidebarItem>
-
-      <div className='flex gap-2'>
-        <Button variant="secondary" className='w-1/2'> 
+      <div className='flex flex-col gap-2 w-full'>
+        <Button variant="secondary"> 
           <ArrowLeftRightIcon className='inline align-sub text-primary' />
           Switch Sides
         </Button>
-        <Button variant="secondary" className='w-1/2'>
+        <Button variant="secondary">
           <RefreshCwIcon className='inline align-sub text-primary' />
           Refresh Bots
         </Button>
       </div>
 
-      <SidebarItem label={
-        <span className='text-[hsl(var(--team-blue-color))]'>
-          <Image src="/blue_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
-          &nbsp;Blue Team
-        </span>
-      }>
-        <BotSelector 
-        botNames={bots}
-        recents={["recent1", "recent2"]} 
-        onChange={(name) => setSelectedBlueTeam(name)} />
+      <SidebarItem label={`Select Maps • ${selectedMaps.size}/${maps.length}`}>
+        <MapList
+        selectedMaps={selectedMaps}
+        setSelectedMaps={setSelectedMaps} />
       </SidebarItem>
       
     </div>
