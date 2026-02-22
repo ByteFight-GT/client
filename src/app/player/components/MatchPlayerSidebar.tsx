@@ -25,6 +25,12 @@ export const MatchPlayerSidebar = () => {
 
   const [currTab, setCurrTab] = React.useState<keyof typeof MATCHPLAYER_SIDEBAR_TABS>("matchInfo");
 
+  // which thing torender
+  const ActiveTabComponent = React.useMemo(
+    () => MATCHPLAYER_SIDEBAR_TABS[currTab].component,
+    [currTab]
+  );
+
   return (
     <div className='matchplayer-sidebar'>
       <div className='matchplayer-sidebar-tabs'>
@@ -37,7 +43,7 @@ export const MatchPlayerSidebar = () => {
           </button>
         ))}
       </div>
-      {MATCHPLAYER_SIDEBAR_TABS[currTab].component()}
+      <ActiveTabComponent />
     </div>
   );
 };

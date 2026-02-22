@@ -16,7 +16,7 @@ export const CollapsibleDocker = (props: CollapsibleDockerProps) => {
 	return (
 		<div className='CollapsibleDocker-container'>
 			<div className={`CollapsibleDocker-header-bar ${isExpanded? 'isExpanded' : ''}`} {...getToggleProps()}>
-				<h1>{props.title}</h1>
+				<h2>{props.title}</h2>
 				<ChevronDownIcon className='CollapsibleDocker-toggle-icon' />
 			</div>
 			<div className='CollapsibleDocker-body' {...getCollapseProps()}>
