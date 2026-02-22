@@ -148,6 +148,7 @@
 	padding: 0.5rem;
 	overflow-y: auto;
 	border: 1px solid hsl(var(--border));
+	background-color: hsl(var(--background));
 }
 .matchplayer-map-list-item {
 	display: flex;
