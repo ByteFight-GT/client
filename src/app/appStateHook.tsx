@@ -6,12 +6,15 @@ import { useToast } from '@/hooks/use-toast';
 
 export type AppStateValue = {
   maps: string[];
+  bots: string[];
   settings: Settings;
   setMaps: React.Dispatch<React.SetStateAction<string[]>>;
+  setBots: React.Dispatch<React.SetStateAction<string[]>>;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
   errors: Record<string, Error>;
   loadings: Record<string, boolean>;
   handleImportMaps: () => void;
+  handleImportBots: () => void;
 };
 
 const AppContext = React.createContext<AppStateValue | undefined>(undefined);
@@ -19,6 +22,7 @@ const AppContext = React.createContext<AppStateValue | undefined>(undefined);
 /** App-wide global states that can be used everywhere */
 export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [maps, setMaps] = React.useState<string[]>([]);
+  const [bots, setBots] = React.useState<string[]>([]);
   const [settings, setSettings] = React.useState<Settings>({});
 
   const [loadings, setLoadings] = React.useState<Record<string, boolean>>({});
@@ -73,6 +77,23 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     });
   }, [loadings]);
 
+  const fetchBotsList = React.useCallback(() => {
+    if (loadings["fetchBotsList"]) return;
+
+    toggleLoading("fetchBotsList", true);
+
+    window.electron.invoke('bots:list')
+    .then(res => {
+      if (res.success) {
+        setBots(res.bots);
+      } else {
+        addError("fetchBotsList", res.error);
+      }
+    }).finally(() => {
+      toggleLoading("fetchBotsList", false);
+    });
+  }, [loadings]);
+
   // <<< END FETCHERS
 
   // INITIAL SETUP
@@ -80,20 +101,19 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     console.log("AppContextProvider mounted, fetching initial data...");
     fetchSettings();
     fetchMapList();
+    fetchBotsList();
   }, []);
 
   // >>> HANDLERS
 
   const handleImportMaps = React.useCallback(() => {
     window.electron.invoke('maps:import')
-    .then((importedMapNames: string[]) => {
-      if (importedMapNames.length > 0) {
-        // can just blindly add because electron wont overwrite dupes
-        // ^ (altho maybe we can add handling for this (popup) in the future?)
-        setMaps(prev => [...prev, ...importedMapNames]);
+    .then((res) => {
+      if (res.success && res.imported.length > 0) {
+        setMaps(prev => [...prev, ...res.imported]);
         toast({
           title: "Maps Imported",
-          description: `Successfully imported ${importedMapNames.length} map(s)!`,
+          description: `Successfully imported ${res.imported.length} map(s)!`,
         });
       }
     }).catch((err: any) => {
@@ -102,24 +122,47 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
         description: err instanceof Error? err.message : String(err),
       });
     });
-	}, [toast]);
+  }, [toast]);
+
+  const handleImportBots = React.useCallback(() => {
+    window.electron.invoke('bots:import')
+    .then((res) => {
+      if (res.success && res.imported.length > 0) {
+        setBots(prev => [...prev, ...res.imported]);
+        toast({
+          title: "Bots Imported",
+          description: `Successfully imported ${res.imported.length} bot(s)!`,
+        });
+      }
+    }).catch((err: any) => {
+      toast({
+        title: "Failed to import bots",
+        description: err instanceof Error? err.message : String(err),
+      });
+    });
+  }, [toast]);
 
   // <<< END HANDLERS
 
   const value = React.useMemo(() => ({
     maps,
+    bots,
     settings,
     setMaps,
+    setBots,
     setSettings,
     errors,
     loadings,
-    handleImportMaps
+    handleImportMaps,
+    handleImportBots
   }), [
-    maps, 
-    settings, 
+    maps,
+    bots,
+    settings,
     errors,
     loadings,
-    handleImportMaps
+    handleImportMaps,
+    handleImportBots
   ]);
 
   return (
