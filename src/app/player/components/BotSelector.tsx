@@ -26,14 +26,14 @@ export const BotSelector = (props: BotSelectorProps) => {
 	return (
 		<div>
 			{props.team === "green"?
-				<p className='text-sm mb-1 text-[hsl(var(--team-green-color))]'>
-					<Image src="/green_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
-					&nbsp;Green Team
+				<p className='flex items-center gap-2 text-sm mb-1 text-[hsl(var(--team-green-color))]'>
+					<Image src="/green_team_icon.svg" alt="*" width={12} height={12} />
+					Green Team
 				</p>
 			:
-				<p className='text-sm mb-1 text-[hsl(var(--team-blue-color))]'>
-					<Image src="/blue_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
-					&nbsp;Blue Team
+				<p className='flex items-center gap-2 text-sm mb-1 text-[hsl(var(--team-blue-color))]'>
+					<Image src="/blue_team_icon.svg" alt="*" width={12} height={12} />
+					Blue Team
 				</p>
 			}
 
