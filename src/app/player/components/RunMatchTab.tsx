@@ -14,6 +14,9 @@ export const RunMatchTab = () => {
   const { maps } = useAppState();
   const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
 
+  const [selectedGreenTeam, setSelectedGreenTeam] = React.useState<string | null>(null);
+  const [selectedBlueTeam, setSelectedBlueTeam] = React.useState<string | null>(null);
+
   return (
     <div className='flex flex-col gap-4 p-4'>
       <h2>Run Match</h2>
@@ -23,7 +26,13 @@ export const RunMatchTab = () => {
           <ImportIcon className='mx-auto text-2xl text-secondary-foreground' />
           Use Last Setup
         </button>
-        <button className='matchplayer-start-button'>
+        <button 
+        disabled={
+          selectedMaps.size === 0 
+          || selectedGreenTeam === null 
+          || selectedBlueTeam === null
+        }
+        className='matchplayer-start-button'>
           <PlayIcon className='mx-auto text-2xl text-primary' />
           Start!
         </button>
@@ -44,7 +53,7 @@ export const RunMatchTab = () => {
         <BotSelector 
         botNames={["test", "test2", "hi", "recent1", "recent2", ...Array.from({length: 20}, (_, i) => `bot${i}`)]}
         recents={["recent1", "recent2dfdsafsafsXX*X*X***XYUYZUYZ*&28372183789000423-4-234-"]} 
-        onChange={() => {}} />
+        onChange={(name) => setSelectedGreenTeam(name)} />
       </SidebarItem>
 
       <div className='flex gap-2'>
@@ -67,7 +76,7 @@ export const RunMatchTab = () => {
         <BotSelector 
         botNames={["test", "test2", "hi", "recent1", "recent2"]} 
         recents={["recent1", "recent2"]} 
-        onChange={() => {}} />
+        onChange={(name) => setSelectedBlueTeam(name)} />
       </SidebarItem>
       
     </div>

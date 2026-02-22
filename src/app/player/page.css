@@ -165,8 +165,12 @@
 	cursor: default;
 	transition: 0.1s;
 }
-.matchplayer-run-again-button:hover {
+.matchplayer-run-again-button:not(:disabled):hover {
 	background-color: hsl(var(--muted-foreground) / 0.1);
+}
+.matchplayer-run-again-button:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
 }
 
 .matchplayer-start-button {
@@ -177,9 +181,15 @@
 	cursor: default;
 	transition: 0.1s;
 }
-.matchplayer-start-button:hover {
+.matchplayer-start-button:not(:disabled):hover {
 	border-color: hsl(var(--primary));
 	background-color: hsl(var(--primary) / 0.2);
+}
+.matchplayer-start-button:disabled {
+	border-color: hsl(var(--muted-foreground));
+	background-color: hsl(var(--muted-foreground) / 0.1);
+	cursor: not-allowed;
+	opacity: 0.5;
 }
 
 .bot-selector-recent-button {
