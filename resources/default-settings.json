@@ -1,8 +1,20 @@
 {
 	"Python Path": {
 		"__type": "string",
-		"__placeholder": "e.g. C:/Python/python.exe...",
+		"__placeholder": "e.g. C:/Python/python.exe",
 		"__desc": "Path to the Python executable to use for running bots and the game engine.",
+		"value": ""
+	},
+	"Bots Directory": {
+		"__type": "string",
+		"__placeholder": "e.g. C:/bytefight/bots",
+		"__desc": "Directory to search in when looking for bots.",
+		"value": ""
+	},
+	"Maps Directory": {
+		"__type": "string",
+		"__placeholder": "e.g. C:/bytefight/maps",
+		"__desc": "Directory to search in when looking for maps. Attempts to parse all json files.",
 		"value": ""
 	},
 	"Reload Default Maps on Startup": {
