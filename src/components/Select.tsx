@@ -19,7 +19,7 @@ const SelectTrigger = React.forwardRef<
 	<SelectPrimitive.Trigger
 		ref={ref}
 		className={cn(
-			"flex w-full items-center justify-between border border-input bg-secondary px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+			"bg-background flex w-full items-center justify-between border border-input px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
 			className
 		)}
 		{...props}
@@ -39,7 +39,7 @@ const SelectScrollUpButton = React.forwardRef<
 	<SelectPrimitive.ScrollUpButton
 		ref={ref}
 		className={cn(
-			"flex cursor-default items-center justify-center py-1",
+			"flex cursor-default items-center justify-center py-1 border-b border-[hsl(var(--complementary)/0.25)] bg-[hsl(var(--complementary)/0.1)]",
 			className
 		)}
 		{...props}
@@ -56,7 +56,7 @@ const SelectScrollDownButton = React.forwardRef<
 	<SelectPrimitive.ScrollDownButton
 		ref={ref}
 		className={cn(
-			"flex cursor-default items-center justify-center py-1",
+			"flex cursor-default items-center justify-center py-1 border-t border-[hsl(var(--complementary)/0.25)] bg-[hsl(var(--complementary)/0.1)]",
 			className
 		)}
 		{...props}
@@ -75,7 +75,7 @@ const SelectContent = React.forwardRef<
 		<SelectPrimitive.Content
 			ref={ref}
 			className={cn(
-				"bg-secondary gap-2 relative z-50 max-h-96 min-w-[6rem] overflow-hidden border text-popover-foreground shadow-md",
+				"bg-secondary gap-1 relative z-50 max-h-96 min-w-[6rem] overflow-hidden border border-[hsl(var(--complementary)/0.5)] text-popover-foreground shadow-md",
 				position === "popper" &&
 					"data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
 				className
@@ -118,7 +118,7 @@ const SelectItem = React.forwardRef<
 	<SelectPrimitive.Item
 		ref={ref}
 		className={cn(
-			"relative flex w-full cursor-default select-none items-center py-1 pl-6 pr-2 text-sm focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+			"bg-background relative flex w-full cursor-default select-none items-center py-1 pl-6 pr-2 text-sm focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
 			className
 		)}
 		{...props}
