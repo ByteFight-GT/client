@@ -6,8 +6,8 @@ import React from 'react';
 
 type BotSelectorProps = {
 	botNames: string[];
-	recents: string[];
-	value?: string;
+	recents: string[]; // should be len 2 max, and PLEASE make sure these actually exist in botNames!! 
+	value: string | null;
 	onChange: (botName: string) => void;
 };
 
@@ -23,7 +23,7 @@ export const BotSelector = (props: BotSelectorProps) => {
 	return (
 		<div>
 			<h3 className='text-sm text-muted-foreground mb-1'>Select Bot</h3>
-			<Select value={props.value} onValueChange={props.onChange}>
+			<Select value={props.value ?? ""} onValueChange={props.onChange}>
 				<SelectTrigger className="w-full">
 					<SelectValue placeholder="Select..." />
 				</SelectTrigger>
@@ -43,13 +43,15 @@ export const BotSelector = (props: BotSelectorProps) => {
 					<h3 className='text-sm text-muted-foreground mb-1'>Recently Used</h3>	
 					<div className='flex flex-col gap-1'>
 						{props.recents.map((botName) => (
-							<button 
+							<Button
+							variant="outline"
 							key={botName}
-							className={`bot-selector-recent-button ${props.value === botName? 'selected' : ''}`}
 							onClick={() => props.onChange(botName)}>
-								<ArrowRightIcon className='inline mx-auto text-muted-foreground' />
-								&nbsp;{botName}
-							</button>
+								<ArrowRightIcon className='flex-shrink-0' />
+								<span className='ellipsis'>
+									{botName}
+								</span>
+							</Button>
 						))}
 					</div>
 				</div>
