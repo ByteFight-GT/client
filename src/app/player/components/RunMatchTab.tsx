@@ -38,37 +38,23 @@ export const RunMatchTab = () => {
         </button>
       </div>
 
-      <div className='grid grid-cols-2 gap-2'>
-        <SidebarItem 
-        disableDefaultHeader
-        label={
-          <span className='text-center text-sm text-[hsl(var(--team-green-color))]'>
-            <Image src="/green_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
-            &nbsp;Green Team
-          </span>
-        }>
+      <SidebarItem label="Teams">
+        <div className='grid grid-cols-2 gap-2'>
           <BotSelector 
+          team="green"
           botNames={bots}
           value={selectedGreenTeam}
-          recents={[]} 
+          recents={["test1", "test2"]} 
           onChange={(name) => setSelectedGreenTeam(name)} />
-        </SidebarItem>
-        
-        <SidebarItem 
-        disableDefaultHeader
-        label={
-          <span className='text-center text-sm text-[hsl(var(--team-blue-color))]'>
-            <Image src="/blue_team_icon.svg" alt="*" width={16} height={16} className='inline align-text-top' />
-            &nbsp;Blue Team
-          </span>
-        }>
+
           <BotSelector 
+          team="blue"
           botNames={bots}
           value={selectedBlueTeam}
-          recents={[]} 
+          recents={["test3", "test4"]} 
           onChange={(name) => setSelectedBlueTeam(name)} />
-        </SidebarItem>
-      </div>
+        </div>
+      </SidebarItem>
 
       <div className='flex flex-col gap-2 w-full'>
         <Button variant="secondary"> 

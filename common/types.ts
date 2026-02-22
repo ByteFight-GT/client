@@ -32,7 +32,7 @@ type PlayerGameState_t = {
 	beaconCount: number;
 }
 
-type PlayerColor_t = 'blue' | 'green';
+export type Team_t = 'blue' | 'green';
 
 export type MapLoc = {
 	x: number;
