@@ -3,8 +3,9 @@ import { ipcRenderer, contextBridge, shell } from "electron";
 contextBridge.exposeInMainWorld('electron', {
 
     invoke: ipcRenderer.invoke,
+    openUrl: (url: string) => shell.openExternal(url),
+    
     /*
-    openExternal: (url) => shell.openExternal(url),
 
     //electron handlers
     storeSet: (key, value) => ipcRenderer.invoke('store-set', key, value),
