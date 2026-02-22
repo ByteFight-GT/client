@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Settings } from '../../common/types';
+import { Settings, MatchMetadata } from '../../common/types';
 import { useToast } from '@/hooks/use-toast';
-import { MatchMetadata } from '@/gametypes';
 
 export type AppStateValue = {
   maps: string[];
