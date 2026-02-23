@@ -96,7 +96,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 			<h2>Map Builder</h2>
 
-			<SidebarItem label="All Maps">
+			<SidebarItem label={`All Maps (${maps.length})`}>
 				<MapList 
 				mapList={maps}
 				selectedMaps={selectedMaps}
