@@ -1,6 +1,6 @@
 export type Settings = Record<string, {
 	value: any;
-	[key: `__${string}`]: any; // for __type, __desc, __placeholder, etc.
+	[key: `__${string}`]: any; // for __type, __desc, __placeholder, other meta stuff.
 }>; 
 
 /**

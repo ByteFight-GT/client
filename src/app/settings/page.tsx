@@ -94,32 +94,34 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 						<div className='settings-list'>
 							{Object.keys(draftSettings || {}).length > 0?
 								Object.entries(draftSettings).map(([key, setting]) => (
-									<SettingsItem 
-									key={key} 
-									name={key} 
-									desc={setting.__desc}
-									unsaved={key in draftChanges}>
-										{setting.__type === "string"?
-											<Input className='w-64' placeholder={setting.__placeholder} value={setting.value} onChange={(e) => {
-												updateSetting(key, e.target.value);
-											}} />
-										: setting.__type === "toggle"?
-											<Checkbox checked={setting.value} onCheckedChange={(checked) => {
-												updateSetting(key, checked);
-											}} />
-										: setting.__type === "select"?
-											<Select value={setting.value} onValueChange={(value) => updateSetting(key, value)}>
-												<SelectTrigger className='w-48'>
-													<SelectValue placeholder={setting.__placeholder} />
-												</SelectTrigger>
-												<SelectContent>
-													{setting.__options?.map((option: any) => (
-														<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										: null}
-									</SettingsItem>
+									<React.Fragment key={key}>
+										<SettingsItem 
+										name={key} 
+										desc={setting.__desc}
+										unsaved={key in draftChanges}>
+											{setting.__type === "string"?
+												<Input className='w-64' placeholder={setting.__placeholder} value={setting.value} onChange={(e) => {
+													updateSetting(key, e.target.value);
+												}} />
+											: setting.__type === "toggle"?
+												<Checkbox checked={setting.value} onCheckedChange={(checked) => {
+													updateSetting(key, checked);
+												}} />
+											: setting.__type === "select"?
+												<Select value={setting.value} onValueChange={(value) => updateSetting(key, value)}>
+													<SelectTrigger className='w-48'>
+														<SelectValue placeholder={setting.__placeholder} />
+													</SelectTrigger>
+													<SelectContent>
+														{setting.__options?.map((option: any) => (
+															<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											: null}
+										</SettingsItem>
+										{setting.__addSeparatorBelow && <hr className='my-4' />}
+									</React.Fragment>
 								))
 							: <p className='text-center text-muted-foreground'>Loading config...</p>}
 						</div>

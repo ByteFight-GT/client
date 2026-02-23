@@ -2,7 +2,8 @@
 	"Python Path": {
 		"__type": "string",
 		"__placeholder": "e.g. python3",
-		"__desc": "Path to the Python executable to use for running games. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__desc": "Path or command for the Python executable to use for running games. If python is on your PATH, something like \"python\" or \"python3\" should work. If not, or you'd like to use a specific python installation, provide the complete absolute path to the executable.",
+		"__addSeparatorBelow": true,
 		"value": "python"
 	},
 	"Bots Directory": {
@@ -20,24 +21,26 @@
 	"Matches Directory": {
 		"__type": "string",
 		"__placeholder": "$/matches",
-		"__desc": "Directory to save and load match data from. These don't contain any information about the games themselves, only metadata. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__desc": "Directory for saving and loading match data. These don't contain any information about the games themselves, only metadata. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
 		"value": "$/matches"
 	},
 	"Games Directory": {
 		"__type": "string",
 		"__placeholder": "$/games",
-		"__desc": "Directory to save and load game data from. These are the PGNs that specify actual game states/moves. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__desc": "Directory for saving and loading game data. These are the PGNs that specify actual game states/moves. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
 		"value": "$/games"
 	},
 	"Logs Directory": {
 		"__type": "string",
 		"__placeholder": "$/logs",
-		"__desc": "Directory to save and load stdio logs of game runs from. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__desc": "Directory for saving and loading stdio logs of game runs. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__addSeparatorBelow": true,
 		"value": "$/logs"
 	},
 	"Reload Default Maps on Startup": {
 		"__type": "toggle",
 		"__desc": "Whether default maps should always be re-populated upon app startup, even if you've deleted them before. This does NOT overwrite any edits made to default maps, only restores deleted ones.",
+		"__addSeparatorBelow": true,
 		"value": true
 	},
 	"ToggleTest": {
