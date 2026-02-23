@@ -32,7 +32,7 @@ export function resolveAppRelativePath(appRelativePath: string): string {
 export function tryGetConfiguredDir(settingKey: string): string {
   const settingValue = getCachedSettingOrDefault(settingKey);
   if (!settingValue) {
-    throw new Error(`Couldn't resolve the "${settingKey}" setting. This is likely to be a bug, or your settings files are incorrect. Try updating "${settingKey}" in settings to a valid value.`);
+    throw new Error(`Couldn't resolve the "${settingKey}" path from config. This is likely to be a settings file problem, or a bug. Try reopening the client or updating "${settingKey}" in config to a valid value.`);
   }
 
   return resolveAppRelativePath(settingValue);
