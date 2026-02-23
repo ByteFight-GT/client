@@ -7,8 +7,10 @@ export const USER_BOTS_PATH = path.join(
 	"bots"
 );
 
+
+
 export const DEFAULT_BOT_PATH = path.join(
-	app.getAppPath(),
+	app.isPackaged ? process.resourcesPath : app.getAppPath(),
 	"resources/example-bot"
 );
 

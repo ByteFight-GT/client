@@ -16,11 +16,11 @@ const NAVBAR_LINKS = [
     label: 'Matches',
     link: '/matches',
   },
-  {
-    icon: 'run',
-    label: 'Run',
-    link: '/runner',
-  },
+  // {
+  //   icon: 'run',
+  //   label: 'Run',
+  //   link: '/runner',
+  // },
   {
     icon: 'map',
     label: 'Maps',

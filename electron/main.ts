@@ -22,13 +22,8 @@ let store;
 const userDataPath = app.getPath('userData');
 const matchPath = path.join(userDataPath, 'match_runs');
 
-let enginePath;
-if (app.isPackaged) {
-    enginePath = path.join(process.resourcesPath, 'engine');
-} else {
-    enginePath = path.join(app.getAppPath(), 'engine');
-    //enginePath = path.join(app.getAppPath(), '../engine/2026/engine'); // for michael's local
-}
+let enginePath = path.join(app.isPackaged ? process.resourcesPath : app.getAppPath(), 'engine');
+
 
 async function initMetadata() {
 
@@ -89,7 +84,7 @@ app.on('ready', async () => {
     // initialize stuff
     await initSettings(); // settings goes first!
     await Promise.all([
-        initMaps(),
+        initMaps(store),
         initMatches(),
         initMetadata(),
         initBots(),

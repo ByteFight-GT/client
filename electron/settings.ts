@@ -9,7 +9,7 @@ export const USER_SETTINGS_PATH = path.join(
 );
 
 export const DEFAULT_SETTINGS_PATH = path.join(
-  app.getAppPath(),
+  app.isPackaged ? process.resourcesPath : app.getAppPath(),
   "resources/default-settings.json"
 );
 

@@ -4,8 +4,8 @@ import fs from 'fs';
 import { tryGetConfiguredDir } from './utils.ts';
 
 export const DEFAULT_MAPS_PATH = path.join(
-	app.getAppPath(),
-	"resources/default-maps"
+	app.isPackaged ? process.resourcesPath : app.getAppPath(),
+	"engine/config/maps.json"
 );
 
 /**
