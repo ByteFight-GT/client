@@ -2,76 +2,83 @@ import { ipcRenderer, contextBridge, shell } from "electron";
 
 contextBridge.exposeInMainWorld('electron', {
 
-    invoke: ipcRenderer.invoke,
-    openUrl: (url: string) => shell.openExternal(url),
-    
-    /*
+	invoke: ipcRenderer.invoke,
 
-    //electron handlers
-    storeSet: (key, value) => ipcRenderer.invoke('store-set', key, value),
-    storeGet: (key) => ipcRenderer.invoke('store-get', key),
+	openUrl: (url: string) => shell.openExternal(url),
 
-    //file/metadata handlers
-    readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
+	registerTcpListener: (channel: string, fn: (data: any) => void) => {
+		const handler = (_, data) => fn(data);
+		ipcRenderer.on(channel, handler);
+		return () => ipcRenderer.removeListener(channel, handler);
+	}
 
-    deleteMap: (mapName) => ipcRenderer.invoke('delete-map', mapName),
-    deleteMaps: () => ipcRenderer.invoke('delete-maps'),
-    selectFile: () => ipcRenderer.invoke('dialog:select-file'),
-    selectFolder: () => ipcRenderer.invoke('dialog:select-folder'),
+	/*
 
-    // match handlers
-    writeMatch: (num, match) => ipcRenderer.invoke('write-match', num, match),
-    getMatches: () => ipcRenderer.invoke('get-matches'),
-    deleteMatch: (matchName) => ipcRenderer.invoke('delete-match', matchName),
-    deleteMatches: () => ipcRenderer.invoke('delete-matches'),
-    readMatch: (matchJson) => ipcRenderer.invoke('read-match', matchJson),
-    importMatch: (sourceFile, num) => ipcRenderer.invoke('import-match', sourceFile, num),
+	//electron handlers
+	storeSet: (key, value) => ipcRenderer.invoke('store-set', key, value),
+	storeGet: (key) => ipcRenderer.invoke('store-get', key),
 
-    // python script handlers
-    runPythonScript: (args, directoryPath) => ipcRenderer.invoke('run-python-script', args, directoryPath),
-    sendTCPInterrupt: () => ipcRenderer.invoke('tcp-send-interrupt'),
-    disconnectTCP: () => ipcRenderer.invoke('tcp-disconnect'),
+	//file/metadata handlers
+	readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
 
-    onTcpData: (callback) => {
-        const handler = (_, data) => callback(data);
-        ipcRenderer.on('stream-tcp-data', handler);
-        return () => ipcRenderer.removeListener('stream-tcp-data', handler);
-    },
+	deleteMap: (mapName) => ipcRenderer.invoke('delete-map', mapName),
+	deleteMaps: () => ipcRenderer.invoke('delete-maps'),
+	selectFile: () => ipcRenderer.invoke('dialog:select-file'),
+	selectFolder: () => ipcRenderer.invoke('dialog:select-folder'),
 
-    onTcpJson: (callback) => {
-        const handler = (_, data) => callback(data);
-        ipcRenderer.on('stream-tcp-message', handler);
-        return () => ipcRenderer.removeListener('stream-tcp-message', handler);
-    },
+	// match handlers
+	writeMatch: (num, match) => ipcRenderer.invoke('write-match', num, match),
+	getMatches: () => ipcRenderer.invoke('get-matches'),
+	deleteMatch: (matchName) => ipcRenderer.invoke('delete-match', matchName),
+	deleteMatches: () => ipcRenderer.invoke('delete-matches'),
+	readMatch: (matchJson) => ipcRenderer.invoke('read-match', matchJson),
+	importMatch: (sourceFile, num) => ipcRenderer.invoke('import-match', sourceFile, num),
 
-    onTcpStatus: (callback) => {
-        const handler = (_, status) => callback(status);
-        ipcRenderer.on('stream-tcp-status', handler);
-        return () => ipcRenderer.removeListener('stream-tcp-status', handler);
-    },
+	// python script handlers
+	runPythonScript: (args, directoryPath) => ipcRenderer.invoke('run-python-script', args, directoryPath),
+	sendTCPInterrupt: () => ipcRenderer.invoke('tcp-send-interrupt'),
+	disconnectTCP: () => ipcRenderer.invoke('tcp-disconnect'),
 
-    onStreamOutput: (callback) => {
-        const handler = (_, chunk) => callback(chunk);
-        ipcRenderer.on('stream-output', handler);
-        return () => ipcRenderer.removeListener('stream-output', handler);
-    },
+	onTcpData: (callback) => {
+		const handler = (_, data) => callback(data);
+		ipcRenderer.on('stream-tcp-data', handler);
+		return () => ipcRenderer.removeListener('stream-tcp-data', handler);
+	},
 
-    onStreamOutputFull: (callback) => {
-        const handler = (_, fullOutput) => callback(fullOutput);
-        ipcRenderer.on('stream-output-full', handler);
-        return () => ipcRenderer.removeListener('stream-output-full', handler);
-    },
+	onTcpJson: (callback) => {
+		const handler = (_, data) => callback(data);
+		ipcRenderer.on('stream-tcp-message', handler);
+		return () => ipcRenderer.removeListener('stream-tcp-message', handler);
+	},
 
-    onStreamError: (callback) => {
-        const handler = (_, chunk) => callback(chunk);
-        ipcRenderer.on('stream-error', handler);
-        return () => ipcRenderer.removeListener('stream-error', handler);
-    },
+	onTcpStatus: (callback) => {
+		const handler = (_, status) => callback(status);
+		ipcRenderer.on('stream-tcp-status', handler);
+		return () => ipcRenderer.removeListener('stream-tcp-status', handler);
+	},
 
-    onStreamErrorFull: (callback) => {
-        const handler = (_, fullError) => callback(fullError);
-        ipcRenderer.on('stream-error-full', handler);
-        return () => ipcRenderer.removeListener('stream-error-full', handler);
-    },
-    */
+	onStreamOutput: (callback) => {
+		const handler = (_, chunk) => callback(chunk);
+		ipcRenderer.on('stream-output', handler);
+		return () => ipcRenderer.removeListener('stream-output', handler);
+	},
+
+	onStreamOutputFull: (callback) => {
+		const handler = (_, fullOutput) => callback(fullOutput);
+		ipcRenderer.on('stream-output-full', handler);
+		return () => ipcRenderer.removeListener('stream-output-full', handler);
+	},
+
+	onStreamError: (callback) => {
+		const handler = (_, chunk) => callback(chunk);
+		ipcRenderer.on('stream-error', handler);
+		return () => ipcRenderer.removeListener('stream-error', handler);
+	},
+
+	onStreamErrorFull: (callback) => {
+		const handler = (_, fullError) => callback(fullError);
+		ipcRenderer.on('stream-error-full', handler);
+		return () => ipcRenderer.removeListener('stream-error-full', handler);
+	},
+	*/
 });
