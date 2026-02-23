@@ -1,9 +1,10 @@
 import ElectronStore from 'electron-store';
 import { setupElectronStoreHandlers, setupFileHandlers, setupMatchHandlers } from './handlers.ts';
-import { setupPythonScriptHandlers} from './pythonHandlers.ts';
+import { setupRunnerHandlers} from './runner.ts';
 import { setupSettingsHandlers } from './settings.ts';
 import { setupMapsHandlers } from './maps.ts';
 import { setupBotsHandlers } from './bots.ts';
+import { setupMatchesHandlers } from './matches.ts';
 
 export function setupAllHandlers(store: ElectronStore, enginePath: string, matchPath: string) {
   setupElectronStoreHandlers(store);
@@ -12,5 +13,6 @@ export function setupAllHandlers(store: ElectronStore, enginePath: string, match
   setupSettingsHandlers();
   setupMapsHandlers();
   setupBotsHandlers();
-  setupPythonScriptHandlers(store, enginePath);
+  setupMatchesHandlers();
+  setupRunnerHandlers(enginePath);
 }

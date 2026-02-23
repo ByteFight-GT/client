@@ -5,13 +5,14 @@ import * as remoteMain from '@electron/remote/main/index.js';
 remoteMain.initialize();
 
 import { setupAllHandlers } from './setup.ts';
-import { closePython, closeTCPClient } from './pythonHandlers.ts';
+import { closePython, closeTCPClient } from './runner.ts';
 
 // no __dir name in modules... sad
 import { fileURLToPath } from 'url';
 import { initSettings } from './settings.ts';
 import { initMaps } from './maps.ts';
 import { initBots } from './bots.ts';
+import { initMatches } from './matches.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -86,9 +87,10 @@ app.on('ready', async () => {
     store = new Store();
 
     // initialize stuff
+    await initSettings(); // settings goes first!
     await Promise.all([
-        initSettings(),
         initMaps(),
+        initMatches(),
         initMetadata(),
         initBots(),
     ]);

@@ -14,16 +14,40 @@ export const DEFAULT_SETTINGS_PATH = path.join(
 );
 
 /** cache settings from file on startup, then write to disk on updates */
-let cachedSettings: Settings | null = null;
+export let cachedSettings: Settings | null = null;
 
 /**
- * settings entrypoint. does the following:
- * - reads settings.json, if it doesnt exist, copies from default-settings.json
- * - if it does exist, merges default-settings into it
- * - writes that merged result into the file
+ * Tries to find value of the setting key in `cachedSettings`.
+ * If not found, returns the default value from `default-settings.json`.
+ * If still not found, returns null.
+ */
+export function getCachedSettingOrDefault(key: string): any | null {
+  if (cachedSettings && key in cachedSettings) {
+    return cachedSettings[key].value;
+  }
+
+  try {
+    const defaultData = fs.readFileSync(DEFAULT_SETTINGS_PATH, { encoding: 'utf8' });
+    const defaultSettings: Settings = JSON.parse(defaultData);
+    if (key in defaultSettings) {
+      return defaultSettings[key].value;
+    } else {
+      return null;
+    }
+  } catch (err: any) {
+    console.error(`Couldn't find setting ${key} in cache, then failed to read default settings: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Refreshes settings file and cache. does the following:
+ * - reads settings file, if it doesnt exist, copies from default-settings.json
+ * - if it did already exist, merges default-settings into it (obv no overwriting)
+ * - writes that merged result back into settings file
  * - updates memory cache (cachedSettings) as well
  */
-export async function initSettings() {
+export async function refreshSettings() {
   try {
     // read default settings
     const defaultData = await fs.promises.readFile(DEFAULT_SETTINGS_PATH, { encoding: 'utf8' });
@@ -41,8 +65,12 @@ export async function initSettings() {
       // else: maybe first time launching, we gotta create it in user data dir
     }
     
-    // merge default settings in without overwriting (in case of any updates)
-    const mergedSettings = { ...defaultSettings, ...userSettings };
+    // merge default settings in without overwriting VALUES (in case of any updates)
+    // however we can overwrite other things like __desc or __placeholder since those are just for UI
+    const mergedSettings = { ...defaultSettings };
+    for (const key in userSettings) {
+      mergedSettings[key] = { ...mergedSettings[key], value: userSettings[key].value };
+    }
     
     // writing back to file + update cache if things didnt break
     const data = JSON.stringify(mergedSettings, null, 2);
@@ -56,8 +84,28 @@ export async function initSettings() {
   }
 }
 
+/**
+ * settings entrypoint. does the following:
+ * - reads settings.json, if it doesnt exist, copies from default-settings.json
+ * - if it does exist, merges default-settings into it
+ * - writes that merged result into the file
+ * - updates memory cache (cachedSettings) as well
+ */
+export async function initSettings() {
+  await refreshSettings();
+}
+
 /** registers ipcMain handlers for reading/writing a JSON settings file */
 export function setupSettingsHandlers() {
+  ipcMain.handle('settings:refresh', async () => {
+    try {
+      await refreshSettings();
+      return { success: true, settings: cachedSettings };
+    } catch (err: any) {
+      return { success: false, error: err.message, settings: cachedSettings };
+    }
+  });
+
   ipcMain.handle('settings:get', () => cachedSettings);
 
   ipcMain.handle('settings:set', async (_, settings) => {
