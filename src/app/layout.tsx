@@ -3,7 +3,7 @@ import "./globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar/Navbar";
-import { AppContextProvider } from "./useAppState";
+import { AppStateProvider } from "@/hooks/provider";
 
 export const metadata: Metadata = {
   title: "Bytefight Client 2026",
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
       <body className="flex antialiased">
-        <AppContextProvider>
+        <AppStateProvider>
           
           <Navbar />
 
@@ -29,7 +29,7 @@ export default function RootLayout({
 
           <Toaster />
         
-        </AppContextProvider>
+        </AppStateProvider>
       </body>
     </html>
   );

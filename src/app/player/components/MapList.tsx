@@ -1,7 +1,7 @@
 "use client";
 
-import { useAppState } from '@/app/useAppState';
 import { Button, Checkbox } from '@/components';
+import { useMaps } from '@/hooks/useMaps';
 import Link from 'next/link';
 import React from 'react';
 
@@ -12,7 +12,7 @@ type MapListProps = {
 
 export const MapList = (props: MapListProps) => {
 
-	const { maps, handleImportMaps } = useAppState();
+	const { maps, handleImportMaps } = useMaps();
 
 	function handleSelectMany(select: boolean) {
 		if (select) {

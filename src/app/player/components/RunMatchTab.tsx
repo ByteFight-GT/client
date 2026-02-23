@@ -4,16 +4,18 @@ import { SidebarItem } from '@/components/SidebarItem';
 import React from 'react';
 import { MapList } from './MapList';
 import { BotSelector } from './BotSelector';
-import Image from 'next/image';
 import { Button } from '@/components';
 import { ArrowLeftRightIcon, ImportIcon, PlayIcon, RefreshCwIcon, SwordsIcon } from 'lucide-react';
-import { useAppState } from '@/app/useAppState';
+import { useMaps } from '@/hooks/useMaps';
+import { useLoadings } from '@/hooks/loadingsContext';
+import { useBots } from '@/hooks/useBots';
 
 export const RunMatchTab = () => {
-
-  const { maps, bots, fetchBotList, fetchMapList, loadings } = useAppState();
+  const {maps, fetchMapList} = useMaps();
+  const {bots, fetchBotList} = useBots();
+  const {loadings} = useLoadings()
+  
   const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
-
   const [selectedGreenTeam, setSelectedGreenTeam] = React.useState<string | null>(null);
   const [selectedBlueTeam, setSelectedBlueTeam] = React.useState<string | null>(null);
 
