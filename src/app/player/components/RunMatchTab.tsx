@@ -95,19 +95,22 @@ export const RunMatchTab = () => {
             </p>
           ) : (
             <div className="flex flex-col gap-0.5">
-              {maps.map((map) => (
-                <button
-                  key={map}
-                  onClick={() => setSelectedMap(map)}
-                  className={`w-full text-left px-2 py-1.5 rounded-sm transition-colors hover:bg-secondary hover:text-secondary-foreground ${
-                    selectedMap === map 
-                      ? "bg-primary text-primary-foreground font-medium" 
-                      : "text-foreground"
-                  }`}
-                >
-                  {map}
-                </button>
-              ))}
+              {maps.map((map) => {
+                const isSelected = selectedMap === map;
+                return (
+                  <button
+                    key={map}
+                    onClick={() => setSelectedMap(map)}
+                    className={`w-full text-left px-2 py-1.5 rounded-sm transition-colors ${
+                      isSelected
+                        ? "bg-primary text-primary-foreground font-medium" // Selected state (no hover bg here)
+                        : "text-foreground hover:bg-secondary hover:text-secondary-foreground" // Only hover if NOT selected
+                    }`}
+                  >
+                    {map}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
