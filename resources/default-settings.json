@@ -2,26 +2,38 @@
 	"Python Path": {
 		"__type": "string",
 		"__placeholder": "e.g. python3",
-		"__desc": "Path to the Python executable to use for running games. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"__desc": "Path to the Python executable to use for running games. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
 		"value": "python"
 	},
 	"Bots Directory": {
 		"__type": "string",
 		"__placeholder": "$/bots",
-		"__desc": "Directory to search in when looking for bots. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"__desc": "Directory to search in when looking for bots. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
 		"value": "$/bots"
 	},
 	"Maps Directory": {
 		"__type": "string",
 		"__placeholder": "$/maps",
-		"__desc": "Directory to search in when looking for maps. Attempts to parse all json files. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"__desc": "Directory to search in when looking for maps. Attempts to parse all json files. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
 		"value": "$/maps"
 	},
 	"Matches Directory": {
 		"__type": "string",
 		"__placeholder": "$/matches",
-		"__desc": "Directory to save to and load matches from. Prefix with \"$/\" to start relative to the default bytefight client userData directory.",
+		"__desc": "Directory to save and load match data from. These don't contain any information about the games themselves, only metadata. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
 		"value": "$/matches"
+	},
+	"Games Directory": {
+		"__type": "string",
+		"__placeholder": "$/games",
+		"__desc": "Directory to save and load game data from. These are the PGNs that specify actual game states/moves. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"value": "$/games"
+	},
+	"Logs Directory": {
+		"__type": "string",
+		"__placeholder": "$/logs",
+		"__desc": "Directory to save and load stdio logs of game runs from. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"value": "$/logs"
 	},
 	"Reload Default Maps on Startup": {
 		"__type": "toggle",
