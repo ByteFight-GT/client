@@ -5,7 +5,7 @@ import React from 'react';
 type AsyncLoadingWrapper_t = <F extends (...args: any[]) => Promise<any>>(
   key: string,
   asyncFn: F
-) => (...args: Parameters<F>) => Promise<Awaited<ReturnType<F>> | null>;
+) => (...args: Parameters<F>) => Promise<Awaited<ReturnType<F>> | void>;
 
 type LoadingsContextType = {
   /** map of key -> loading state */
@@ -33,7 +33,7 @@ export const LoadingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const asyncLoadingWrapper: AsyncLoadingWrapper_t = React.useCallback(
     (key, asyncFn) => 
       async function (...args) {
-        if (loadings[key]) return null;
+        if (loadings[key]) return;
         toggleLoading(key, true);
         try {
           return await asyncFn(...args);
