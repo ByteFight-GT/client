@@ -14,8 +14,10 @@ export const RunMatchTab = () => {
   const {maps, fetchMapList} = useMaps();
   const {bots, fetchBotList} = useBots();
   const {loadings} = useLoadings()
-  
-  const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
+
+  // 1. Changed from a Set to a single string (or null)
+  const [selectedMap, setSelectedMap] = React.useState<string | null>(null);  
+  // const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
   const [selectedGreenTeam, setSelectedGreenTeam] = React.useState<string | null>(null);
   const [selectedBlueTeam, setSelectedBlueTeam] = React.useState<string | null>(null);
 
@@ -34,7 +36,8 @@ export const RunMatchTab = () => {
 
   const handleRefreshMaps = React.useCallback(() => {
     fetchMapList();
-    setSelectedMaps(new Set());
+    // setSelectedMaps(new Set());
+    setSelectedMap(null);
   }, [fetchMapList]);
   
   return (
@@ -48,7 +51,8 @@ export const RunMatchTab = () => {
         </button>
         <button 
         disabled={
-          selectedMaps.size === 0 
+          // selectedMaps.size === 0 
+          selectedMap === null 
           || selectedGreenTeam === null 
           || selectedBlueTeam === null
         }
@@ -83,10 +87,30 @@ export const RunMatchTab = () => {
         </Button>
       </SidebarItem>
 
-      <SidebarItem label={`Select Maps • ${selectedMaps.size}/${maps.length}`}>
-        <MapList
-        selectedMaps={selectedMaps}
-        setSelectedMaps={setSelectedMaps} />
+      <SidebarItem label="Select Map">
+        <div className="w-full max-h-48 overflow-y-auto rounded-md border border-input bg-background p-1 text-sm shadow-sm">
+          {maps.length === 0 ? (
+            <p className="p-2 text-muted-foreground text-center italic">
+              No maps available
+            </p>
+          ) : (
+            <div className="flex flex-col gap-0.5">
+              {maps.map((map) => (
+                <button
+                  key={map}
+                  onClick={() => setSelectedMap(map)}
+                  className={`w-full text-left px-2 py-1.5 rounded-sm transition-colors hover:bg-secondary hover:text-secondary-foreground ${
+                    selectedMap === map 
+                      ? "bg-primary text-primary-foreground font-medium" 
+                      : "text-foreground"
+                  }`}
+                >
+                  {map}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </SidebarItem>
 
       <div className='flex flex-col gap-2 w-full'>
