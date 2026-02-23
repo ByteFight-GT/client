@@ -50,9 +50,6 @@ const TILE_TYPE_DESCS = {
 }
 
 export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
-
-	const { toast } = useToast();
-
 	const [editorState, setEditorState] = React.useState<{
 		selectedTileType: keyof typeof TileType;
 		erasing: boolean;
@@ -145,17 +142,17 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			<SidebarItem label="Map Size">
 				<div className='flex items-center gap-1'>
 					<span className='text-sm text-muted-foreground'>X:</span>
-					<Input type="number" value={props.mapData.width} onChange={(e) => props.setMapData({...props.mapData, width: parseInt(e.target.value)})} />
+					<Input className='bg-background' type="number" value={props.mapData.width} onChange={(e) => props.setMapData({...props.mapData, width: parseInt(e.target.value)})} />
 					&ensp;
 					<span className='text-sm text-muted-foreground'>Y:</span>
-					<Input type="number" value={props.mapData.height} onChange={(e) => props.setMapData({...props.mapData, height: parseInt(e.target.value)})} />
+					<Input className='bg-background' type="number" value={props.mapData.height} onChange={(e) => props.setMapData({...props.mapData, height: parseInt(e.target.value)})} />
 				</div>
 			</SidebarItem>
 
 			<hr />
 			
 			<SidebarItem label="Map Name">
-				<Input 
+				<Input className='bg-background'
 				value={props.mapData.name} 
 				onChange={(e) => props.setMapData({...props.mapData, name: e.target.value})} />
 			</SidebarItem>
@@ -163,7 +160,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			<SidebarItem label="Save">
 				<div className="flex gap-2">
 					<Button className='w-1/2' onClick={() => handleSaveMap(props.mapData)}>Save</Button>
-					<Button variant='secondary' className='w-1/2'><DownloadIcon /> Export</Button>
+					<Button variant='outline' className='w-1/2'><DownloadIcon /> Export</Button>
 				</div>
 			</SidebarItem>
 

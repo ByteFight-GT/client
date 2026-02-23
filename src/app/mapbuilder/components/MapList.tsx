@@ -80,7 +80,7 @@ export const MapList = (props: MapListProps) => {
 			</div>
 
 			<Button 
-			variant="secondary"
+			variant="outline"
 			className="flex-grow"
 			onClick={handleImportMaps}>
 				Import Maps
@@ -88,12 +88,12 @@ export const MapList = (props: MapListProps) => {
 
 			<div className='flex gap-2'>
 				<Button 
-				variant="secondary"
+				variant="outline"
 				onClick={() => handleSelectMany(true)}>
 					+ All
 				</Button>
 				<Button 
-				variant="secondary"
+				variant="outline"
 				onClick={() => handleSelectMany(false)}>
 					- None
 				</Button>
