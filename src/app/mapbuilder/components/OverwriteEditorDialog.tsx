@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button, Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components';
+import { useLoadings } from '@/hooks/loadingsContext';
 
 type OverwriteEditorDialogProps = {
 	onCancel: () => void;
@@ -10,6 +11,9 @@ type OverwriteEditorDialogProps = {
 };
 
 export const OverwriteEditorDialog = (props: OverwriteEditorDialogProps) => {
+
+	const {loadings} = useLoadings();
+
 	return (
 		<Dialog open={props.askingToLoadMapToEditor !== null} 
 		onOpenChange={(open) => {
@@ -20,7 +24,7 @@ export const OverwriteEditorDialog = (props: OverwriteEditorDialogProps) => {
 				<p>Are you sure you want to load <span className='text-primary'>{props.askingToLoadMapToEditor}</span> into the editor? Any unsaved progress will be lost.</p>
 				<DialogFooter>
 					<Button variant='secondary' onClick={() => props.onCancel()}>Cancel</Button>
-					<Button onClick={() => props.onConfirm(props.askingToLoadMapToEditor!)}>Load Map</Button>
+					<Button loading={loadings["readMap"]} onClick={() => props.onConfirm(props.askingToLoadMapToEditor!)}>Load Map</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button, Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components';
+import { useLoadings } from '@/hooks/loadingsContext';
 
 type DeleteMapsDialogProps = {
 	open: boolean;
@@ -12,6 +13,9 @@ type DeleteMapsDialogProps = {
 };
 
 export const DeleteMapsDialog = (props: DeleteMapsDialogProps) => {
+
+	const {loadings} = useLoadings();
+
 	return (
 		<Dialog open={props.open} 
 		onOpenChange={(open) => {
@@ -22,7 +26,7 @@ export const DeleteMapsDialog = (props: DeleteMapsDialogProps) => {
 				<p>Are you sure you want to delete <span className='text-primary'>{props.nSelectedMaps}</span> map(s)? This action cannot be undone.</p>
 				<DialogFooter>
 					<Button variant="secondary" onClick={props.onCancel}>Cancel</Button>
-					<Button variant="destructive" onClick={props.onConfirm}>Delete Maps</Button>
+					<Button loading={loadings["handleDeleteMaps"]} variant="destructive" onClick={props.onConfirm}>Delete Maps</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

@@ -3,18 +3,25 @@
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLoadings } from './loadingsContext';
+import { MapData } from '@/gametypes';
 
 export type UseMapsValue = {
   maps: string[];
   fetchMapList: () => void;
-  handleImportMaps: () => void;
+  readMap: (mapName: string) => Promise<MapData | null>;
+  handleImportMaps: () => Promise<void>;
+
+  /** attempts to delete all maps in mapNames, return array of successfully deleted maps. */
+  handleDeleteMaps: (mapNames: Iterable<string>) => Promise<string[]>;
+
+  handleSaveMap: (mapData: MapData) => Promise<void>;
 };
 
 const MapsContext = React.createContext<UseMapsValue | undefined>(undefined);
 
 export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [maps, setMaps] = React.useState<string[]>([]);
-  const {loadings, toggleLoading} = useLoadings();
+  const {loadings, toggleLoading, asyncLoadingWrapper} = useLoadings();
   const {toast, toastError} = useToast();
 
   // >>> HANDLERS
@@ -40,8 +47,24 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, [loadings, toastError]);
 
-  const handleImportMaps = React.useCallback(() => {
-    window.electron.invoke('maps:import')
+  const readMap = React.useCallback(asyncLoadingWrapper(
+    "readMap",
+    async (mapName: string) => {
+      const res = await window.electron.invoke('maps:read', mapName);
+      if (res.success) {
+        return JSON.parse(res.mapData);
+      } else {
+        toastError("Failed to read map", res.error);
+        return null;
+      }
+		}), 
+    [toastError]
+  );
+
+  const handleImportMaps = React.useCallback(asyncLoadingWrapper(
+    "handleImportMaps",
+    async () => {
+      window.electron.invoke('maps:import')
       .then((res) => {
         if (res.success && res.imported.length > 0) {
           setMaps(prev => [...prev, ...res.imported]);
@@ -54,7 +77,49 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .catch((err: any) => {
         toastError("Failed to import maps", err);
       });
-  }, [toast, toastError]);
+    }), 
+    [toast, toastError]
+  );
+
+  const handleDeleteMaps = React.useCallback(asyncLoadingWrapper(
+    "handleDeleteMaps", 
+    async (mapNames: Iterable<string>) => {
+      const res = await window.electron.invoke('maps:delete', [...mapNames])
+      if (res.success) {
+        setMaps(prev => {
+          return prev.filter(mapName => !res.deleted.includes(mapName));
+        });
+      } else {
+        toastError("Failed to delete maps", res.error);
+      }
+      return res.deleted;
+    }), 
+    [toastError]
+  );
+
+  const handleSaveMap = React.useCallback(asyncLoadingWrapper(
+    "handleSaveMap",
+    async (mapData: MapData) => {
+      window.electron.invoke('maps:write', mapData.name, JSON.stringify(mapData, null, 2))
+      .then(res => {
+        if (res.success) {
+          toast({
+            title: "Map Saved",
+            description: `Successfully saved map "${mapData.name}"`,
+          });
+          if (!maps.includes(mapData.name)) {
+            setMaps(prev => [...prev, mapData.name]);
+          }
+        } else {
+          toastError("Failed to save map", res.error);
+        }
+      })
+      .catch((err: any) => {
+        toastError("Failed to save map", err);
+      })
+    }), 
+    [maps, toast, toastError]
+  );
 
   // >>> INITIAL SETUP
 
@@ -65,11 +130,17 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = React.useMemo(() => ({
     maps,
     fetchMapList,
+    readMap,
     handleImportMaps,
+    handleDeleteMaps,
+    handleSaveMap,
   } satisfies UseMapsValue), [
     maps, 
     fetchMapList, 
+    readMap,
     handleImportMaps, 
+    handleDeleteMaps,
+    handleSaveMap,
   ]);
 
   return (

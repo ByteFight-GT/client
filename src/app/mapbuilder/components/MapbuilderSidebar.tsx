@@ -15,6 +15,7 @@ import { SidebarItem } from '@/components/SidebarItem';
 import { MapList } from './MapList';
 import { OverwriteEditorDialog } from './OverwriteEditorDialog';
 import { DeleteMapsDialog } from './DeleteMapsDialog';
+import { useMaps } from '@/hooks/useMaps';
 
 type MapbuilderSidebarProps = {
 	mapData: MapData;
@@ -60,91 +61,17 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 		erasing: false,
 	});
 
-	// TODO - use context lol.
-	const [mapList, setMapList] = React.useState<string[]>([]);
+	const {maps, readMap, handleImportMaps, handleSaveMap, handleDeleteMaps} = useMaps();
 	const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
 	const [deleteMapsDialogOpen, setDeleteMapsDialogOpen] = React.useState(false);
 	const [askingToLoadMapToEditor, setAskingToLoadMapToEditor] = React.useState<string | null>(null);
 
-	// initial fetch of maps list
-	React.useEffect(() => {
-		window.electron.invoke('maps:list').then(res => {
-			if (res.success) {
-				setMapList(res.maps);
-			} else {
-				toast({
-					title: "Failed to load maps",
-					description: res.error,
-				});
-			}
-		});
-	}, []);
-
-	async function handleDeleteMaps() {
-		const res = await window.electron.invoke('maps:delete', Array.from(selectedMaps))
-		if (res.success) {
-			setMapList(prev => {
-				return prev.filter(mapName => !res.deleted.includes(mapName));
-			});
-			setSelectedMaps(new Set());
-		} else {
-			toast({
-				title: "Failed to delete maps",
-				description: res.error,
-			});
-			setSelectedMaps(prev => {
-				const newSelected = new Set(prev);
-				for (const mapName of res.deleted) {
-					newSelected.delete(mapName);
-				}				
-				return newSelected;
-			});
-		}
-	}
-
-	async function handleLoadMapToEditor(mapName: string) {
-		const res = await window.electron.invoke('maps:read', mapName);
-		if (res.success) {
-			props.setMapData(JSON.parse(res.mapData));
-			setAskingToLoadMapToEditor(null);
-		} else {
-			toast({
-				title: "Failed to load map",
-				description: res.error,
-			});
-		}
-	}
-
-	function handleSaveMap() {
-		window.electron.invoke('maps:write', props.mapData.name, JSON.stringify(props.mapData, null, 2)).then(res => {
-			if (res.success) {
-				toast({
-					title: "Map Saved",
-					description: `Successfully saved map "${props.mapData.name}"`,
-				});
-				if (!mapList.includes(props.mapData.name)) {
-					setMapList(prev => [...prev, props.mapData.name]);
-				}
-			} else {
-				toast({
-					title: "Failed to save map",
-					description: res.error,
-				});
-			}
-		});
-	}
-
-	function handleImportMaps(mapNames: string[]) {
-		if (mapNames.length > 0) {
-			// can just blindly add because electron wont overwrite dupes
-			// ^ (altho maybe we can add handling for this (popup) in the future?)
-			setMapList(prev => [...prev, ...mapNames]);
-			toast({
-				title: "Maps Imported",
-				description: `Successfully imported ${mapNames.length} map(s)!`,
-			});
-		}
-	}
+	const handleLoadMapToEditor = React.useCallback(async (mapName: string) => {
+		const res = await readMap(mapName);
+		if (res) {
+			props.setMapData(res);
+		} // else: readMap should handle displaying error
+	}, [readMap, props]);
 
 	return (
 		<div className='mapbuilder-sidebar'>
@@ -153,8 +80,9 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			askingToLoadMapToEditor={askingToLoadMapToEditor}
 			onCancel={() => setAskingToLoadMapToEditor(null)}
 			onConfirm={(mapName) => {
-				setAskingToLoadMapToEditor(null);
-				handleLoadMapToEditor(mapName)
+				handleLoadMapToEditor(mapName).then(() =>
+					setAskingToLoadMapToEditor(null)
+				);
 			}} />
 
 			<DeleteMapsDialog
@@ -162,13 +90,18 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			nSelectedMaps={selectedMaps.size}
 			selectedMaps={selectedMaps}
 			onCancel={() => setDeleteMapsDialogOpen(false)}
-			onConfirm={() => handleDeleteMaps().then(() => setDeleteMapsDialogOpen(false))} />
+			onConfirm={() => 
+				handleDeleteMaps(selectedMaps).then(() => {
+					setDeleteMapsDialogOpen(false);
+					setSelectedMaps(new Set());
+				})
+			} />
 
 			<h2>Map Builder</h2>
 
 			<SidebarItem label="All Maps">
 				<MapList 
-				mapList={mapList}
+				mapList={maps}
 				selectedMaps={selectedMaps}
 				setSelectedMaps={setSelectedMaps}
 				askToLoadMapToEditor={(mapName) => setAskingToLoadMapToEditor(mapName)}
@@ -229,7 +162,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 			<SidebarItem label="Save">
 				<div className="flex gap-2">
-					<Button className='w-1/2' onClick={handleSaveMap}>Save</Button>
+					<Button className='w-1/2' onClick={() => handleSaveMap(props.mapData)}>Save</Button>
 					<Button variant='secondary' className='w-1/2'><DownloadIcon /> Export</Button>
 				</div>
 			</SidebarItem>
