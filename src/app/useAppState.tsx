@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Settings, MatchMetadata } from '../../common/types';
+import { generateMatchId } from '../../common/utils';
 import { useToast } from '@/hooks/use-toast';
 
 export type AppStateValue = {
@@ -18,9 +19,8 @@ export type AppStateValue = {
   fetchMapList: () => void;
   fetchBotList: () => void;
   fetchSettings: () => void;
-  fetchMatchHistory: () => void;
+  fetchMatchHistoryNextPage: () => void;
 
-  errors: Record<string, Error>;
   loadings: Record<string, boolean>;
   handleImportMaps: () => void;
   handleImportBots: () => void;
@@ -32,24 +32,33 @@ const AppContext = React.createContext<AppStateValue | undefined>(undefined);
 export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [maps, setMaps] = React.useState<string[]>([]);
   const [bots, setBots] = React.useState<string[]>([]);
-  const [matchHistory, setMatchHistory] = React.useState<MatchMetadata[]>([]);
   const [settings, setSettings] = React.useState<Settings>({});
 
+  /** should be sorted in ascending queued order. these are COMPLETED matches. */
+  const [completedMatchHistory, setCompletedMatchHistory] = React.useState<MatchMetadata[]>([]);
+
+  /** queued matches. These will NOT be saved when the app is closed. */
+  const [queuedMatches, setQueuedMatches] = React.useState<MatchMetadata[]>([]);
+
+  /** stores the match thats currently running on the backend. In the best case this should never
+   * be null as long as queuedMatches isnt empty.
+   */
+  const [currentlyRunningMatch, setCurrentlyRunningMatch] = React.useState<MatchMetadata | null>(null);
+
   const [loadings, setLoadings] = React.useState<Record<string, boolean>>({});
-  const [errors, setErrors] = React.useState<Record<string, Error>>({});
 
   const { toast } = useToast();
 
-  function addError(key: string, error: string | Error) {
-    setErrors(prev => ({ 
-      ...prev, 
-      [key]: error instanceof Error? error : new Error(error) 
-    }));
+  function toastError(title: string, error: string | Error) {
+    toast({
+      title,
+      description: error instanceof Error? error.message : String(error),
+    });
   }
   function toggleLoading(key: string, value?: boolean) {
     setLoadings(prev => ({
       ...prev,
-      [key]: value !== undefined ? value : !prev[key],
+      [key]: value !== undefined? value : !prev[key],
     }));
   }
   
@@ -64,7 +73,7 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     .then((settings) => {
       setSettings(settings);
     }).catch((err: any) => {
-      addError("fetchSettings", err);
+      toastError("fetchSettings", err);
     }).finally(() => {
       toggleLoading("fetchSettings", false);
     });
@@ -80,7 +89,7 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
       if (res.success) {
         setMaps(res.maps);
       } else {
-        addError("fetchMapList", res.error);
+        toastError("Failed to fetch map list", res.error);
       }
     }).finally(() => {
       toggleLoading("fetchMapList", false);
@@ -97,27 +106,141 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
       if (res.success) {
         setBots(res.bots);
       } else {
-        addError("fetchBotList", res.error);
+        toastError("Failed to fetch bot list", res.error);
       }
     }).finally(() => {
       toggleLoading("fetchBotList", false);
     });
   }, [loadings]);
 
-  const fetchMatchHistory = React.useCallback(() => {
-    if (loadings["fetchMatchHistory"]) return;
+  /**
+   * Get the next page of *UNLOADED* matches from electron. This should be 
+   * robust against changes in match history while the app is open; we assume 
+   * that the index kept on the backend is always synced with our state here, 
+   * so we can just request starting at the length of our current matchHistory.
+   */
+  const fetchMatchHistoryNextPage = React.useCallback(() => {
+    if (loadings["fetchMatchHistoryNextPage"]) return;
 
-    toggleLoading("fetchMatchHistory", true);
+    toggleLoading("fetchMatchHistoryNextPage", true);
 
-    window.electron.invoke('matchHistory:list')
+    window.electron.invoke('matchHistory:readmany', completedMatchHistory.length, 100)
     .then(res => {
       if (res.success) {
-        setMatchHistory(res.history);
+        setCompletedMatchHistory(prev => [
+          ...prev,
+          ...res.matches
+        ]);
       } else {
-        addError("fetchMatchHistory", res.error);
+        toastError("Failed to fetch match history", res.error);
       }
     }).finally(() => {
-      toggleLoading("fetchMatchHistory", false);
+      toggleLoading("fetchMatchHistoryNextPage", false);
+    });
+  }, [loadings]);
+
+  /**
+   * Create a new match object and updates state/storage so it shows up
+   * in history/queue. used by the run match flow when starting a new match.
+   * 
+   * Does NOT handle actually starting the processes to run the games - this
+   * solely handles creating and saving metadata.
+   */
+  const queueNewMatch = React.useCallback(({
+    selectedGreenTeam,
+    selectedBlueTeam,
+    selectedMaps,
+  }) => {
+    const queuedTime = new Date();
+    const matchId = generateMatchId(queuedTime.getTime())
+    const matchData = {
+      matchId: matchId,
+      queuedTimestamp: queuedTime.getTime(),
+      startTimestamp: null,
+      finishTimestamp: null,
+      notes: "",
+      maps: selectedMaps,
+      resultFiles: [],
+      teamGreen: selectedGreenTeam,
+      teamBlue: selectedBlueTeam,
+      greenWins: [],
+      blueWins: [],
+      status: 'queued',
+    } as MatchMetadata;
+
+    setQueuedMatches(prev => [...prev, matchData]);
+
+    // check if we should start the match immediately (if no other match is running)
+    if (!currentlyRunningMatch) {
+      setCurrentlyRunningMatch(matchData);
+    }
+  }, [loadings]);
+
+  /** handles calling electron to begin match/game loops and listeners. */
+  const handleStartMatch = React.useCallback((matchData: MatchMetadata) => {
+    // runner will check if theres already a match running
+    window.electron.invoke('runner:start-match', matchData.matchId, matchData)
+    .then(res => {
+      if (res.success) {
+        // add to end of state arr
+        setCompletedMatchHistory(prev => [...prev, matchData]);
+      } else {
+        toastError("Failed to start match", res.error);
+      }
+    })
+    .catch((err: any) => {
+      toastError("Failed to start match", err);
+    })
+    .finally(() => {
+      toggleLoading("handleStartMatch", false);
+    });
+  }, []);
+
+  /** used for *intentionally and manually* stopping the running match before completion. */
+  const terminateRunningMatch = React.useCallback((matchData: MatchMetadata) => {
+
+  }, []);
+
+  /** handles cleanup/takedown when a match completes for any reason (finished/termination),
+   * and checks if we can move on to the next match in the queue.
+   */
+  const handleMatchEnd = React.useCallback((matchData: MatchMetadata) => {
+    // allow these to run in parallel since they arent user-triggered.
+    // although this shouldnt ever need to run more than once at a time...
+    // since we dont support having multiple matches running at the same time anyway
+    toggleLoading("handleMatchEnd", true);
+    window.electron.invoke('-', matchData.matchId, matchData)
+    .then(res => {
+      if (res.success) {
+        // add to end of state arr
+        setCompletedMatchHistory(prev => [...prev, matchData]);
+      } else {
+        toastError("Error while handling match end", res.error);
+      }
+    }).finally(() => {
+      toggleLoading("handleMatchEnd", false);
+    });
+  }, []);
+
+  /**
+   * Use solely for updating existing matches in state/files.
+   * use queueNewMatch for new ones!
+   */
+  const updateExistingMatch = React.useCallback((matchData: MatchMetadata) => {
+    if (loadings["updateExistingMatch"]) return;
+
+    toggleLoading("updateExistingMatch", true);
+
+    window.electron.invoke('matchHistory:write', matchData.matchId, matchData)
+    .then(res => {
+      if (res.success) {
+        // update state as well
+        setCompletedMatchHistory(prev => prev.map(m => m.matchId === matchData.matchId? matchData : m));
+      } else {
+        toastError("Failed to update match", res.error);
+      }
+    }).finally(() => {
+      toggleLoading("updateExistingMatch", false);
     });
   }, [loadings]);
 
@@ -128,7 +251,7 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
     fetchSettings();
     fetchMapList();
     fetchBotList();
-    fetchMatchHistory();
+    fetchMatchHistoryNextPage();
   }, []);
 
   // >>> HANDLERS
@@ -144,10 +267,7 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
         });
       }
     }).catch((err: any) => {
-      toast({
-        title: "Failed to import maps",
-        description: err instanceof Error? err.message : String(err),
-      });
+      toastError("Failed to import maps", err);
     });
   }, [toast]);
 
@@ -162,10 +282,7 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
         });
       }
     }).catch((err: any) => {
-      toast({
-        title: "Failed to import bots",
-        description: err instanceof Error? err.message : String(err),
-      });
+      toastError("Failed to import bots", err);
     });
   }, [toast]);
 
@@ -174,33 +291,31 @@ export const AppContextProvider: React.FC<{children: React.ReactNode}> = ({ chil
   const value = React.useMemo(() => ({
     maps,
     bots,
-    matchHistory,
+    matchHistory: completedMatchHistory,
     settings,
 
     setMaps,
     setBots,
     setSettings,
-    setMatchHistory,
+    setMatchHistory: setCompletedMatchHistory,
     
     fetchMapList,
     fetchBotList,
     fetchSettings,
-    fetchMatchHistory,
+    fetchMatchHistoryNextPage,
 
-    errors,
     loadings,
     handleImportMaps,
     handleImportBots,
   }), [
     maps,
     bots,
-    matchHistory,
+    completedMatchHistory,
     settings,
     fetchMapList,
     fetchBotList,
     fetchSettings,
-    fetchMatchHistory,
-    errors,
+    fetchMatchHistoryNextPage,
     loadings,
     handleImportMaps,
     handleImportBots,
