@@ -56,7 +56,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     toggleLoading("fetchMatchHistoryNextPage", true);
 
-    window.electron.invoke('matchHistory:readmany', completedMatchHistory.length, count)
+    window.electron.invoke('matches:readmany', completedMatchHistory.length, count)
       .then(res => {
         if (res.success) {
           setCompletedMatchHistory(prev => [
@@ -173,7 +173,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     toggleLoading("updateExistingMatch", true);
 
-    window.electron.invoke('matchHistory:write', matchData.matchId, matchData)
+    window.electron.invoke('matches:write', matchData.matchId, matchData)
     .then(res => {
       if (res.success) {
         // update state as well
