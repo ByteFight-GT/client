@@ -35,7 +35,7 @@ export const TileType = {
 	EMPTY: 'EMPTY',
 	WALL: 'WALL',
 	HILL: 'HILL',
-	HILL_CENTER: 'HILL_CENTER',
+	// HILL_CENTER: 'HILL_CENTER',
 	BLUE_SPAWN: 'BLUE_SPAWN',
 	GREEN_SPAWN: 'GREEN_SPAWN',
 } as const;

@@ -35,10 +35,10 @@ const TILE_TYPE_DESCS = {
 		name: "Hill",
 		desc: "Hill description",
 	},
-	HILL_CENTER: {
-		name: "Hill Center",
-		desc: "The center of a hill. No two hill centers may be connected via a bridge of hills.",
-	},
+	// HILL_CENTER: {
+	// 	name: "Hill Center",
+	// 	desc: "The center of a hill. No two hill centers may be connected via a bridge of hills.",
+	// },
 	BLUE_SPAWN: {
 		name: "Blue Spawn",
 		desc: "The location where the blue player spawns at the start of the game. Green's spawn will be determined symmetrically when this is placed!",
@@ -51,12 +51,14 @@ const TILE_TYPE_DESCS = {
 
 export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 	const [editorState, setEditorState] = React.useState<{
-		selectedTileType: keyof typeof TileType;
-		erasing: boolean;
-	}>({
-		selectedTileType: TileType.EMPTY,
-		erasing: false,
-	});
+        selectedTileType: keyof typeof TileType;
+        erasing: boolean;
+        hillId: number;
+    }>({
+        selectedTileType: TileType.EMPTY,
+        erasing: false,
+        hillId: 0,
+    });
 
 	const {maps, readMap, handleImportMaps, handleSaveMap, handleDeleteMaps} = useMaps();
 	const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
@@ -107,46 +109,78 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			</SidebarItem>
 
 			<SidebarItem label="Build">
-				<div className='mapbuilder-sidebar-selected-tile'>
-					<Image className='w-24 h-24' src={`/mapbuilder/${editorState.selectedTileType}.png`} alt={editorState.selectedTileType} width={96} height={96} />
-					<div>
-						<h4 className='text-sm'>{TILE_TYPE_DESCS[editorState.selectedTileType].name}</h4>
-						<p className='text-muted-foreground text-xs'>{TILE_TYPE_DESCS[editorState.selectedTileType].desc}</p>
+                <div className='mapbuilder-sidebar-selected-tile'>
+                    <Image className='w-24 h-24' src={`/mapbuilder/${editorState.selectedTileType}.png`} alt={editorState.selectedTileType} width={96} height={96} />
+                    <div>
+                        <h4 className='text-sm'>{TILE_TYPE_DESCS[editorState.selectedTileType].name}</h4>
+                        <p className='text-muted-foreground text-xs'>{TILE_TYPE_DESCS[editorState.selectedTileType].desc}</p>
+                    </div>
+                </div>
+
+                <div className='mapbuilder-sidebar-tile-select'>
+                    {Object.keys(TileType).map(k => (
+                        <div 
+                        key={k} 
+                        className={`mapbuilder-tile-option ${editorState.selectedTileType === k? 'selected' : ''}`}
+                        onClick={() => setEditorState({...editorState, selectedTileType: k as keyof typeof TileType})}>
+                            <Image src={`/mapbuilder/${k}.png`} alt={k} width={64} height={64} />
+                        </div>
+                    ))}
+                </div>
+                {/* HILL ID INPUT - Matches Width/Height style */}
+				{editorState.selectedTileType === "HILL" && (
+					<div className='flex items-center gap-2 mt-3 pt-3 border-t w-full'>
+						<span className='text-sm text-muted-foreground flex-shrink-0'>
+							Hill ID:
+						</span>
+						<Input 
+							className='bg-background flex-1' 
+							type="number" 
+							min={0}
+							value={editorState.hillId} 
+							onChange={(e) => setEditorState({
+								...editorState, 
+								hillId: parseInt(e.target.value) || 0
+							})} 
+						/>
 					</div>
-				</div>
-				<div className='mapbuilder-sidebar-tile-select'>
-					{Object.keys(TileType).map(k => (
-						<div 
-						key={k} 
-						className={`mapbuilder-tile-option ${editorState.selectedTileType === k? 'selected' : ''}`}
-						onClick={() => setEditorState({...editorState, selectedTileType: k as keyof typeof TileType})}>
-							<Image src={`/mapbuilder/${k}.png`} alt={k} width={64} height={64} />
-						</div>
-					))}
-				</div>
-			</SidebarItem>
+				)}
+            </SidebarItem>
 
-			<SidebarItem label="Symmetry">
-				<Select onValueChange={(val: keyof typeof Symmetry) => props.setMapData({...props.mapData, symmetry: val})} value={props.mapData.symmetry}>
-					<SelectTrigger>
-						<SelectValue placeholder="Select symmetry..." />
-					</SelectTrigger>
-					<SelectContent>
-						{Object.entries(Symmetry).map(([k, v]) => (
-							<SelectItem key={k} value={k}>{v}</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-			</SidebarItem>
-
-			<SidebarItem label="Map Size">
+			<SidebarItem label="Map Settings">
 				<div className='flex items-center gap-1'>
-					<span className='text-sm text-muted-foreground'>X:</span>
+				<span className='text-sm text-muted-foreground'>Symmetry:</span>
+					<Select onValueChange={(val: keyof typeof Symmetry) => props.setMapData({...props.mapData, symmetry: val})} value={props.mapData.symmetry}>
+						<SelectTrigger>
+							<SelectValue placeholder="Select symmetry..." />
+						</SelectTrigger>
+						<SelectContent>
+							{Object.entries(Symmetry).map(([k, v]) => (
+								<SelectItem key={k} value={k}>{v}</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+
+				<div className='flex items-center gap-1'>
+					<span className='text-sm text-muted-foreground flex-shrink-0'>Width:</span>
 					<Input className='bg-background' type="number" value={props.mapData.width} onChange={(e) => props.setMapData({...props.mapData, width: parseInt(e.target.value)})} />
 					&ensp;
-					<span className='text-sm text-muted-foreground'>Y:</span>
+					<span className='text-sm text-muted-foreground flex-shrink-0'>Height:</span>
 					<Input className='bg-background' type="number" value={props.mapData.height} onChange={(e) => props.setMapData({...props.mapData, height: parseInt(e.target.value)})} />
 				</div>
+
+				<div className='flex items-center gap-1'>
+					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup spawn rate:</span>
+					<Input className='bg-background' type="number" value={props.mapData.width} onChange={(e) => props.setMapData({...props.mapData, width: parseInt(e.target.value)})} />
+				</div>
+
+				<div className='flex items-center gap-1'>
+					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup spawn #:</span>
+					<Input className='bg-background' type="number" value={props.mapData.height} onChange={(e) => props.setMapData({...props.mapData, height: parseInt(e.target.value)})} />
+				</div>
+
+				
 			</SidebarItem>
 
 			<hr />
