@@ -84,7 +84,7 @@ app.on('ready', async () => {
     // initialize stuff
     await initSettings(); // settings goes first!
     await Promise.all([
-        initMaps(store),
+        initMaps(),
         initMatches(),
         initMetadata(),
         initBots(),
