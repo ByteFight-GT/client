@@ -103,7 +103,7 @@ export function setupMapsHandlers() {
 
 	ipcMain.handle('maps:write', async (event, mapName: string, mapData: string) => {
 		const mapsDir = tryGetConfiguredDir("Maps Directory");
-		const mapPath = path.join(mapsDir, mapName);
+		const mapPath = path.join(mapsDir, mapName + ".json");
 		console.log(`[maps:write] Writing map ${mapName} to ${mapPath}, data:`, mapData);
 		try {
 			await fs.promises.writeFile(mapPath, mapData, { encoding: 'utf8' });
