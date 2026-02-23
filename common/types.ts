@@ -74,8 +74,8 @@ export type MatchMetadata = {
 	matchId: string;
 	queuedTimestamp: number; // when the match entered the queue
 	startTimestamp: number | null; // start time of first game
-	finishTimestamp: number | null; // end time of last game
-	notes: string | null; // user-written notes for their reference!
+	finishTimestamp: number | null; // end time of last game or termination
+	notes: string; // user-written notes for their reference!
 
 	maps: string[]; // names of maps played (or to play)
 
