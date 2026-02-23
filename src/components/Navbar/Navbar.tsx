@@ -13,8 +13,8 @@ const NAVBAR_LINKS = [
   },
   {
     icon: 'book',
-    label: 'History',
-    link: '/replayer',
+    label: 'Matches',
+    link: '/matches',
   },
   {
     icon: 'run',
