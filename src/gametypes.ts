@@ -26,10 +26,6 @@ export const Symmetry = {
 	XY: 'XY',
 } as const;
 
-export type PowerupSpawn = {
-	loc: MapLoc;
-	round: number;
-}
 
 export const TileType = {
 	EMPTY: 'EMPTY',
@@ -42,8 +38,8 @@ export const TileType = {
 
 /**
  * Represents all data about a map.
- * Map features like hills, walls, spawnpoints, etc. are only guarnateed to be specified
- * for at least one side - for the other, use symmetry to compute.
+ * Map features like hills, walls, spawnpoints, etc. are all specified
+ * No computation necessary
  */
 export type MapData = {
 	name: string;
@@ -52,7 +48,10 @@ export type MapData = {
 	hillCenters: MapLoc[];
 	wallLocs: MapLoc[];
 	spawnpointGreen: MapLoc;
+	spawnpointBlue: MapLoc;
+	powerupSpawnRate:number;
+	powerupSpawnNum:number;
 	symmetry: keyof typeof Symmetry;
-	healthPowerupSpawns: PowerupSpawn[];
-	staminaPowerupSpawns: PowerupSpawn[];
+	
+
 }

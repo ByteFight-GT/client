@@ -172,12 +172,12 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 				<div className='flex items-center gap-1'>
 					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup spawn rate:</span>
-					<Input className='bg-background' type="number" value={props.mapData.width} onChange={(e) => props.setMapData({...props.mapData, width: parseInt(e.target.value)})} />
+					<Input className='bg-background' type="number" value={props.mapData.powerupSpawnRate} onChange={(e) => props.setMapData({...props.mapData, powerupSpawnRate: parseInt(e.target.value)})} />
 				</div>
 
 				<div className='flex items-center gap-1'>
 					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup spawn #:</span>
-					<Input className='bg-background' type="number" value={props.mapData.height} onChange={(e) => props.setMapData({...props.mapData, height: parseInt(e.target.value)})} />
+					<Input className='bg-background' type="number" value={props.mapData.powerupSpawnNum} onChange={(e) => props.setMapData({...props.mapData, powerupSpawnNum: parseInt(e.target.value)})} />
 				</div>
 
 				
