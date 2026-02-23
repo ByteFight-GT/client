@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 
 type AsyncLoadingWrapper_t = <F extends (...args: any[]) => Promise<any>>(

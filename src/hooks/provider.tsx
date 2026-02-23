@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { BotsProvider } from './useBots';
 import { MapsProvider } from './useMaps';
