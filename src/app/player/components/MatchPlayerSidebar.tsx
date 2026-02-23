@@ -15,10 +15,10 @@ const MATCHPLAYER_SIDEBAR_TABS = {
     label: <><PlayIcon /> Run</>,
     component: RunMatchTab
   },
-  queue: {
-    label: <><ListIcon /> Queue</>,
-    component: QueueTab
-  }
+  // queue: {
+  //   label: <><ListIcon /> Queue</>,
+  //   component: QueueTab
+  // }
 } as const;
 
 export const MatchPlayerSidebar = () => {
