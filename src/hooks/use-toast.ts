@@ -184,9 +184,17 @@ function useToast() {
     }
   }, [state])
 
+  const toastError = React.useCallback((title: string, error: string | Error) => {
+    toast({
+      title,
+      description: error instanceof Error? error.message : error,
+    });
+  }, [])
+
   return {
     ...state,
     toast,
+    toastError,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   }
 }
