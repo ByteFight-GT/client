@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Settings } from '../../common/types';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './loadingsContext';
 
 export type UseSettingsValue = {

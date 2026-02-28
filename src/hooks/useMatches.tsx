@@ -3,7 +3,7 @@
 import React from 'react';
 import { MatchMetadata } from '../../common/types';
 
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './loadingsContext';
 
 export type UseMatchesValue = {

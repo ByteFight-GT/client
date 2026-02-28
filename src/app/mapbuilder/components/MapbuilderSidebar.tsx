@@ -9,7 +9,7 @@ import {
 	Input, 
 	Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { type MapData, Symmetry, TileType } from '@/gametypes';
 import { SidebarItem } from '@/components/SidebarItem';
 import { MapList } from './MapList';

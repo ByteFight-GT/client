@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './loadingsContext';
 import { MatchMetadata } from '../../common/types';
 import { useMatches } from './useMatches';
