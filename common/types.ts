@@ -62,7 +62,12 @@ export const TileType = {
 	GREEN_SPAWN: 'GREEN_SPAWN',
 } as const;
 
-export type MatchStatus = 'queued' | 'in-progress' | 'terminated' | 'completed';
+export type MatchStatus =
+	| 'queued' // in queue, stored by frontend
+	| 'in-progress' // currently running on the backend
+	| 'terminated' // (end state) manually terminated or killed
+	| 'errored' // (end state) process error, probably not caused by user
+	| 'completed'; // (end state) game finished successfully
 
 /**
  * All information about a match (which can have multiple games),
@@ -72,9 +77,9 @@ export type MatchStatus = 'queued' | 'in-progress' | 'terminated' | 'completed';
  */
 export type MatchMetadata = {
 	matchId: string;
-	queuedTimestamp: number; // when the match entered the queue
-	startTimestamp: number | null; // start time of first game
-	finishTimestamp: number | null; // end time of last game or termination
+	queuedTimestamp: number; // when the match entered the queue (ms)
+	startTimestamp: number | null; // start time (ms) of first game
+	finishTimestamp: number | null; // end time (ms) of last game or termination
 	notes: string; // user-written notes for their reference!
 
 	maps: string[]; // names of maps played (or to play)
@@ -88,4 +93,3 @@ export type MatchMetadata = {
 
 	status: MatchStatus;
 }
-
