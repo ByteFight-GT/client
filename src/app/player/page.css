@@ -218,3 +218,32 @@
 	color: hsl(var(--primary-foreground));
 	font-weight: 600;
 }
+
+
+.queue-tab {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0.5rem;
+	border: 1px solid hsl(var(--border));
+	background-color: hsl(var(--background));
+}
+
+.match-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 1rem;
+	padding-top: 0.5rem; /* text line height */
+	background-color: hsl(var(--secondary));
+	border-width: 1px;
+	border-style: solid;
+}
+.match-card-green-header {
+	color: hsl(var(--team-green-color));
+	font-size: 1.25rem;
+}
+.match-card-blue-header {
+	color: hsl(var(--team-blue-color));
+	font-size: 1.25rem;
+}
