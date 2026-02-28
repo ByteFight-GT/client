@@ -3,7 +3,7 @@
 import React from 'react';
 import { Settings } from '../../common/types';
 import { useToast } from '@/hooks/useToast';
-import { useLoadings } from './loadingsContext';
+import { useLoadings } from './useLoadings';
 
 export type UseSettingsValue = {
   settings: Settings;

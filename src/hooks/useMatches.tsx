@@ -4,7 +4,7 @@ import React from 'react';
 import { MatchMetadata } from '../../common/types';
 
 import { useToast } from '@/hooks/useToast';
-import { useLoadings } from './loadingsContext';
+import { useLoadings } from './useLoadings';
 
 export type UseMatchesValue = {
   completedMatchHistory: MatchMetadata[];

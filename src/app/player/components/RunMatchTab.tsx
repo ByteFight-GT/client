@@ -7,7 +7,7 @@ import { BotSelector } from './BotSelector';
 import { Button } from '@/components';
 import { ArrowLeftRightIcon, ClockIcon, ImportIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
 import { useMaps } from '@/hooks/useMaps';
-import { useLoadings } from '@/hooks/loadingsContext';
+import { useLoadings } from '@/hooks/useLoadings';
 import { useBots } from '@/hooks/useBots';
 import { useRunner } from '@/hooks/useRunner';
 

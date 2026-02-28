@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useToast } from '@/hooks/useToast';
-import { useLoadings } from './loadingsContext';
+import { useLoadings } from './useLoadings';
 
 export type UseBotsValue = {
   bots: string[];

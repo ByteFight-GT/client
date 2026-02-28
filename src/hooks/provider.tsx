@@ -5,7 +5,7 @@ import { BotsProvider } from './useBots';
 import { MapsProvider } from './useMaps';
 import { SettingsProvider } from './useSettings';
 import { MatchesProvider } from './useMatches';
-import { LoadingsProvider } from './loadingsContext';
+import { LoadingsProvider } from './useLoadings';
 import { RunnerProvider } from './useRunner';
 
 /**

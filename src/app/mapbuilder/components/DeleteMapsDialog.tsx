@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button, Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components';
-import { useLoadings } from '@/hooks/loadingsContext';
+import { useLoadings } from '@/hooks/useLoadings';
 
 type DeleteMapsDialogProps = {
 	open: boolean;
