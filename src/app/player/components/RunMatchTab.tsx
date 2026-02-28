@@ -5,14 +5,16 @@ import React from 'react';
 import { MapList } from './MapList';
 import { BotSelector } from './BotSelector';
 import { Button } from '@/components';
-import { ArrowLeftRightIcon, ImportIcon, PlayIcon, RefreshCwIcon, SwordsIcon } from 'lucide-react';
+import { ArrowLeftRightIcon, ClockIcon, ImportIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
 import { useMaps } from '@/hooks/useMaps';
 import { useLoadings } from '@/hooks/loadingsContext';
 import { useBots } from '@/hooks/useBots';
+import { useRunner } from '@/hooks/useRunner';
 
 export const RunMatchTab = () => {
   const {maps, fetchMapList} = useMaps();
   const {bots, fetchBotList} = useBots();
+  const {queueNewMatch, queuedMatches, recentGreenBots, recentBlueBots, updateRecentBots, lastRunnerSetup, saveLastRunnerSetup} = useRunner();
   const {loadings} = useLoadings()
 
   // 1. Changed from a Set to a single string (or null)
@@ -39,27 +41,57 @@ export const RunMatchTab = () => {
     // setSelectedMaps(new Set());
     setSelectedMap(null);
   }, [fetchMapList]);
-  
+
+  const handleStartMatch = React.useCallback(() => {
+    if (selectedMap && selectedGreenTeam && selectedBlueTeam) {
+      queueNewMatch({
+        selectedMaps: [selectedMap], // change to selectedMaps when we support multiple
+        selectedGreenTeam,
+        selectedBlueTeam,
+      });
+      saveLastRunnerSetup({
+        selectedMaps: [selectedMap],
+        selectedGreenTeam,
+        selectedBlueTeam,
+      });
+      updateRecentBots(selectedGreenTeam, selectedBlueTeam);
+      setSelectedMap(null);
+      setSelectedGreenTeam(null);
+      setSelectedBlueTeam(null);
+    }
+  }, [selectedMap, selectedGreenTeam, selectedBlueTeam, queueNewMatch, updateRecentBots]);
+
   return (
     <div className='flex flex-col gap-4 p-4'>
       <h2>Run Match</h2>
 
       <div className='flex gap-2'>
-        <button className='matchplayer-run-again-button'>
+
+        <button 
+        className='matchplayer-run-again-button'
+        disabled={!lastRunnerSetup}
+        onClick={() => {
+          if (lastRunnerSetup) {
+            setSelectedMap(lastRunnerSetup.selectedMaps[0]); // TODO: change when we support multiple maps
+            setSelectedGreenTeam(lastRunnerSetup.selectedGreenTeam);
+            setSelectedBlueTeam(lastRunnerSetup.selectedBlueTeam);
+          }
+        }}>
           <ImportIcon className='mx-auto text-2xl text-secondary-foreground' />
           Use Last Setup
         </button>
+
         <button 
-        disabled={
-          // selectedMaps.size === 0 
-          selectedMap === null 
-          || selectedGreenTeam === null 
-          || selectedBlueTeam === null
-        }
-        className='matchplayer-start-button'>
-          <PlayIcon className='mx-auto text-2xl text-primary' />
-          Start!
+        className='matchplayer-start-button'
+        disabled={!(selectedMap && selectedGreenTeam && selectedBlueTeam)}
+        onClick={handleStartMatch}>
+          {queuedMatches.length > 0? 
+            <><ClockIcon className='mx-auto text-2xl text-secondary-foreground' />Queue</>
+          :
+            <><PlayIcon className='mx-auto text-2xl text-primary' />Start</>
+          }
         </button>
+
       </div>
 
       <SidebarItem label="Select Teams">
@@ -68,14 +100,14 @@ export const RunMatchTab = () => {
           team="green"
           botNames={bots}
           value={selectedGreenTeam}
-          recents={["test1"]} 
+          recents={recentGreenBots} 
           onChange={(name) => setSelectedGreenTeam(name)} />
 
           <BotSelector 
           team="blue"
           botNames={bots}
           value={selectedBlueTeam}
-          recents={["test3", "test4"]} 
+          recents={recentBlueBots} 
           onChange={(name) => setSelectedBlueTeam(name)} />
         </div>
         
