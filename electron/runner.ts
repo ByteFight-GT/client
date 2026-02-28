@@ -142,91 +142,104 @@ export function setupRunnerHandlers(enginePath: string) {
 
 		const pythonServerScript = path.join(enginePath, LOCAL_SERVER_SCRIPT);
 
-		return new Promise<string>(async (resolve, reject) => {
-			let scriptOutput = '';
-			let scriptError = '';
+		console.log(
+			`DEBUG: spawning ${pythonPath} with args ${scriptArgs.join(" ")} in directory ${enginePath} to start match!`
+		)
 
-			pythonProcess = child_process.spawn(`${pythonPath} ${pythonServerScript}`, [...scriptArgs], {
-				cwd: enginePath,
-				shell: true
-			});
+		//temp: for now, just return
+		return {
+			success: true
+		}
 
-			// Stream stdout for debugging
-			// this should mostly be user-created data, like print() and stuff.
-			pythonProcess.stdout.on('data', (data) => {
-				const chunk = data.toString();
-				scriptOutput += chunk;
-				event.sender.send('game-usr:stdout', chunk);
-				// event.sender.send('stream-output-full', scriptOutput);
-			});
-
-			// Stream stderr for errors
-			// this should also mostly be user-created, errors, etc.
-			pythonProcess.stderr.on('data', (data) => {
-				const chunk = data.toString();
-				scriptError += chunk;
-				event.sender.send('game-usr:stderr', chunk);
-				// event.sender.send('stream-error-full', scriptError);
-			});
-
-			// note: 'close' happens when stdio streams close, while 'exit' doesnt necessarily imply that
-			pythonProcess.on('close', (code) => {
-				tcpClientManager?.disconnect();
-
-				event.sender.send('game-sys:process-closed', {
-					code,
-					stdout: scriptOutput,
-				});
-
-				if (code !== 0) {
-					reject(new Error(`Python script error: ${scriptError}`));
-				} else {
-					resolve(scriptOutput);
-				}
-			});
-
-			pythonProcess.on('error', (err) => {
-				tcpClientManager?.disconnect();
-				reject(err);
-			});
-
-			// Connect TCP client
-			setTimeout(async () => {
-				try {
-					await tcpClientManager?.connect(
-						'127.0.0.1', // host
-						port, // port
-						(chunk) => { // onRawData
-							event.sender.send('game-sys:raw-data', chunk);
-							console.log('TCP raw data received');
-						},
-						(data) => { // onData
-							event.sender.send('game-sys:data', data);
-							console.log('TCP data parsed');
-						}, 
-						() => { // onServerClosed
-							event.sender.send('game-sys:server-closed');
-						},
-						(err) => { // onError
-							event.sender.send('game-sys:error', err);
-							console.error('TCP connection error:', err);
-						},
-						() => { // onComplete
-							event.sender.send('game-sys:complete');
-						},
-					);
-				} catch (err) {
-					console.error('Failed to connect TCP client:', err);
-				}
-			}, 500);
+		/*
+		pythonProcess = child_process.spawn(`${pythonPath} ${pythonServerScript}`, [...scriptArgs], {
+			cwd: enginePath,
+			shell: true
 		});
+		const startTimestamp = Date.now();
+
+		// Stream stdout for debugging
+		// this should mostly be user-created data, like print() and stuff.
+		pythonProcess.stdout.on('data', (data) => {
+			const chunk = data.toString();
+			event.sender.send('game-usr:stdout', chunk);
+		});
+
+		// Stream stderr for errors
+		// this should also mostly be user-created, errors, etc.
+		pythonProcess.stderr.on('data', (data) => {
+			const chunk = data.toString();
+			event.sender.send('game-usr:stderr', chunk);
+		});
+
+		// note: 'close' happens when stdio streams close, while 'exit' doesnt necessarily imply that
+		pythonProcess.on('close', (code) => {
+			const finishTimestamp = Date.now();
+
+			tcpClientManager?.disconnect();
+
+			// TODO - (switch to 'exit' event?) have python send us a message for what status to use
+			// it should be able to tell us if success, termination, or errored
+			// if no status, we can assume crash/unintended failure (check status code)
+			// exit code nonzero = error, no code probably means killed?
+			if (code !== 0) {
+				console.log(`[runner:start-match] Python process exited with non-zero code ${code}!`);
+			} else {
+				console.log(`[runner:start-match] Python process exited successfully with code ${code}`);
+			}
+			
+			event.sender.send('game-sys:process-closed', {code, finishTimestamp});
+		});
+
+		pythonProcess.on('error', (err) => {
+			tcpClientManager?.disconnect();
+			event.sender.send('game-sys:process-error', {error: err.message});
+		});
+
+		// Connect TCP client
+		setTimeout(async () => {
+			try {
+				await tcpClientManager?.connect(
+					'127.0.0.1', // host
+					port, // port
+					(chunk) => { // onRawData
+						event.sender.send('game-sys:raw-data', chunk);
+						console.log('TCP raw data received');
+					},
+					(data) => { // onData
+						event.sender.send('game-sys:data', data);
+						console.log('TCP data parsed');
+					}, 
+					() => { // onServerClosed
+						event.sender.send('game-sys:server-closed');
+					},
+					(err) => { // onError
+						event.sender.send('game-sys:error', err);
+						console.error('TCP connection error:', err);
+					},
+					() => { // onComplete
+						event.sender.send('game-sys:complete');
+					},
+				);
+			} catch (err) {
+				console.error('Failed to connect TCP client:', err);
+			}
+		}, 500);
+
+		return {
+			success: true,
+			startTimestamp,
+		}
+		*/
 	});
 
 	ipcMain.handle('runner:terminate', async (event) => {
 		if (tcpClientManager) {
-			return tcpClientManager.sendInterrupt();
+			return {
+				success: tcpClientManager.sendInterrupt()
+			};
 		}
-		return false;
+		return {success: false};
 	});
 
 	ipcMain.handle('runner:disconnect', async (event) => {

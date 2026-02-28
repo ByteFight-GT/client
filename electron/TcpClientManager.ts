@@ -145,5 +145,6 @@ export class TcpClientManager {
 			this.client.write(interruptMessage);
 			return true;
 		}
+		return false;
 	}
 }
