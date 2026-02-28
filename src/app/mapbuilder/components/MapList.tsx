@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Checkbox } from '@/components';
+import { useMaps } from '@/hooks/useMaps';
 import { ArrowRightIcon } from 'lucide-react';
 import React from 'react';
 
@@ -10,16 +11,13 @@ type MapListProps = {
 	setSelectedMaps: React.Dispatch<React.SetStateAction<Set<string>>>;
 	askToLoadMapToEditor: (mapName: string) => void;
 	askToDeleteMaps: () => void;
-	onImportMaps: (mapNames: string[]) => void;
 };
 
 export const MapList = (props: MapListProps) => {
 
 	const [deletionLoading, setDeletionLoading] = React.useState(false);
 
-	function handleImportMaps() {
-		window.electron.invoke('maps:import').then(props.onImportMaps);
-	}
+	const {handleImportMaps} = useMaps();
 
 	function handleSelectMany(select: boolean) {
 		if (select) {

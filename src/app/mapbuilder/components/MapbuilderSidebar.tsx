@@ -9,7 +9,6 @@ import {
 	Input, 
 	Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components';
-import { useToast } from '@/hooks/useToast';
 import { type MapData, Symmetry, TileType } from '@/gametypes';
 import { SidebarItem } from '@/components/SidebarItem';
 import { MapList } from './MapList';
@@ -60,7 +59,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
         hillId: 0,
     });
 
-	const {maps, readMap, handleImportMaps, handleSaveMap, handleDeleteMaps} = useMaps();
+	const {maps, readMap, handleSaveMap, handleDeleteMaps} = useMaps();
 	const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
 	const [deleteMapsDialogOpen, setDeleteMapsDialogOpen] = React.useState(false);
 	const [askingToLoadMapToEditor, setAskingToLoadMapToEditor] = React.useState<string | null>(null);
@@ -104,8 +103,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 				selectedMaps={selectedMaps}
 				setSelectedMaps={setSelectedMaps}
 				askToLoadMapToEditor={(mapName) => setAskingToLoadMapToEditor(mapName)}
-				askToDeleteMaps={() => setDeleteMapsDialogOpen(true)}
-				onImportMaps={handleImportMaps} />
+				askToDeleteMaps={() => setDeleteMapsDialogOpen(true)} />
 			</SidebarItem>
 
 			<SidebarItem label="Build">
