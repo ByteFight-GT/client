@@ -1,0 +1,61 @@
+.matches-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	flex-grow: 1;
+	margin-bottom: 2rem;
+}
+
+.completed-match-card {
+	padding: 1rem;
+	background-color: hsl(var(--secondary));
+	border-width: 1px;
+	border-style: solid;
+}
+.completed-match-card-header {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 2rem;
+}
+.match-card-green-header {
+	color: hsl(var(--team-green-color));
+	font-size: 1.25rem;
+}
+.match-card-blue-header {
+	color: hsl(var(--team-blue-color));
+	font-size: 1.25rem;
+}
+
+.completed-match-card-map {
+	color: hsl(var(--muted-foreground));
+	font-size: 0.875rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem;
+	margin-top: 0.5rem;
+}
+.completed-match-card-map.Green {
+	border: 1px solid hsl(var(--team-green-color) / 0.5);
+	background-color: hsl(var(--team-green-color) / 0.05);
+	background-image: linear-gradient(to right, hsl(var(--team-green-color)/0.1), transparent);
+}
+.completed-match-card-map.Blue {
+	border: 1px solid hsl(var(--team-blue-color) / 0.5);
+	background-color: hsl(var(--team-blue-color) / 0.05);
+	background-image: linear-gradient(to left, hsl(var(--team-blue-color)/0.1), transparent);
+}
+.completed-match-card-map.undecided {
+	border: 1px solid hsl(var(--muted-foreground) / 0.5);
+	background-color: hsl(var(--muted-foreground) / 0.05);
+}
+
+.completed-match-card-status-completed {
+	color: hsl(var(--secondary-foreground));
+}
+.completed-match-card-status-terminated {
+	color: hsl(var(--primary));
+}
+.completed-match-card-status-errored {
+	color: hsl(var(--destructive));
+}
