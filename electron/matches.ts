@@ -82,7 +82,7 @@ export function setupMatchesHandlers() {
 					const matchesDir = tryGetConfiguredDir("Matches Directory");
 					const filePath = path.join(matchesDir, file);
 					const data = await fs.promises.readFile(filePath, { encoding: 'utf8' });
-					return { fileName: file, data };
+					return JSON.parse(data) as MatchMetadata;
 				})
 			);
 			
@@ -101,7 +101,7 @@ export function setupMatchesHandlers() {
 
 	ipcMain.handle('matches:write', async (event, matchData: MatchMetadata) => {
 		const matchesDir = tryGetConfiguredDir("Matches Directory");
-		const matchPath = path.join(matchesDir, matchData.matchId);
+		const matchPath = path.join(matchesDir, matchData.matchId + ".json");
 		console.log(`[matches:write] Writing match ${matchData.matchId} to ${matchPath}`);
 
 		try {
