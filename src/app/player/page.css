@@ -135,6 +135,7 @@
 	background-color: hsl(var(--themecolor));
 	color: hsl(var(--foreground));
 	height: 30rem;
+	overflow-y: auto;
 }
 
 
