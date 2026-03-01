@@ -65,7 +65,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
    */
   const writeMatchData = React.useCallback(async (matchData: MatchMetadata) => {
     try {
-      const res = await window.electron.invoke('matches:write', matchData.matchId, matchData)
+      const res = await window.electron.invoke('matches:write', matchData)
       if (res.success) {
         return true;
       } else {
