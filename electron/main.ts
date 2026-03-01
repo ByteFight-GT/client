@@ -22,9 +22,6 @@ let store;
 const userDataPath = app.getPath('userData');
 const matchPath = path.join(userDataPath, 'match_runs');
 
-let enginePath = path.join(app.isPackaged ? process.resourcesPath : app.getAppPath(), 'engine');
-
-
 async function initMetadata() {
 
     if(!store.has('numMatches')){
@@ -91,7 +88,7 @@ app.on('ready', async () => {
     ]);
 
     // Setup all IPC handlers
-    setupAllHandlers(store, enginePath, matchPath);
+    setupAllHandlers(store);
 
     createWindow();
 });

@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import * as child_process from 'child_process';
 import path from 'path';
 import net from 'net';
@@ -8,7 +8,12 @@ import { tryGetConfiguredDir } from './utils.ts';
 import { readMap } from './maps.ts';
 import { TcpClientManager } from './TcpClientManager.ts';
 
-const LOCAL_SERVER_SCRIPT = 'local_server.py';
+export const ENGINE_PATH = path.join(
+	app.getAppPath(),
+	"engine",
+);
+
+export const LOCAL_SERVER_SCRIPT = "local_server.py";
 
 export let pythonProcess: child_process.ChildProcessWithoutNullStreams | null = null;
 export let tcpClientManager = new TcpClientManager();
@@ -57,7 +62,7 @@ export function closePython() {
 	}
 }
 
-export function setupRunnerHandlers(enginePath: string) {
+export function setupRunnerHandlers() {
 	ipcMain.handle('runner:start-match', async (event, matchData: MatchMetadata) => {
 
 		// initial setup/checks/data gathering
@@ -140,35 +145,27 @@ export function setupRunnerHandlers(enginePath: string) {
 		// ^ TODO - server only handles 1 game at a time rn.
 		// pushing just first map for now, in the future we can try handling multiple
 
-		const pythonServerScript = path.join(enginePath, LOCAL_SERVER_SCRIPT);
-
-		console.log(
-			`DEBUG: spawning ${pythonPath} with args ${scriptArgs.join(" ")} in directory ${enginePath} to start match!`
-		)
-
-		//temp: for now, just return
-		return {
-			success: true
-		}
-
-		/*
-		pythonProcess = child_process.spawn(`${pythonPath} ${pythonServerScript}`, [...scriptArgs], {
-			cwd: enginePath,
+		pythonProcess = child_process.spawn(`${pythonPath} ${LOCAL_SERVER_SCRIPT}`, [...scriptArgs], {
+			cwd: ENGINE_PATH,
 			shell: true
 		});
 		const startTimestamp = Date.now();
+
+		console.log(`[runner:start-match]: spawned process w/ pid ${pythonProcess.pid}`);
 
 		// Stream stdout for debugging
 		// this should mostly be user-created data, like print() and stuff.
 		pythonProcess.stdout.on('data', (data) => {
 			const chunk = data.toString();
 			event.sender.send('game-usr:stdout', chunk);
+			console.log('Python stdout:', chunk);
 		});
 
 		// Stream stderr for errors
 		// this should also mostly be user-created, errors, etc.
 		pythonProcess.stderr.on('data', (data) => {
 			const chunk = data.toString();
+			console.log('Python stderr:', chunk);
 			event.sender.send('game-usr:stderr', chunk);
 		});
 
@@ -189,6 +186,7 @@ export function setupRunnerHandlers(enginePath: string) {
 			}
 			
 			event.sender.send('game-sys:process-closed', {code, finishTimestamp});
+			pythonProcess = null;
 		});
 
 		pythonProcess.on('error', (err) => {
@@ -208,17 +206,17 @@ export function setupRunnerHandlers(enginePath: string) {
 					},
 					(data) => { // onData
 						event.sender.send('game-sys:data', data);
-						console.log('TCP data parsed');
+						console.log('TCP data parsed:', data);
 					}, 
 					() => { // onServerClosed
-						event.sender.send('game-sys:server-closed');
+						event.sender.send('game-sys:socket-end');
 					},
 					(err) => { // onError
-						event.sender.send('game-sys:error', err);
+						event.sender.send('game-sys:socket-error', err);
 						console.error('TCP connection error:', err);
 					},
 					() => { // onComplete
-						event.sender.send('game-sys:complete');
+						event.sender.send('game-sys:socket-close');
 					},
 				);
 			} catch (err) {
@@ -230,7 +228,6 @@ export function setupRunnerHandlers(enginePath: string) {
 			success: true,
 			startTimestamp,
 		}
-		*/
 	});
 
 	ipcMain.handle('runner:terminate', async (event) => {
