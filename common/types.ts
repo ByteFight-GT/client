@@ -88,8 +88,18 @@ export type MatchMetadata = {
 
 	teamGreen: string; // green bot name
 	teamBlue: string; // blue bot name
-	greenWins: {map: string, reason: string, numRounds: number}[];
-	blueWins: {map: string, reason: string, numRounds: number}[];
+	greenWins: {
+		[map: string]: {
+			reason: string, 
+			numRounds: number
+		}
+	};
+	blueWins: {
+		[map: string]: {
+			reason: string, 
+			numRounds: number
+		}
+	};
 
 	status: MatchStatus;
 }
