@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MatchMetadata } from '../../../../common/types';
-import { timeElapsedString, word } from '../../../../common/utils';
+import { fmtTime, word } from '../../../../common/utils';
 import { Button } from '@/components';
 import { useRunner } from '@/hooks/useRunner';
 import { ChevronDownIcon, ChevronsUpIcon, ChevronUpIcon } from 'lucide-react';
@@ -20,11 +20,11 @@ type QueuedMatchCardProps = {
 export const QueuedMatchCard = (props: QueuedMatchCardProps) => {
 
   // stored in state so we can update every min
-  const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(timeElapsedString(props.matchData.queuedTimestamp));
+  const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(fmtTime(props.matchData.queuedTimestamp));
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setTimeElapsedDisplay(timeElapsedString(props.matchData.queuedTimestamp));
+      setTimeElapsedDisplay(fmtTime(Date.now() - props.matchData.queuedTimestamp));
     }, 60000);
 
     return () => clearInterval(interval);
@@ -80,7 +80,7 @@ export const QueuedMatchCard = (props: QueuedMatchCardProps) => {
         </p>
         <p className='text-sm text-muted-foreground' title={new Date(props.matchData.queuedTimestamp).toLocaleString()}>
           Queued&nbsp;
-          <span className='text-secondary-foreground'>{timeElapsedDisplay}</span>
+          <span className='text-secondary-foreground'>{timeElapsedDisplay} ago</span>
         </p>
         <p className='text-sm text-muted-foreground'>
           Match ID&nbsp;
