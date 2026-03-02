@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import './Navbar.css';
-import React from 'react';
+import React, { lazy } from 'react';
+import { BugIcon } from 'lucide-react';
+import { Tooltip, Tooltipped, TooltipProvider } from '../Tooltip';
 
 const NAVBAR_LINKS = [
   {
@@ -33,6 +35,14 @@ const NAVBAR_LINKS = [
   },
 ]
 
+const NAVBAR_LINKS_BOTTOM = [
+  {
+    icon: <BugIcon />,
+    label: 'Debug',
+    link: '/debug',
+  }
+]
+
 function Navbar() {
 
   const pathName = usePathname();
@@ -49,7 +59,17 @@ function Navbar() {
         key={item.label}
         selected={item.link === pathName} />
       )}
-    </div>
+
+      <div className='navbar-bottom-buttons'>
+        {NAVBAR_LINKS_BOTTOM.map((item) => 
+          <NavbarLinkBottom 
+          {...item} 
+          key={item.label}
+          selected={item.link === pathName} />
+        )}
+      </div>
+
+      </div>
   );
 }
 
@@ -65,6 +85,22 @@ function NavbarLink(props: NavbarLinkProps) {
       <img src={`/navbar_icons/${props.icon}.png`} className="navbar-link-icon" />
       <p className="navbar-link-label">{props.label}</p>
     </Link>
+  );
+}
+
+interface NavbarLinkBottomProps {
+  icon: React.ReactNode;
+  label: string;
+  link: string;
+  selected: boolean;
+}
+function NavbarLinkBottom(props: NavbarLinkBottomProps) {
+  return (
+    <Tooltipped tooltip={props.label}>
+      <Link href={props.link} className={`navbar-button ${props.selected? 'selected' : ''}`}>
+        {props.icon}
+      </Link>
+    </Tooltipped>
   );
 }
 

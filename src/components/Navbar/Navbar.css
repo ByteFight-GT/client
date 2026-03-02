@@ -77,3 +77,26 @@ for the triangle "arrow" on the right side of selected tab.
 	clip-path: polygon(0 0%, 100% 50%, 0 100%);
 	background-color: hsl(var(--border));
 }
+
+.navbar-bottom-buttons {
+	margin-top: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+
+	margin-bottom: 1rem;
+}
+.navbar-button {
+	border: none;
+	width: fit-content;
+	padding: 0.5rem;
+	cursor: pointer;
+	user-select: none;
+	border: 2px solid hsl(var(--border));
+	background-color: hsl(var(--background) 0.25);
+}
+.navbar-button.selected {
+	border-color: hsl(var(--primary));
+	background-color: hsl(var(--primary) / 0.25);
+}
