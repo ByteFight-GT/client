@@ -5,7 +5,8 @@ import { tryGetConfiguredDir } from './utils.ts';
 
 export const DEFAULT_MAPS_PATH = path.join(
 	app.isPackaged ? process.resourcesPath : app.getAppPath(),
-	"engine/config/maps.json"
+	"resources/default-maps"
+	//"engine/config/maps.json"
 );
 
 /**
@@ -20,9 +21,9 @@ export function initMaps() {
 
 	// copying default maps over (but we wont overwrite existing ones)
 	const defaultMaps = fs.readdirSync(DEFAULT_MAPS_PATH);
-	defaultMaps.forEach(map => {
-		const userMapPath = path.join(mapsDir, map);
-		const defaultMapPath = path.join(DEFAULT_MAPS_PATH, map);
+	defaultMaps.forEach(mapFile => {
+		const userMapPath = path.join(mapsDir, mapFile);
+		const defaultMapPath = path.join(DEFAULT_MAPS_PATH, mapFile);
 		if (!fs.existsSync(userMapPath)) {
 			fs.copyFileSync(defaultMapPath, userMapPath);
 		}
@@ -34,7 +35,7 @@ export async function readMap(mapName: string): Promise<
 	| {success: false, error: string}
 > {
 	const mapsDir = tryGetConfiguredDir("Maps Directory");
-	const mapPath = path.join(mapsDir, mapName);
+	const mapPath = path.join(mapsDir, mapName + ".json");
 	try {
 		const mapData = await fs.promises.readFile(mapPath, { encoding: 'utf8' });
 		return { success: true, mapData };
@@ -49,7 +50,7 @@ export function setupMapsHandlers() {
 		const mapsDir = tryGetConfiguredDir("Maps Directory");
 		const deleted: string[] = [];
 		for (const mapName of mapNames) {
-			const mapPath = path.join(mapsDir, mapName);
+			const mapPath = path.join(mapsDir, mapName + ".json");
 			try {
 				await fs.promises.unlink(mapPath);
 				deleted.push(mapName);
@@ -65,7 +66,12 @@ export function setupMapsHandlers() {
 		const mapsDir = tryGetConfiguredDir("Maps Directory");
 		try {
 			const files = await fs.promises.readdir(mapsDir);
-			return { success: true, maps: files.filter(file => file.endsWith('.json')) };
+			return { 
+				success: true, 
+				maps: files
+					.filter(file => file.endsWith('.json'))
+					.map(file => path.parse(file).name) // return name without extension
+			};
 		} catch (err: any) {
 			console.error(`Failed to list maps: ${err.message}`);
 			return { success: false, error: err.message, maps: [] };
@@ -73,6 +79,7 @@ export function setupMapsHandlers() {
 	});
 
 	ipcMain.handle('maps:import', async (event) => {
+		console.log("[IPC] maps:import triggered, opening file dialog");
 		const { canceled, filePaths } = await dialog.showOpenDialog({
 			title: "Import Maps",
 			properties: ['openFile', 'multiSelections'],
@@ -85,11 +92,11 @@ export function setupMapsHandlers() {
 			const mapsDir = tryGetConfiguredDir("Maps Directory");
 			const importedNames: string[] = [];
 			for (const filePath of filePaths) {
-				const mapName = path.basename(filePath);
-				const userMapPath = path.join(mapsDir, mapName);
+				const mapFile = path.basename(filePath);
+				const userMapPath = path.join(mapsDir, mapFile);
 				if (!fs.existsSync(userMapPath)) {
 					fs.copyFileSync(filePath, userMapPath);
-					importedNames.push(mapName);
+					importedNames.push(path.parse(mapFile).name);
 				}
 			}
 			return { success: true, imported: importedNames };
