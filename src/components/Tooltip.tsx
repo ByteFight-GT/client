@@ -29,4 +29,22 @@ const TooltipContent = React.forwardRef<
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+/** easy-use wrapper to tooltip something, bundles all the provider/content/trigger stuff */
+type TooltippedProps = {
+  tooltip: React.ReactNode,
+  children: React.ReactNode,
+}
+const Tooltipped = React.forwardRef<HTMLButtonElement, TooltippedProps>(
+  ({ tooltip, children, ...props }, ref) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild ref={ref}>
+          {children}
+        </TooltipTrigger>
+        <TooltipContent {...props}>{tooltip}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+)
+
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, Tooltipped }

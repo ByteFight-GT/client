@@ -5,3 +5,4 @@ export * from "./GenericPage";
 export * from "./Checkbox";
 export * from "./Select";
 export * from "./Dialog";
+export * from "./Tooltip";
