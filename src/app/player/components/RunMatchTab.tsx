@@ -14,7 +14,7 @@ import { useRunner } from '@/hooks/useRunner';
 export const RunMatchTab = () => {
   const {maps, fetchMapList} = useMaps();
   const {bots, fetchBotList} = useBots();
-  const {queueNewMatch, queuedMatches, recentGreenBots, recentBlueBots, updateRecentBots, lastRunnerSetup, saveLastRunnerSetup} = useRunner();
+  const {queueNewMatch, currentlyRunningMatch, recentBots, updateRecentBots, lastRunnerSetup, saveLastRunnerSetup} = useRunner();
   const {loadings} = useLoadings()
 
   // 1. Changed from a Set to a single string (or null)
@@ -85,7 +85,7 @@ export const RunMatchTab = () => {
         className='matchplayer-start-button'
         disabled={!(selectedMap && selectedGreenTeam && selectedBlueTeam)}
         onClick={handleStartMatch}>
-          {queuedMatches.length > 0? 
+          {currentlyRunningMatch? 
             <><ClockIcon className='mx-auto text-2xl text-secondary-foreground' />Queue</>
           :
             <><PlayIcon className='mx-auto text-2xl text-primary' />Start</>
@@ -100,14 +100,14 @@ export const RunMatchTab = () => {
           team="green"
           botNames={bots}
           value={selectedGreenTeam}
-          recents={recentGreenBots} 
+          recents={recentBots.green} 
           onChange={(name) => setSelectedGreenTeam(name)} />
 
           <BotSelector 
           team="blue"
           botNames={bots}
           value={selectedBlueTeam}
-          recents={recentBlueBots} 
+          recents={recentBots.blue} 
           onChange={(name) => setSelectedBlueTeam(name)} />
         </div>
         
