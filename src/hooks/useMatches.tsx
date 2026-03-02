@@ -8,6 +8,7 @@ import { useLoadings } from './useLoadings';
 
 export type UseMatchesValue = {
   completedMatchHistory: MatchMetadata[];
+  totalMatchesIndexed: number;
   fetchMatchHistoryNextPage: (count: number) => void;
   writeMatchData: (matchData: MatchMetadata) => Promise<boolean>;
   addMatchToCompletedHistory: (matchData: MatchMetadata) => void;
@@ -19,6 +20,9 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   /** should be sorted in ascending queued order. these are COMPLETED matches. */
   const [completedMatchHistory, setCompletedMatchHistory] = React.useState<MatchMetadata[]>([]);
+
+  /** returned from electron, for pagination */
+  const [totalMatchesIndexed, setTotalMatchesIndexed] = React.useState(0);
 
   const {toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
@@ -39,6 +43,8 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
     window.electron.invoke('matches:readmany', completedMatchHistory.length, count)
       .then(res => {
         if (res.success) {
+          console.log("fetched match history page: ", res.matches);
+          setTotalMatchesIndexed(res.total);
           setCompletedMatchHistory(prev => [
             ...prev,
             ...res.matches
@@ -80,6 +86,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const addMatchToCompletedHistory = React.useCallback((matchData: MatchMetadata) => {
     setCompletedMatchHistory(prev => [...prev, matchData]);
+    setTotalMatchesIndexed(prev => prev + 1);
   }, []);
 
   // >>> INITIAL SETUP
@@ -90,11 +97,13 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const value = React.useMemo(() => ({
     completedMatchHistory,
+    totalMatchesIndexed,
     fetchMatchHistoryNextPage,
     writeMatchData,
     addMatchToCompletedHistory,
   } satisfies UseMatchesValue), [
     completedMatchHistory,
+    totalMatchesIndexed,
     fetchMatchHistoryNextPage,
     writeMatchData,
     addMatchToCompletedHistory,
