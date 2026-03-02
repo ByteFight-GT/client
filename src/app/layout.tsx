@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar/Navbar";
 import { AppStateProvider } from "@/hooks/provider";
+import { IPCWrapper } from "@/hooks/ipcWrapper";
 
 export const metadata: Metadata = {
   title: "Bytefight Client 2026",
@@ -20,15 +21,15 @@ export default function RootLayout({
     <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
       <body className="flex antialiased">
         <AppStateProvider>
-          
-          <Navbar />
+          <IPCWrapper>
+            <Navbar />
 
-          <div className="w-full h-screen overflow-auto">
-            {children}
-          </div>
+            <div className="w-full h-screen overflow-auto">
+              {children}
+            </div>
 
-          <Toaster />
-        
+            <Toaster />
+          </IPCWrapper>
         </AppStateProvider>
       </body>
     </html>
