@@ -29,7 +29,7 @@ export const GenericPage = ({
 				<h1 className="text-5xl lg:text-6xl font-bold">{titleEle}</h1>
 			</>}
 			{subtitleEle && <>
-				<p className="text-lg text-muted-foreground mt-1">{subtitleEle}</p>
+				<div className="text-lg text-muted-foreground mt-1">{subtitleEle}</div>
 			</>}
 			{(titleEle || subtitleEle) && 
 				<br />
