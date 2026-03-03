@@ -37,13 +37,12 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
    */
   const fetchMatchHistoryNextPage = React.useCallback((count: number) => {
     if (loadings.fetchMatchHistoryNextPage) return;
-
     toggleLoading("fetchMatchHistoryNextPage", true);
+    console.log(`[fetchMatchHistoryNextPage] requesting matches starting at index ${completedMatchHistory.length} with count ${count}`);
 
     window.electron.invoke('matches:readmany', completedMatchHistory.length, count)
       .then(res => {
         if (res.success) {
-          console.log("fetched match history page: ", res.matches);
           setTotalMatchesIndexed(res.total);
           setCompletedMatchHistory(prev => [
             ...prev,
@@ -58,6 +57,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
       })
       .finally(() => {
         toggleLoading("fetchMatchHistoryNextPage", false);
+        console.log(`[fetchMatchHistoryNextPage] finished fetching matches, total indexed matches: ${totalMatchesIndexed}, current loaded matches: ${completedMatchHistory.length}`);
       });
   }, [loadings.fetchMatchHistoryNextPage, completedMatchHistory.length, toggleLoading, toastError]);
 
