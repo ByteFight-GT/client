@@ -40,7 +40,7 @@ const MatchReplayerPage = () => {
 					disabled={loadings.fetchMatchHistoryNextPage}
 					variant="outline"
 					onClick={() => fetchMatchHistoryNextPage(PAGE_SIZE)}>
-						Load More ({totalMatchesIndexed} / {completedMatchHistory.length})
+						Load More ({completedMatchHistory.length} / {totalMatchesIndexed})
 					</Button>
 				:
 					<p className='text-center text-sm text-muted-foreground'>That's all folks!</p>
