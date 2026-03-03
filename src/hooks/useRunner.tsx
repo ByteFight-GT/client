@@ -113,8 +113,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setCurrentlyRunningMatch(startedMatchData);
 
 				toast({
-					title: "Match started",
-					description: `\
+					toastTitle: "Match started",
+					toastDescription: `\
 						Started match between ${matchData.teamGreen} and ${matchData.teamBlue}\
 						on ${matchData.maps.length} map(s)!`
 				});
@@ -164,8 +164,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // no error, there just happens to be another match running. just add to queue
       setQueuedMatches(prev => [...prev, matchData]);
       toast({
-        title: "Match queued",
-        description: `Queued ${matchData.teamGreen} v. ${matchData.teamBlue} on ${matchData.maps.length} map(s) at position ${queuedMatches.length + 1}. It will be started automatically if you leave the client open.`
+        toastTitle: "Match queued",
+        toastDescription: `Queued ${matchData.teamGreen} v. ${matchData.teamBlue} on ${matchData.maps.length} map(s) at position ${queuedMatches.length + 1}. It will be started automatically if you leave the client open.`
       });
     }
   }, [currentlyRunningMatch, queuedMatches, startMatch]);
@@ -222,8 +222,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         toastError("No stop command sent", "No match is currently running");
       }
       toast({
-        title: "Stopping match...",
-        description: "Sent command for the python process to gracefully shutdown. Please wait..."
+        toastTitle: "Stopping match...",
+        toastDescription: "Sent command for the python process to gracefully shutdown. Please wait..."
       });
     })
     .catch((err: any) => {
@@ -260,8 +260,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setLatestGameDiff(null);
 
       toast({
-        title: `Match ${exitCode === 0? 'completed' : 'errored'}`,
-        description: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${exitCode === 0? 'successfully' : 'with exit code ' + exitCode}!`
+        toastTitle: `Match ${exitCode === 0? 'completed' : 'errored'}`,
+        toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${exitCode === 0? 'successfully' : 'with exit code ' + exitCode}!`
       });
 
       setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${exitCode} ---`]);

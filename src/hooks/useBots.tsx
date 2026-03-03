@@ -46,8 +46,8 @@ export const BotsProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.success && res.imported.length > 0) {
         setBots(prev => [...prev, ...res.imported]);
         toast({
-          title: "Bots Imported",
-          description: `Successfully imported ${res.imported.length} bot(s)!`,
+          toastTitle: "Bots Imported",
+          toastDescription: `Successfully imported ${res.imported.length} bot(s)!`,
         });
       }
     })

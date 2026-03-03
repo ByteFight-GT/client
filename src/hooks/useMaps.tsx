@@ -69,8 +69,8 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.success && res.imported.length > 0) {
           setMaps(prev => [...prev, ...res.imported]);
           toast({
-            title: "Maps Imported",
-            description: `Successfully imported ${res.imported.length} map(s)!`,
+            toastTitle: "Maps Imported",
+            toastDescription: `Successfully imported ${res.imported.length} map(s)!`,
           });
         }
       })
@@ -104,8 +104,8 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .then(res => {
         if (res.success) {
           toast({
-            title: "Map Saved",
-            description: `Successfully saved map "${mapData.name}"`,
+            toastTitle: "Map Saved",
+            toastDescription: `Successfully saved map "${mapData.name}"`,
           });
           if (!maps.includes(mapData.name)) {
             setMaps(prev => [...prev, mapData.name]);

@@ -8,13 +8,13 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
-const TOAST_LIMIT = 1
+const TOAST_LIMIT = 4
 const TOAST_REMOVE_DELAY = 1000000
 
 type ToasterToast = ToastProps & {
   id: string
-  title?: React.ReactNode
-  description?: React.ReactNode
+  toastTitle?: React.ReactNode
+  toastDescription?: React.ReactNode
   action?: ToastActionElement
 }
 
@@ -186,8 +186,8 @@ function useToast() {
 
   const toastError = React.useCallback((title: string, error: string | Error) => {
     toast({
-      title,
-      description: error instanceof Error? error.message : error,
+      toastTitle: <span className='text-destructiveBright'>{title}</span>,
+      toastDescription: error instanceof Error? error.message : error,
     });
   }, [])
 
