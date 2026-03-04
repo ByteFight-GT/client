@@ -8,4 +8,6 @@ declare global {
       registerTcpListener: (channel: string, fn: (data: any) => void) => () => void;
     };
   }
+
+  type ValueType<T> = T[keyof T];
 }
