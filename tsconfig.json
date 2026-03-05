@@ -27,9 +27,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@gamerenderer": [
-        "./src/gamerenderer/*"
       ]
     }
   },
