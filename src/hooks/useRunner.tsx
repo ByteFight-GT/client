@@ -6,6 +6,12 @@ import { useLoadings } from './useLoadings';
 import { MatchMetadata } from '../../common/types';
 import { useMatches } from './useMatches';
 import { generateMatchId } from '../../common/utils';
+import { useGame } from '@/gamerenderer/useGame';
+
+// TODO - clean this up somehow 
+import _EMPTY_GAME_PGN from '@/gamerenderer/defaults/EMPTY_GAME_PGN.json'
+import { GamePGN } from '@/gametypes';
+const EMPTY_GAME_PGN = _EMPTY_GAME_PGN as GamePGN;
 
 type QueueNewMatchParams = {
   selectedGreenTeam: string;
@@ -48,6 +54,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const {toast, toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
   const {writeMatchData, addMatchToCompletedHistory} = useMatches();
+  const {reset, setAutoAdvance} = useGame();
  
   const [currentlyRunningMatch, setCurrentlyRunningMatch] = React.useState<MatchMetadata | null>(null);
 
@@ -118,6 +125,9 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 						Started match between ${matchData.teamGreen} and ${matchData.teamBlue}\
 						on ${matchData.maps.length} map(s)!`
 				});
+
+        reset(res.mapData, EMPTY_GAME_PGN); // reset game state to empty for the new game
+        setAutoAdvance(true);
 
         return true;
 

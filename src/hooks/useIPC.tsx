@@ -1,8 +1,11 @@
 "use client";
 
 import React from 'react';
+
 import { useToast } from '@/hooks/useToast';
-import { useRunner } from './useRunner';
+import { useRunner } from '@/hooks/useRunner';
+
+import { useGame } from '@/gamerenderer/useGame';
 
 /**
  * Handles state/logic for ipc communication with electron.
@@ -19,6 +22,8 @@ export function useIPC() {
     setLatestGameDiff,
     handleMatchEnd,
   } = useRunner();
+
+  const {updateGamePGN} = useGame();
 
   // REFS
   // only for the unstable stuff from useRunner so we dont need to reregister all the time
@@ -52,6 +57,19 @@ export function useIPC() {
     function handleSystemData(data: any) {
       setDebugIPCEventLog(prev => [...prev, 'game-sys:data']);
       setLatestGameDiff(data);
+
+      switch (data.type) {
+
+        // TODO - clean up this mess on the engine
+
+        case 'init_game': {
+          updateGamePGN(data.data);
+        } break;
+
+        case 'update': {
+          updateGamePGN(data);
+        } break;
+      }
     },
 
     'game-sys:process-error':

@@ -226,6 +226,7 @@ export function setupRunnerHandlers() {
 
 		return {
 			success: true,
+			mapData: mapsData[0],
 			startTimestamp,
 		}
 	});
