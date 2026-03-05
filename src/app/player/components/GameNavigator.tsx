@@ -26,7 +26,7 @@ export const GameNavigator = () => {
 		setPlaybackSpeed
 	} = useGame();
 
-	const MAX_ROUNDS_TEMP = 100; // TODO - this is stored in the refs, but wont cause rerenders - we gotta store it in state too somehow
+	const MAX_ROUNDS_TEMP = gameManagerRef.current.gamePGN.turn_count; // TODO - wont cause rerenders - we gotta make it reactive somehow
 
 	return (
 		<div className="game-navigator-container">

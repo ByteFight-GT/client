@@ -254,9 +254,9 @@
 
 .game-navigator-container {
 	position: absolute;
+	margin: 0 auto;
 	bottom: 1rem;
-	left: 50%;
-	transform: translateX(-50%);
+	width: 40rem;
 	background-color: hsl(var(--background));
 	border: 1px solid hsl(var(--border));
 	display: flex;
@@ -272,6 +272,7 @@
 .gamenav-area-2 {
 	grid-area: gamenav-area-2;
 	flex-grow: 1;
+	min-width: 4rem;
 	padding: 0 0.25rem;
 }
 .gamenav-area-3 {
