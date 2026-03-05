@@ -85,11 +85,13 @@
 }
 
 .GameWindow-container {
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background-color: hsl(var(--background));
 }
+
 
 .Console-tabs-bar {
 	display: grid;
@@ -247,4 +249,64 @@
 .match-card-blue-header {
 	color: hsl(var(--team-blue-color));
 	font-size: 1.25rem;
+}
+
+
+.game-navigator-container {
+	position: absolute;
+	bottom: 1rem;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: hsl(var(--background));
+	border: 1px solid hsl(var(--border));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.5rem;
+	box-shadow: 0 0.5rem 1rem hsl(var(--themecolor) / 0.25);
+}
+.gamenav-area-1 {
+	grid-area: gamenav-area-1;
+}
+.gamenav-area-2 {
+	grid-area: gamenav-area-2;
+	flex-grow: 1;
+	padding: 0 0.25rem;
+}
+.gamenav-area-3 {
+	grid-area: gamenav-area-3;
+}
+@media (max-width: 1024px) {
+	.game-navigator-container {
+		display: grid !important;
+		grid-template-areas: 
+			"gamenav-area-2 gamenav-area-2"
+			"gamenav-area-1 gamenav-area-3" !important;
+	}
+	.gamenav-area-3 {
+		width: 100%;
+		display: flex;
+		justify-content: flex-end;
+	}
+}
+
+
+.gamenav-slider-track {
+	background-color: hsl(var(--muted));
+	border: 1px solid hsl(var(--muted-foreground));
+	width: 100%;
+	height: 0.5rem;
+	border-radius: var(--radius2);
+	position: relative;
+}
+.gamenav-slider-thumb {
+	height: 1rem;
+	width: 0.5rem;
+	background-color: hsl(var(--primary));
+	border-radius: var(--radius2);
+}
+.gamenav-slider-thumb:focus, .gamenav-slider-thumb:focus-visible, .gamenav-slider-thumb:active {
+	outline: none;
+	box-shadow: 0 0 0 2px hsl(var(--ring));
 }
