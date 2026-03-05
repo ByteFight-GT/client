@@ -1,13 +1,3 @@
-type PlayerColor_t = 'blue' | 'green';
-
-export type MapLoc = [number, number]; // [r, c]
-
-export const Symmetry = {
-	X: 'X',
-	Y: 'Y',
-	XY: 'XY',
-} as const;
-
 export const TileType = {
 	EMPTY: 'EMPTY',
 	WALL: 'WALL',
@@ -15,24 +5,42 @@ export const TileType = {
 	BLUE_SPAWN: 'BLUE_SPAWN',
 	GREEN_SPAWN: 'GREEN_SPAWN',
 } as const;
+type ValueType<T> = T[keyof T];
 
-/**
- * Represents all data about a map.
- * Map features like hills, walls, spawnpoints, etc. are all specified
- * No computation necessary
- */
-export type MapData = {
-	name: string;
-	width: number;
-	height: number;
-	hillCenters: MapLoc[];
-	wallLocs: MapLoc[];
-	spawnpointGreen: MapLoc;
-	spawnpointBlue: MapLoc;
-	powerupSpawnRate:number;
-	powerupSpawnNum:number;
-	symmetry: keyof typeof Symmetry;
+export type MapLoc = {r: number; c: number};
+
+export const Symmetry = {
+	X: 'X',
+	Y: 'Y',
+	XY: 'XY',
+} as const;
+export type Symmetry_t = ValueType<typeof Symmetry>;
+
+export type PowerupSpawn = {
+	loc: MapLoc;
+	round: number;
 }
+
+export type PaintMatrix = number[][];
+
+export type BeaconOwner = "P1" | "P2" | null;
+
+export type BeaconMatrix = BeaconOwner[][];
+
+export type PowerupCellState = {
+	hasHealth: boolean;
+	hasStamina: boolean;
+};
+
+export type PowerupMatrix = PowerupCellState[][];
+
+export type GameRenderState = {
+	p1Loc: MapLoc;
+	p2Loc: MapLoc;
+	paint: PaintMatrix;
+	beacons: BeaconMatrix;
+	powerups: PowerupMatrix;
+};
 
 export const GameActionName = {
 	MOVE: 'Move',
@@ -54,8 +62,8 @@ export const MoveType = {
 } as const;
 export type MoveType_t = ValueType<typeof MoveType>;
 
-/** represents an action ("turn") in the game */
-export type GameAction = 
+/** represents actions taken during a turn in the game. Note that player isnt specified. */
+export type GameTurn = 
 	"NONE" 
 	| {
 		name: GameActionName_t;
@@ -66,9 +74,9 @@ export type GameAction =
 	} | {
 		name: GameActionName_t;
 		location: MapLoc;
-	}
+	};
 
-/** Game PGN format */
+/** Game PGN format (all data about a match) */
 export type GamePGN = {
 	p1_bid: number; // stamina bid
 	p2_bid: number; // stamina bid
@@ -100,7 +108,7 @@ export type GamePGN = {
 
 	walls: boolean[][]; // 2d binary matrix, true = wall, false = no wall
 
-	actions: GameAction[]; // array of actions taken by players on each turn. Player is determined by indexing parity_playing
+	actions: GameTurn[]; // array of actions taken by players on each turn. Player is determined by indexing parity_playing
 
 	turn_count: number; // total number of turns in the game
 	
@@ -121,4 +129,19 @@ export type GamePGN = {
 	engine_version: string; // version of the game engine used to run this match
 
 	cpu: string; // cpu info of how the game was run
+}
+/**
+ * Represents all data about a map.
+ * Map features like hills, walls, spawnpoints, etc. are all specified
+ * No computation necessary
+ */
+export type MapData = {
+	size: MapLoc; // r, c (height, width)
+	hillLocs: MapLoc[];
+	wallLocs: MapLoc[];
+	spawnpointGreen: MapLoc;
+	spawnpointBlue: MapLoc;
+	powerupSpawnRate: number;
+	powerupSpawnNum: number;
+	symmetry: Symmetry_t;
 }
