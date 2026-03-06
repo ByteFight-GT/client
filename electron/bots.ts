@@ -1,7 +1,7 @@
 import { app, dialog, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { tryGetConfiguredDir } from './utils';
+import { tryGetConfiguredDir } from './utils.ts';
 
 export const DEFAULT_BOT_PATH = path.join(
 	app.isPackaged ? process.resourcesPath : app.getAppPath(),
