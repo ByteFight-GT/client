@@ -3,7 +3,7 @@
 import React from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
-import { MatchMetadata } from '../../common/types';
+import { GameResult, MatchMetadata, Team_t } from '../../common/types';
 import { useMatches } from './useMatches';
 import { generateMatchId, word } from '../../common/utils';
 import { useGame } from '@/gamerenderer/useGame';
@@ -41,7 +41,12 @@ export type UseRunnerValue = {
   startMatch: (matchData: MatchMetadata) => Promise<boolean>;
 	startNextInQueue: () => void;
   terminateRunningMatch: (matchData: MatchMetadata) => void;
-  handleMatchEnd: (exitCode: number, finishTimestamp: number, TEMP_map0_outfile: string) => void;
+  handleMatchEnd: (data: {
+    exitCode: number, 
+    finishTimestamp: number, 
+    result: GameResult,
+    TEMP_map0_outfile: string
+  }) => void;
   updateRecentBots: (greenBot: string, blueBot: string) => void;
   saveLastRunnerSetup: (setup: QueueNewMatchParams) => void;
 };
@@ -249,8 +254,13 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   /** handles cleanup/takedown when a match completes for any reason (finished/termination),
    * and checks if we can move on to the next match in the queue.
    */
-  const handleMatchEnd = React.useCallback(async (exitCode: number, finishTimestamp: number, TEMP_map0_outfile: string) => {    
-    console.log(`[handleMatchEnd] handling end of match ${currentlyRunningMatch?.matchId} (exit=${exitCode} & game outfile=${TEMP_map0_outfile})`);
+  const handleMatchEnd = React.useCallback(async (data: {
+    exitCode: number, 
+    finishTimestamp: number,
+    result: GameResult,
+    TEMP_map0_outfile: string
+  }) => {
+    console.log(`[handleMatchEnd] handling end of match ${currentlyRunningMatch?.matchId} (exit=${data.exitCode} & game outfile=${data.TEMP_map0_outfile})`);
     if (!currentlyRunningMatch) {
       console.warn("[handleMatchEnd] Received match end event but no match was running?");
       return;
@@ -258,10 +268,23 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const updatedMatchData = {
       ...currentlyRunningMatch,
-      finishTimestamp,
-      resultFiles: [TEMP_map0_outfile], // only map 1 for now (TODO)
-      status: exitCode === 0? 'completed' : 'errored'
+      finishTimestamp: data.finishTimestamp,
+      resultFiles: [data.TEMP_map0_outfile], // only map 1 for now (TODO)
+      status: data.exitCode === 0? 'completed' : 'errored'
     } satisfies MatchMetadata;
+
+    // TEMP - apply results
+    if (data.result.winner === 'green') {
+      updatedMatchData.greenWins[updatedMatchData.maps[0]] = {
+        reason: data.result.reason || "unknown",
+        numRounds: data.result.numRounds || 0
+      }
+    } else if (data.result.winner === 'blue') {
+      updatedMatchData.blueWins[updatedMatchData.maps[0]] = {
+        reason: data.result.reason || "unknown",
+        numRounds: data.result.numRounds || 0
+      }
+    }
 
     const writeSuccess = await writeMatchData(updatedMatchData);
     if (writeSuccess) {
@@ -273,11 +296,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setAutoAdvance(false);
 
       toast({
-        toastTitle: `Match ${exitCode === 0? 'completed' : 'errored'}`,
-        toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${exitCode === 0? 'successfully' : 'with exit code ' + exitCode}!`
+        toastTitle: `Match ${data.exitCode === 0? 'completed' : 'errored'}`,
+        toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${data.exitCode === 0? 'successfully' : 'with exit code ' + data.exitCode}!`
       });
 
-      //setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${exitCode} ---`]);
+      //setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${data.exitCode} ---`]);
     
 			// cant start next in queue immediately since setCurrentlyRunningMatch wont update immediately BRUH
 			// we will use an effect for that

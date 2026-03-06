@@ -2,8 +2,9 @@ import { app, ipcMain } from 'electron';
 import * as child_process from 'child_process';
 import path from 'path';
 import net from 'net';
+import fs from 'fs';
 import { getCachedSettingOrDefault } from './settings.ts';
-import { type MatchMetadata } from '../common/types.ts';
+import { Team_t, type MatchMetadata } from '../common/types.ts';
 import { tryGetConfiguredDir } from './utils.ts';
 import { readMap } from './maps.ts';
 import { TcpClientManager } from './TcpClientManager.ts';
@@ -64,6 +65,32 @@ export function closePython() {
 	}
 }
 
+/** TEMPORARY - reads the output file that runner:start-match passes into python,
+ * and tries to find results data in that json ("result", "turn_count", and "reason"). 
+ * 
+ * Result: "PLAYER_1" or "PLAYER_2", which are blue and green respectively.
+ * 
+ * Or null if not found/nonexistent.
+ */
+export function TEMP_getResultsFromGameOutputFile(fp: string): {
+	winner: Team_t | null;
+	numRounds: number | null;
+	reason: string | null;
+} {
+	try {
+		const fileData = fs.readFileSync(fp, 'utf-8');
+		const jsonData = JSON.parse(fileData);
+		const result = jsonData.result;
+		if (result === "PLAYER_1") return { winner: 'blue', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
+		else if (result === "PLAYER_2") return { winner: 'green', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
+		else return { winner: null, numRounds: null, reason: null };
+	} catch (err) {
+		console.error("Error reading winner from game output file:", err);
+		return { winner: null, numRounds: null, reason: null };
+	}
+}
+
+
 export function setupRunnerHandlers() {
 	ipcMain.handle('runner:start-match', async (event, matchData: MatchMetadata) => {
 
@@ -113,6 +140,17 @@ export function setupRunnerHandlers() {
 			};
 		}
 
+		// create output directory if it doesn't exist
+		try {
+			await fs.promises.mkdir(outputDir, {recursive: true});
+		} catch (err: any) {
+			return {
+				success: false,
+				error: `Failed to create output directory: ${err.message}`
+			};
+		}
+		const TEMP_map0_outfile = path.join(outputDir, matchData.maps[0] + ".json");
+
 		// read maps
 		const mapsData: MapData[] = [];
 		for (const mapName of matchData.maps) {
@@ -147,7 +185,6 @@ export function setupRunnerHandlers() {
 		// TODO - server only handles 1 game at a time rn.
 		// pushing just first map/outfile for now, in the future we can try handling multiple
 		scriptArgs.push('--map_string', stringFromMapData(mapsData[0]));
-		const TEMP_map0_outfile = path.join(outputDir, matchData.maps[0] + ".json");
 		scriptArgs.push('--output_dir', TEMP_map0_outfile);
 
 		pythonProcess = child_process.spawn(`${pythonPath} ${LOCAL_SERVER_SCRIPT}`, [...scriptArgs], {
@@ -175,7 +212,7 @@ export function setupRunnerHandlers() {
 		});
 
 		// note: 'close' happens when stdio streams close, while 'exit' doesnt necessarily imply that
-		pythonProcess.on('close', (code) => {
+		pythonProcess.on('close', (exitCode) => {
 			const finishTimestamp = Date.now();
 
 			tcpClientManager?.disconnect();
@@ -184,15 +221,18 @@ export function setupRunnerHandlers() {
 			// it should be able to tell us if success, termination, or errored
 			// if no status, we can assume crash/unintended failure (check status code)
 			// exit code nonzero = error, no code probably means killed?
-			if (code !== 0) {
-				console.log(`[runner:start-match] Python process exited with non-zero code ${code}!`);
+			if (exitCode !== 0) {
+				console.log(`[runner:start-match] Python process exited with non-zero code ${exitCode}!`);
 			} else {
-				console.log(`[runner:start-match] Python process exited successfully with code ${code}`);
+				console.log(`[runner:start-match] Python process exited successfully with code ${exitCode}`);
 			}
+
+			const results = TEMP_getResultsFromGameOutputFile(TEMP_map0_outfile);
 			
 			event.sender.send('game-sys:process-closed', {
-				code, 
+				exitCode, 
 				finishTimestamp,
+				results,
 				TEMP_map0_outfile
 			});
 			pythonProcess = null;

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/useToast';
 import { useRunner } from '@/hooks/useRunner';
 
 import { useGame } from '@/gamerenderer/useGame';
+import { GameResult, Team_t } from '../../common/types';
 
 /**
  * Handles state/logic for ipc communication with electron.
@@ -87,9 +88,9 @@ export function useIPC() {
 
     /** process closed for whatever reason - consider the current game as "ended" */
     'game-sys:process-closed':
-    function handleProcessClosed(res: {code: number, finishTimestamp: number, TEMP_map0_outfile: string}) {
+    function handleProcessClosed(data: {exitCode: number, finishTimestamp: number, result: GameResult, TEMP_map0_outfile: string}) {
       //setDebugIPCEventLog(prev => [...prev, 'game-sys:process-closed']);
-      handleMatchEndRef.current(res.code, res.finishTimestamp, res.TEMP_map0_outfile);
+      handleMatchEndRef.current(data);
     },
 
     'game-sys:socket-error':

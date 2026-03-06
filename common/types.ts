@@ -12,6 +12,12 @@ export type MatchStatus =
 	| 'errored' // (end state) process error, probably not caused by user
 	| 'completed'; // (end state) game finished successfully
 
+export type GameResult = {
+	winner: Team_t | null; // null if draw or unknown
+	numRounds: number | null; // how many rounds the game lasted, if known
+	reason: string | null; // reason for game end, if known (e.g. "time limit exceeded", "player 1 crashed", "max rounds reached", "player 2 wins by territory control", etc.)
+}
+
 /**
  * All information about a match (which can have multiple games),
  * except for the actual game data (like gamestates, moves, etc.).
