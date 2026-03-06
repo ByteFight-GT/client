@@ -41,21 +41,21 @@ export function useIPC() {
     /** mostly user-generated, like print statements */
     'game-usr:stdout': 
     function handleStdOut(chunk: string) {
-      setDebugIPCEventLog(prev => [...prev, 'game-usr:stdout']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-usr:stdout']);
       stdOutChunksRef.current.push(chunk);
     },
 
     /** in a perfect world, also user-only data */
     'game-usr:stderr': 
     function handleStdErr(chunk: string) {
-      setDebugIPCEventLog(prev => [...prev, 'game-usr:stderr']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-usr:stderr']);
       stdErrChunksRef.current.push(chunk);
     },
 
     /** game data from the runner, like moves and events */
     'game-sys:data': 
     function handleSystemData(data: any) {
-      setDebugIPCEventLog(prev => [...prev, 'game-sys:data']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-sys:data']);
       setTEMP_gameDataPacketsReceived(prev => prev + 1);
 
       switch (data.type) {
@@ -81,32 +81,32 @@ export function useIPC() {
 
     'game-sys:process-error':
     function handleProcessError(err: any) {
-      setDebugIPCEventLog(prev => [...prev, 'game-sys:process-error']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-sys:process-error']);
       toastError("Python process error", err);
     },
 
     /** process closed for whatever reason - consider the current game as "ended" */
     'game-sys:process-closed':
     function handleProcessClosed(res: {code: number, finishTimestamp: number, TEMP_map0_outfile: string}) {
-      setDebugIPCEventLog(prev => [...prev, 'game-sys:process-closed']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-sys:process-closed']);
       handleMatchEndRef.current(res.code, res.finishTimestamp, res.TEMP_map0_outfile);
     },
 
     'game-sys:socket-error':
     function handleSocketError(err: any) {
-      setDebugIPCEventLog(prev => [...prev, 'game-sys:socket-error']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-sys:socket-error']);
     },
 
     /** socket closed on server side (most likely python exiting) */
     'game-sys:socket-close':
     function handleSocketClose() {
-      setDebugIPCEventLog(prev => [...prev, 'game-sys:socket-close']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-sys:socket-close']);
     },
 
     /** socket fully closed */
     'game-sys:socket-end':
     function handleSocketEnd() {
-      setDebugIPCEventLog(prev => [...prev, 'game-sys:socket-end']);
+      //setDebugIPCEventLog(prev => [...prev, 'game-sys:socket-end']);
     }
 
   }), []);

@@ -101,7 +101,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return false;
     }
 
-    setDebugIPCEventLog(prev => [...prev, `--- starting match ${matchData.matchId} ---`]);
+    //setDebugIPCEventLog(prev => [...prev, `--- starting match ${matchData.matchId} ---`]);
 
     try {
       const res = await window.electron.invoke('runner:start-match', matchData);
@@ -277,7 +277,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${exitCode === 0? 'successfully' : 'with exit code ' + exitCode}!`
       });
 
-      setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${exitCode} ---`]);
+      //setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${exitCode} ---`]);
     
 			// cant start next in queue immediately since setCurrentlyRunningMatch wont update immediately BRUH
 			// we will use an effect for that
