@@ -37,15 +37,18 @@ export const GameNavigator = () => {
 		setTEMP_maxGameFrame(newMaxFrame);
 	}, [TEMP_gameDataPacketsReceived]);
 
+	const maxFrameString = Math.max(0, TEMP_maxGameFrame).toString();
+
+
 	return (
 		<div className="game-navigator-container">
 			<div className='flex gap-2 items-center gamenav-area-1 w-fit'>
 				<span className='text-xl'>
 					<span className='font-bold tabular-nums'>
-						{(renderedGameFrame).toString()}
+						{(renderedGameFrame).toString().padStart(maxFrameString.length, '0') /* TEMP: pad this with 0s so it doesn't jump around when the number of digits changes */}
 					</span>
 					<span className='text-secondary-foreground'>
-						/{Math.max(0, TEMP_maxGameFrame).toString() /* (TEMP) this is so stupid lol */}
+						/{maxFrameString /* (TEMP) this is so stupid lol */}
 					</span>
 				</span>
 
