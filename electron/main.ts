@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, net, protocol } from 'electron';
 import path from 'path';
 import { promises as fs } from 'fs';
 import * as remoteMain from '@electron/remote/main/index.js';
@@ -8,13 +8,25 @@ import { setupAllHandlers } from './setup.ts';
 import { closePython, closeTCPClient } from './runner.ts';
 
 // no __dir name in modules... sad
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { initSettings } from './settings.ts';
 import { initMaps } from './maps.ts';
 import { initBots } from './bots.ts';
 import { initMatches } from './matches.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+protocol.registerSchemesAsPrivileged([
+    {
+        scheme: 'app',
+        privileges: {
+            standard: true,
+            secure: true,
+            supportFetchAPI: true,
+            stream: true,
+        },
+    },
+]);
 
 let win;
 let store;
@@ -42,6 +54,34 @@ async function initMetadata() {
     }
 }
 
+function registerAppProtocol() {
+    protocol.handle('app', (request) => {
+        const url = new URL(request.url);
+        let relativePath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+
+        if (relativePath.endsWith('/')) {
+            relativePath = relativePath.slice(0, -1);
+        }
+        if (!relativePath) {
+            relativePath = 'index.html';
+        }
+        if (!path.extname(relativePath)) {
+            relativePath += '.html';
+        }
+
+        const appPath = path.normalize(app.getAppPath());
+        const resolvedPath = path.normalize(path.join(appPath, relativePath));
+        if (
+            resolvedPath !== appPath &&
+            !resolvedPath.startsWith(appPath + path.sep)
+        ) {
+            return new Response('Not Found', { status: 404 });
+        }
+
+        return net.fetch(pathToFileURL(resolvedPath).toString());
+    });
+}
+
 function createWindow() {
     win = new BrowserWindow({
         width: 1200,
@@ -60,7 +100,7 @@ function createWindow() {
     if (!app.isPackaged) {
         win.loadURL('http://localhost:3000')  // URL served by your dev server (like React's dev server)
     } else {
-        win.loadURL(`file://${path.join(__dirname, 'index.html')}`);
+        win.loadURL('app://-/');
     }
 
     if (!app.isPackaged) {
@@ -69,6 +109,8 @@ function createWindow() {
 }
 
 app.on('ready', async () => {
+    registerAppProtocol();
+
     // Initialize store
     const Store = (await import('electron-store')).default;
     store = new Store();
