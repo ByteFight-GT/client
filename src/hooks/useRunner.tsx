@@ -22,6 +22,7 @@ type QueueNewMatchParams = {
 
 export type UseRunnerValue = {
   currentlyRunningMatch: MatchMetadata | null;
+  TEMP_currentlyViewingMatch: MatchMetadata | null; // TEMP - for game info page, should be the match whose info we're currently viewing, but for now just set to currentlyRunningMatch
   queuedMatches: MatchMetadata[];
   stdOutChunksRef: React.RefObject<string[]>;
   stdErrChunksRef: React.RefObject<string[]>;
@@ -33,6 +34,7 @@ export type UseRunnerValue = {
   lastRunnerSetup: QueueNewMatchParams | null;
   debugIPCEventLog: string[]; // for debugging - logs the ipc events received from electron
   setTEMP_gameDataPacketsReceived: React.Dispatch<React.SetStateAction<number>>;
+  setTEMP_currentlyViewingMatch: React.Dispatch<React.SetStateAction<MatchMetadata | null>>;
   setDebugIPCEventLog: React.Dispatch<React.SetStateAction<string[]>>;
   queueNewMatch: (params: QueueNewMatchParams) => void;
   dequeueMatch: (index: number) => void;
@@ -49,6 +51,7 @@ export type UseRunnerValue = {
   }) => void;
   updateRecentBots: (greenBot: string, blueBot: string) => void;
   saveLastRunnerSetup: (setup: QueueNewMatchParams) => void;
+  loadGameIntoPlayer: (matchData: MatchMetadata, mapName: string) => Promise<boolean>;
 };
 
 const RunnerContext = React.createContext<UseRunnerValue | undefined>(undefined);
@@ -60,7 +63,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const {toast, toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
   const {writeMatchData, addMatchToCompletedHistory} = useMatches();
-  const {reset, setPlaybackSpeed, setAutoAdvance} = useGame();
+  const {reset, setAutoAdvance} = useGame();
  
   const [currentlyRunningMatch, setCurrentlyRunningMatch] = React.useState<MatchMetadata | null>(null);
 
@@ -72,6 +75,13 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const stdOutChunksRef = React.useRef<string[]>([]);
   const stdErrChunksRef = React.useRef<string[]>([]);
+
+  /**
+   * TEMP - this for now is used for keeping track of any completed match that the user has loaded into
+   * the game renderer. Used for the RunningMatchCard component
+   */
+  const [TEMP_currentlyViewingMatch, setTEMP_currentlyViewingMatch] = React.useState<MatchMetadata | null>(null);
+  console.log(`[RunnerProvider] currentlyRunningMatch:`, currentlyRunningMatch, `TEMP_currentlyViewingMatch:`, TEMP_currentlyViewingMatch);
 
   // maybe TEMP: used for causing things like game info and game nav to rerender upon new game data
   const [TEMP_gameDataPacketsReceived, setTEMP_gameDataPacketsReceived] = React.useState(0);
@@ -133,6 +143,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 				});
 
         reset(res.TEMP_mapData0, EMPTY_GAME_PGN); // reset game state to empty for the new game
+        setTEMP_currentlyViewingMatch(null);
         setAutoAdvance(false); // TEMP: we want autoadvance during games, but useGame currently handles it differently SPECIFICALLY for live games 
         setTEMP_gameDataPacketsReceived(0);
 
@@ -338,6 +349,29 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLastRunnerSetup(setup);
   }, []);
 
+  const loadGameIntoPlayer = React.useCallback(async (matchData: MatchMetadata, mapName: string) => {
+    if (loadings.loadGameIntoPlayer) return false;
+    toggleLoading("loadGameIntoPlayer", true);
+
+    try {
+      const res = await window.electron.invoke('matches:readgame', matchData, mapName);
+      if (res.success) {
+        const {mapData, gameData} = res;
+        setTEMP_currentlyViewingMatch(matchData);
+        reset(mapData, gameData);
+        return true;
+      } else {
+        toastError("Failed to load game replay", res.error);
+        return false;
+      }
+    } catch (err: any) {
+      toastError("Failed to load game replay", err);
+      return false;
+    } finally {
+      toggleLoading("loadGameIntoPlayer", false);
+    }
+  }, [toastError, reset]);
+
 	// EFFECTS
 
 	// start next in queue when current match is gone (is null)
@@ -354,10 +388,12 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     stdOutChunksRef,
     stdErrChunksRef,
     TEMP_gameDataPacketsReceived,
+    TEMP_currentlyViewingMatch,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,
     setTEMP_gameDataPacketsReceived,
+    setTEMP_currentlyViewingMatch,
     queueNewMatch,
     dequeueMatch,
     moveWithinQueue,
@@ -369,10 +405,12 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     updateRecentBots,
     saveLastRunnerSetup,
     setDebugIPCEventLog,
+    loadGameIntoPlayer,
   } satisfies UseRunnerValue), [
     currentlyRunningMatch,
     queuedMatches,
     TEMP_gameDataPacketsReceived,
+    TEMP_currentlyViewingMatch,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,
@@ -387,6 +425,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     updateRecentBots,
     saveLastRunnerSetup,
     setDebugIPCEventLog,
+    loadGameIntoPlayer,
   ]);
 
   return (
