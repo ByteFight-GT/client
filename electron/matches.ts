@@ -1,8 +1,9 @@
-import { app, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { type MatchMetadata } from '../common/types.ts';
+import { ipcMain } from 'electron';
 import { tryGetConfiguredDir } from './utils.ts';
+import { readMap } from './maps.ts';
+import type { MapData, MatchMetadata, GamePGN } from '../common/types.ts';
 
 /**
  * In-memory cache of files in the matches directory.
@@ -143,5 +144,29 @@ export function setupMatchesHandlers() {
     MATCHES_INDEX.length = writeIndex; // truncate the rest
 
 		return { success: deleted.size === fileNames.length, deleted: Array.from(deleted) };
+	});
+
+	/** reads a single game (map) from a match, returning mapData and gamePGN */
+	ipcMain.handle('matches:readgame', async(event, matchData: MatchMetadata, mapName: string) => {
+		if (!matchData.outputDir) {
+			return { success: false, error: `Can't find game file for ${mapName} because match ${matchData.matchId} does not specify its games directory!` };
+		}
+
+		// read map data
+		const readMapRes = await readMap(mapName);
+		if (!readMapRes.success) {
+			return readMapRes;
+		}
+		const mapData = JSON.parse(readMapRes.mapData) as MapData;
+
+		const gamePath = path.join(matchData.outputDir, `${mapName}.json`);
+		try {
+			const data = await fs.promises.readFile(gamePath, { encoding: 'utf8' });
+			const gameData = JSON.parse(data) as GamePGN;
+			return { success: true, gameData, mapData };
+		} catch (err: any) {
+			console.error(`[matches:readgame] Failed to read game data for match ${matchData.matchId} map ${mapName}: ${err.message}`);
+			return { success: false, error: err.message };
+		}
 	});
 }

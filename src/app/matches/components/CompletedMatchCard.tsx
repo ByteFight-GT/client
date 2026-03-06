@@ -7,6 +7,12 @@ import { Button } from '@/components';
 import Image from 'next/image';
 import { useCollapse } from 'react-collapsed';
 import { EyeOffIcon, FolderIcon, SwordsIcon } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
+import { useRunner } from '@/hooks/useRunner';
+import { useLoadings } from '@/hooks/useLoadings';
+import { useMatches } from '@/hooks/useMatches';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { redirect } from 'next/navigation';
 
 type CompletedMatchCardProps = {
   matchData: MatchMetadata;
@@ -17,6 +23,12 @@ type CompletedMatchCardProps = {
  * Please make sure `matchData` is actually from the completed matches list!!!
  */
 export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
+
+  const {toastError} = useToast();
+  const {loadings} = useLoadings();
+  const {currentlyRunningMatch} = useRunner();
+  const {loadGameIntoPlayer} = useMatches();
+
   const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(fmtTime(Date.now() - (props.matchData.finishTimestamp ?? 0)));
 
   React.useEffect(() => {
@@ -28,6 +40,33 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
   }, [props.matchData.finishTimestamp]);
 
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse({defaultExpanded: true, duration: 100});
+
+
+  const handleOpenGameReplay = React.useCallback(async () => {
+    if (!props.matchData.outputDir) {
+      toastError(
+        "No replay found",
+        "Couldn't find replay directory: this match appears to not have a replay directory attached to it."
+      );
+      return;
+    }
+
+    if (currentlyRunningMatch) {
+      toastError(
+        "Game currently running",
+        "You currently have a match running, please stop it or wait for it to finish before opening a replay."
+      );
+      return;
+    }
+
+    // TEMP - only have 1 map per match rn so just use [0]
+    const success = await loadGameIntoPlayer(props.matchData, props.matchData.maps[0]);
+    if (success) {
+      redirect("/player");
+    } // else: loadGameIntoPlayer will handle error display
+
+  }, [loadGameIntoPlayer, currentlyRunningMatch]);
+
 
   if (props.matchData.finishTimestamp === null || props.matchData.startTimestamp === null) {
     console.warn(`Tried to render CompletedMatchCard w/ match id ${props.matchData.matchId} that has no finishTimestamp or startTimestamp! It wont be shown cuz these are required!`);
@@ -83,9 +122,12 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
           }
 
           return (
-            <div
+            <button
             key={map} 
+            disabled={loadings.loadGameIntoPlayer}
+            onClick={handleOpenGameReplay}
             className={`completed-match-card-map ${winnerStr}`}>
+              { loadings.loadGameIntoPlayer && <LoadingSpinner /> }
               <span className='font-bold text-foreground'>{map}</span>
               &middot;
               <span>{winnerStr} won</span>
@@ -93,7 +135,7 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
               <span>{word(winObj.numRounds, "round", "rounds")}</span>
               &middot;
               <span>by {winObj.reason}</span>
-            </div>
+            </button>
           );
         })}
 

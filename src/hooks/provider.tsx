@@ -22,13 +22,13 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       <SettingsProvider>
         <BotsProvider>
           <MapsProvider>
-            <MatchesProvider>
-              <GameProvider>
+            <GameProvider>
+              <MatchesProvider>
                 <RunnerProvider>
                   {children}
                 </RunnerProvider>
-              </GameProvider>
-            </MatchesProvider>
+              </MatchesProvider>
+            </GameProvider>
           </MapsProvider>
         </BotsProvider>
       </SettingsProvider>
