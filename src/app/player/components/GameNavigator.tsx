@@ -75,7 +75,8 @@ export const GameNavigator = () => {
 			<div className={`gamenav-area-2 ${TEMP_maxGameFrame <= 0 && 'pointer-events-none opacity-50'}`}>
 				<Range
 				disabled={TEMP_maxGameFrame <= 0} // < and ^: TODO: make this cleaner lol
-				values={renderedGameFrame !== undefined ? [renderedGameFrame] : [0]}
+				// TEMP: when navigating back to /player, max starts off at 0. it should update when the effect runs
+				values={renderedGameFrame !== undefined ? [Math.min(renderedGameFrame, TEMP_maxGameFrame)] : [0]}
 				step={1}
 				min={0}
 				max={TEMP_maxGameFrame <= 0? 1 : TEMP_maxGameFrame} // TODO. setting to 1 as min because it errors if min=max. Should be disabled tho so it should be fine
