@@ -81,7 +81,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
    * the game renderer. Used for the RunningMatchCard component
    */
   const [TEMP_currentlyViewingMatch, setTEMP_currentlyViewingMatch] = React.useState<MatchMetadata | null>(null);
-  console.log(`[RunnerProvider] currentlyRunningMatch:`, currentlyRunningMatch, `TEMP_currentlyViewingMatch:`, TEMP_currentlyViewingMatch);
 
   // maybe TEMP: used for causing things like game info and game nav to rerender upon new game data
   const [TEMP_gameDataPacketsReceived, setTEMP_gameDataPacketsReceived] = React.useState(0);
@@ -301,7 +300,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (writeSuccess) {
       addMatchToCompletedHistory(updatedMatchData);
 
-      // cleanup state
+      // "demote" the match to a viewing match
+      setTEMP_currentlyViewingMatch(currentlyRunningMatch);
       setCurrentlyRunningMatch(null);
 
       setAutoAdvance(false);
