@@ -1,0 +1,45 @@
+class GameConstants:
+	"""
+	Static constants for the entire game. Do not modify.
+	"""
+	
+	MAX_ROUNDS: int = 1000	
+	MAX_TURNS: int = 2000
+	BASE_MAX_STAMINA: int = 100	
+	HILL_MAX_STAMINA_BONUS: int = 40	
+	STAMINA_POWERUP_AMOUNT: int = 35	
+	
+	BASE_STAMINA_REGEN: int = 5	
+	ADJACENT_REGEN_BONUS: int = 2	
+	ADJACENCY_RADIUS: int = 2	
+	GLOBAL_PAINT_REGEN_RATIO: int = 8
+	GLOBAL_PAINT_REGEN_CAP = 50
+	# BEACON_REGEN_BONUS: int = 0
+	
+	EXTRA_MOVE_COST: int = 10
+	ERASE_STEP_EXTRA_COST: int = 50
+	BEACON_COST: int = 0
+	BEACON_REQUIREMENT_Q: int = 7
+	BEACON_WINDOW_SIZE_P: int = 3
+	BEACON_CONSUME_LEFTOVER_PAINT: int = 1
+
+	MAX_PAINT_VALUE: int = 4
+	PAINT_STAMINA_COST: int = 15
+	PAINT_RANGE: int = 1
+	HILL_CONTROL_THRESHOLD: float = 0.5
+	BID_MAX: int = 100
+	CONSTRUCT_TIME_LIMIT: float = 10.0
+	BID_TIME_LIMIT: float = 20.0
+	PLAY_TIME_LIMIT: float = 180.0
+	COMMENTATE_TIME_LIMIT: float = 1.0
+
+	TIME_TIEBREAK_THRESH = 5
+	DOMINATION_WIN_THRESHOLD = .75
+
+	ALLOW_DIAGONAL_MOVES: bool = False
+
+	# endgame / global regen decay settings
+	GLOBAL_DECAY_TURN_THRESHOLD: int = 1000
+	GLOBAL_DECAY_INTERVAL: int = 100
+	GLOBAL_DECAY_REGEN_PENALTY: int = 1  # amount subtracted from base regen each interval
+
