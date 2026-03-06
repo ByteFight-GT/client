@@ -122,13 +122,13 @@ export type MoveType_t = ValueType<typeof MoveType>;
 export type GameTurn = 
 	"NONE" 
 	| {
-		name: GameActionName_t;
+		name: "Move";
 		direction: Dir_t;
 		move_type: MoveType_t;
 		place_beacon: boolean;
 		beacon_target: [number, number];
 	}[] | {
-		name: GameActionName_t;
+		name: "Paint";
 		location: MapLoc;
 	}[];
 
