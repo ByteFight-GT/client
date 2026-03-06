@@ -25,14 +25,14 @@ export type UseRunnerValue = {
   queuedMatches: MatchMetadata[];
   stdOutChunksRef: React.RefObject<string[]>;
   stdErrChunksRef: React.RefObject<string[]>;
-  latestGameDiff: any; // TODO: type
+  TEMP_gameDataPacketsReceived: number; // TEMP for causing game info and game nav to rerender on new game data
   recentBots: {
     green: string[];
     blue: string[];
   }
   lastRunnerSetup: QueueNewMatchParams | null;
   debugIPCEventLog: string[]; // for debugging - logs the ipc events received from electron
-  setLatestGameDiff: React.Dispatch<React.SetStateAction<any>>;
+  setTEMP_gameDataPacketsReceived: React.Dispatch<React.SetStateAction<number>>;
   setDebugIPCEventLog: React.Dispatch<React.SetStateAction<string[]>>;
   queueNewMatch: (params: QueueNewMatchParams) => void;
   dequeueMatch: (index: number) => void;
@@ -55,7 +55,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const {toast, toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
   const {writeMatchData, addMatchToCompletedHistory} = useMatches();
-  const {reset, setAutoAdvance} = useGame();
+  const {reset, setPlaybackSpeed, setAutoAdvance} = useGame();
  
   const [currentlyRunningMatch, setCurrentlyRunningMatch] = React.useState<MatchMetadata | null>(null);
 
@@ -68,8 +68,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const stdOutChunksRef = React.useRef<string[]>([]);
   const stdErrChunksRef = React.useRef<string[]>([]);
 
-  /** the most recently obtained diff (move/board update) from the engine */
-  const [latestGameDiff, setLatestGameDiff] = React.useState<any>(null); // TODO: type
+  // maybe TEMP: used for causing things like game info and game nav to rerender upon new game data
+  const [TEMP_gameDataPacketsReceived, setTEMP_gameDataPacketsReceived] = React.useState(0);
 
   /** recent bots: stores the last 2 unique bots used */
   const [recentBots, setRecentBots] = React.useState<UseRunnerValue['recentBots']>({
@@ -129,6 +129,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         reset(res.TEMP_mapData0, EMPTY_GAME_PGN); // reset game state to empty for the new game
         setAutoAdvance(true);
+        setPlaybackSpeed(0); // set to render as fast as possible by default since it's a live game
 
         return true;
 
@@ -268,7 +269,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       // cleanup state
       setCurrentlyRunningMatch(null);
-      setLatestGameDiff(null);
+      setTEMP_gameDataPacketsReceived(0);
 
       setAutoAdvance(false);
 
@@ -330,11 +331,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     queuedMatches,
     stdOutChunksRef,
     stdErrChunksRef,
-    latestGameDiff,
+    TEMP_gameDataPacketsReceived,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,
-    setLatestGameDiff,
+    setTEMP_gameDataPacketsReceived,
     queueNewMatch,
     dequeueMatch,
     moveWithinQueue,
@@ -349,7 +350,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   } satisfies UseRunnerValue), [
     currentlyRunningMatch,
     queuedMatches,
-    latestGameDiff,
+    TEMP_gameDataPacketsReceived,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,

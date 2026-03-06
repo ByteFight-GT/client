@@ -19,7 +19,7 @@ export function useIPC() {
     stdOutChunksRef,
     stdErrChunksRef,
     setDebugIPCEventLog, 
-    setLatestGameDiff,
+    setTEMP_gameDataPacketsReceived,
     handleMatchEnd,
   } = useRunner();
 
@@ -56,18 +56,19 @@ export function useIPC() {
     'game-sys:data': 
     function handleSystemData(data: any) {
       setDebugIPCEventLog(prev => [...prev, 'game-sys:data']);
-      setLatestGameDiff(data);
+      setTEMP_gameDataPacketsReceived(prev => prev + 1);
 
       switch (data.type) {
 
         // TODO - clean up this mess on the engine
 
         case 'init_game': {
-          updateGamePGN(data.data);
+          //updateGamePGN(data.data);
         } break;
 
         case 'update': {
           updateGamePGN(data);
+          setTEMP_gameDataPacketsReceived(prev => prev + 1);
         } break;
 
         case 'game_complete': {
