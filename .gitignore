@@ -20,6 +20,8 @@
 # production
 /build
 /dist
+/engine
+!engine/placeholder.txt
 
 # misc
 .DS_Store
