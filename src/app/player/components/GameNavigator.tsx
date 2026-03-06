@@ -63,7 +63,7 @@ export const GameNavigator = () => {
 				values={renderedGameFrame !== undefined ? [renderedGameFrame] : [0]}
 				step={1}
 				min={0}
-				max={MAX_ROUNDS_TEMP <= 0? 1 : MAX_ROUNDS_TEMP - 1} // TODO. setting to 1 as min because it errors if min=max. Should be disabled tho so it should be fine
+				max={MAX_ROUNDS_TEMP <= 0? 1 : MAX_ROUNDS_TEMP} // TODO. setting to 1 as min because it errors if min=max. Should be disabled tho so it should be fine
 				onChange={(values) => setRenderedGameFrame(values[0])}
 				renderTrack={RangeTrack}
 				renderThumb={RangeThumb} />
