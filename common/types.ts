@@ -63,7 +63,7 @@ export const TileType = {
 	GREEN_SPAWN: 'GREEN_SPAWN',
 } as const;
 
-export type MapLoc = {r: number; c: number};
+export type MapLoc = [number, number];
 
 export const Symmetry = {
 	Horizontal: 'Horizontal',
@@ -126,7 +126,7 @@ export type GameTurn =
 		direction: Dir_t;
 		move_type: MoveType_t;
 		place_beacon: boolean;
-		beacon_target: [number, number];
+		beacon_target: MapLoc;
 	}[] | {
 		name: "Paint";
 		location: MapLoc;
@@ -187,13 +187,13 @@ export type GamePGN = {
 	cpu: string; // cpu info of how the game was run
 }
 
-/** the type that the python server sends to us each round. Used to update GamePGNs! */
+/** Game diff data coming directly from the python server, used to update GamePGNs */
 export type GamePGNDiff = {
 	p1_time_left: number;
 	p2_time_left: number;
 
-	p1_loc: [number, number]; // rc
-	p2_loc: [number, number]; // rc
+	p1_loc: MapLoc;
+	p2_loc: MapLoc;
 
 	p1_stamina: number;
 	p2_stamina: number;
