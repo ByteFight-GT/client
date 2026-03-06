@@ -11,6 +11,13 @@
 	border-width: 1px;
 	border-style: solid;
 }
+.completed-match-card.Blue {
+	border-left: 2px solid hsl(var(--team-blue-color));
+}
+.completed-match-card.Green {
+	border-right: 2px solid hsl(var(--team-green-color));
+}
+
 .completed-match-card-header {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

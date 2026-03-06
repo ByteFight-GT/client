@@ -34,8 +34,17 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
     return null;
   }
 
+  const winnerClass = 
+    Object.entries(props.matchData.blueWins).length > Object.entries(props.matchData.greenWins).length? 
+      "Blue"
+    : Object.entries(props.matchData.greenWins).length > Object.entries(props.matchData.blueWins).length?
+      "Green"
+    : // else:
+      "Undecided";
+
   return (
-    <div className="completed-match-card">
+    <div className={`completed-match-card ${winnerClass}`}>
+
 
       <div className="completed-match-card-header" {...getToggleProps()}>
         <h3 className='match-card-blue-header flex gap-4 items-center' title={props.matchData.teamBlue}>
