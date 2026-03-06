@@ -81,6 +81,7 @@
 	align-items: center;
 	justify-content: center;
 	background-color: hsl(var(--background));
+	overflow: hidden;
 }
 
 
@@ -276,6 +277,7 @@
 @media (max-width: 1024px) {
 	.game-navigator-container {
 		display: grid !important;
+		width: fit-content !important;
 		grid-template-areas: 
 			"gamenav-area-2 gamenav-area-2"
 			"gamenav-area-1 gamenav-area-3" !important;
