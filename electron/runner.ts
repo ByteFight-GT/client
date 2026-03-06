@@ -12,7 +12,7 @@ import { stringFromMapData } from '../common/mapconvert.ts';
 import { type MapData } from '../common/types.ts';
 
 export const ENGINE_PATH = path.join(
-	app.getAppPath(),
+	app.isPackaged ? process.resourcesPath : app.getAppPath(),
 	"engine",
 );
 
@@ -186,12 +186,42 @@ export function setupRunnerHandlers() {
 		// pushing just first map/outfile for now, in the future we can try handling multiple
 		scriptArgs.push('--map_string', stringFromMapData(mapsData[0]));
 		scriptArgs.push('--output_dir', TEMP_map0_outfile);
+		const localServerScriptPath = path.join(ENGINE_PATH, LOCAL_SERVER_SCRIPT);
+
+		let engineStats: fs.Stats;
+		try {
+			engineStats = fs.statSync(ENGINE_PATH);
+		} catch {
+			return {
+				success: false,
+				error: `Game engine directory not found at: ${ENGINE_PATH}. Try reinstalling the client.`
+			};
+		}
+		if (!engineStats.isDirectory()) {
+			return {
+				success: false,
+				error: `Game engine path is not a directory: ${ENGINE_PATH}`
+			};
+		}
+		if (!fs.existsSync(localServerScriptPath)) {
+			return {
+				success: false,
+				error: `Engine server script not found at: ${localServerScriptPath}. Try reinstalling the client.`
+			};
+		}
 
 		// Run python directly (without shell) so argument values with spaces stay intact.
-		pythonProcess = child_process.spawn(pythonPath, [LOCAL_SERVER_SCRIPT, ...scriptArgs], {
-			cwd: ENGINE_PATH,
-			shell: false
-		});
+		try {
+			pythonProcess = child_process.spawn(pythonPath, [localServerScriptPath, ...scriptArgs], {
+				cwd: ENGINE_PATH,
+				shell: false
+			});
+		} catch (err: any) {
+			return {
+				success: false,
+				error: `Failed to start Python engine: ${err.message}`
+			};
+		}
 		const startTimestamp = Date.now();
 
 		console.log(`[runner:start-match]: spawned process w/ pid ${pythonProcess.pid}`);
