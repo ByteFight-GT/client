@@ -21,15 +21,25 @@ export const RunningMatchCard = () => {
   }, [currentlyRunningMatch, TEMP_currentlyViewingMatch]);
 
   // stored in state so we can update every min
-  const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(fmtTime(matchToShow?.queuedTimestamp || Date.now()));
+  const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(
+    matchToShow?.startTimestamp?
+      fmtTime(matchToShow.startTimestamp) 
+    : 
+      "-"
+  );
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setTimeElapsedDisplay(fmtTime(Date.now() - (matchToShow?.queuedTimestamp ?? 0)));
+      setTimeElapsedDisplay(
+        matchToShow?.startTimestamp?
+          fmtTime(Date.now() - matchToShow.startTimestamp) 
+        : 
+          "-"
+      );
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [matchToShow?.queuedTimestamp]);
+  }, [matchToShow?.startTimestamp]);
   
   if (!matchToShow) {
     return (
@@ -67,10 +77,12 @@ export const RunningMatchCard = () => {
       <hr />
 
       <div>
-        <p className='text-sm text-muted-foreground' title={new Date(matchToShow.queuedTimestamp).toLocaleString()}>
-          Queued&nbsp;
-          <span className='text-secondary-foreground'>{timeElapsedDisplay} ago</span>
-        </p>
+        {matchToShow.startTimestamp !== null &&
+          <p className='text-sm text-muted-foreground' title={new Date(matchToShow.startTimestamp).toLocaleString()}>
+            Started&nbsp;
+            <span className='text-secondary-foreground'>{timeElapsedDisplay} ago</span>
+          </p>
+        }
         <p className='text-sm text-muted-foreground'>
           Match ID&nbsp;
           <span className='text-secondary-foreground'>{matchToShow.matchId}</span>
