@@ -187,7 +187,7 @@ export function setupRunnerHandlers() {
 		scriptArgs.push('--map_string', stringFromMapData(mapsData[0]));
 		scriptArgs.push('--output_dir', TEMP_map0_outfile);
 
-		pythonProcess = child_process.spawn(`${pythonPath} ${LOCAL_SERVER_SCRIPT}`, [...scriptArgs], {
+		pythonProcess = child_process.spawn(`"${pythonPath}" "${LOCAL_SERVER_SCRIPT}"`, [...scriptArgs], {
 			cwd: ENGINE_PATH,
 			shell: true
 		});
