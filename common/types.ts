@@ -33,7 +33,7 @@ export type MatchMetadata = {
 
 	maps: string[]; // names of maps played (or to play)
 
-	resultFiles: string[]; // filepaths to pgns for each game. SAME ORDER AS maps array!
+	outputDir: string | null; // folder where game pgns are stored (each one is <map name>.json)
 
 	teamGreen: string; // green bot name
 	teamBlue: string; // blue bot name

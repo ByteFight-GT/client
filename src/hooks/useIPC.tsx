@@ -92,7 +92,7 @@ export function useIPC() {
       exitCode: number, 
       finishTimestamp: number, 
       result: GameResult, 
-      TEMP_map0_outfile: string
+      outputDir: string
     }) {
       //setDebugIPCEventLog(prev => [...prev, 'game-sys:process-closed']);
       handleMatchEndRef.current(data);

@@ -45,7 +45,7 @@ export type UseRunnerValue = {
     exitCode: number, 
     finishTimestamp: number, 
     result: GameResult,
-    TEMP_map0_outfile: string
+    outputDir: string
   }) => void;
   updateRecentBots: (greenBot: string, blueBot: string) => void;
   saveLastRunnerSetup: (setup: QueueNewMatchParams) => void;
@@ -167,7 +167,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       finishTimestamp: null,
       notes: "",
       maps: params.selectedMaps,
-      resultFiles: [],
+      outputDir: null,
       teamGreen: params.selectedGreenTeam,
       teamBlue: params.selectedBlueTeam,
       greenWins: {},
@@ -258,7 +258,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     exitCode: number, 
     finishTimestamp: number,
     result: GameResult,
-    TEMP_map0_outfile: string
+    outputDir: string
   }) => {
     console.log(`[handleMatchEnd] handling end of match ${currentlyRunningMatch?.matchId}, data=`, data);
     if (!currentlyRunningMatch) {
@@ -269,7 +269,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const updatedMatchData = {
       ...currentlyRunningMatch,
       finishTimestamp: data.finishTimestamp,
-      resultFiles: [data.TEMP_map0_outfile], // only map 1 for now (TODO)
+      outputDir: data.outputDir,
       status: data.exitCode === 0? 'completed' : 'errored'
     } satisfies MatchMetadata;
 

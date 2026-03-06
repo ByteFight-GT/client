@@ -233,7 +233,7 @@ export function setupRunnerHandlers() {
 				exitCode, 
 				finishTimestamp,
 				result,
-				TEMP_map0_outfile
+				outputDir,
 			});
 			pythonProcess = null;
 		});
