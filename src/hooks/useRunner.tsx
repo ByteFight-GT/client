@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
 import { MatchMetadata } from '../../common/types';
 import { useMatches } from './useMatches';
-import { generateMatchId } from '../../common/utils';
+import { generateMatchId, word } from '../../common/utils';
 import { useGame } from '@/gamerenderer/useGame';
 
 // TODO - clean this up somehow 
@@ -124,10 +124,10 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 					toastTitle: "Match started",
 					toastDescription: `\
 						Started match between ${matchData.teamGreen} and ${matchData.teamBlue}\
-						on ${matchData.maps.length} map(s)!`
+						on ${word(matchData.maps.length, 'map', 'maps')}!`
 				});
 
-        reset(res.mapData, EMPTY_GAME_PGN); // reset game state to empty for the new game
+        reset(res.TEMP_mapData0, EMPTY_GAME_PGN); // reset game state to empty for the new game
         setAutoAdvance(true);
 
         return true;
@@ -176,7 +176,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setQueuedMatches(prev => [...prev, matchData]);
       toast({
         toastTitle: "Match queued",
-        toastDescription: `Queued ${matchData.teamGreen} v. ${matchData.teamBlue} on ${matchData.maps.length} map(s) at position ${queuedMatches.length + 1}. It will be started automatically if you leave the client open.`
+        toastDescription: `Queued ${matchData.teamGreen} v. ${matchData.teamBlue} on ${word(matchData.maps.length, 'map', 'maps')} at position ${queuedMatches.length + 1}. It will be started automatically if you leave the client open.`
       });
     }
   }, [currentlyRunningMatch, queuedMatches, startMatch]);

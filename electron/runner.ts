@@ -7,6 +7,8 @@ import { type MatchMetadata } from '../common/types.ts';
 import { tryGetConfiguredDir } from './utils.ts';
 import { readMap } from './maps.ts';
 import { TcpClientManager } from './TcpClientManager.ts';
+import { stringFromMapData } from '../common/mapconvert.ts';
+import { type MapData } from '../common/types.ts';
 
 export const ENGINE_PATH = path.join(
 	app.getAppPath(),
@@ -112,11 +114,11 @@ export function setupRunnerHandlers() {
 		}
 
 		// read maps
-		const mapsData: string[] = [];
+		const mapsData: MapData[] = [];
 		for (const mapName of matchData.maps) {
 			const mapReadRes = await readMap(mapName);
 			if (mapReadRes.success) {
-				mapsData.push(mapReadRes.mapData);
+				mapsData.push(JSON.parse(mapReadRes.mapData) as MapData);
 			} else {
 				return {
 					success: false,
@@ -144,7 +146,7 @@ export function setupRunnerHandlers() {
 		
 		// TODO - server only handles 1 game at a time rn.
 		// pushing just first map/outfile for now, in the future we can try handling multiple
-		scriptArgs.push('--map_string', mapsData[0]);
+		scriptArgs.push('--map_string', stringFromMapData(mapsData[0]));
 		const TEMP_map0_outfile = path.join(outputDir, matchData.maps[0] + ".json");
 		scriptArgs.push('--output_dir', TEMP_map0_outfile);
 
@@ -233,7 +235,7 @@ export function setupRunnerHandlers() {
 
 		return {
 			success: true,
-			mapData: mapsData[0],
+			TEMP_mapData0: mapsData[0],
 			startTimestamp,
 		}
 	});

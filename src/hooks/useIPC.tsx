@@ -71,9 +71,9 @@ export function useIPC() {
         } break;
 
         case 'game_complete': {
-          if (data.success) {
-
-          }
+          // TODO
+          // idt we actually need much here IN THE CURRENT (MESSY) SYSTEM.
+          // since handleMatchEnd can handle most of what we need for now.
         }
       }
     },
