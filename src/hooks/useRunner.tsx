@@ -10,9 +10,9 @@ import { useGame } from '@/gamerenderer/useGame';
 
 // TODO - clean this up somehow 
 import _EMPTY_GAME_PGN from '@/gamerenderer/defaults/EMPTY_GAME_PGN.json'
-import { GamePGN } from '@/gametypes';
-import { Button } from '@/components';
 const EMPTY_GAME_PGN = _EMPTY_GAME_PGN as GamePGN;
+import { GamePGN } from '../../common/types';
+import { Button } from '@/components';
 
 type QueueNewMatchParams = {
   selectedGreenTeam: string;
@@ -269,6 +269,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // cleanup state
       setCurrentlyRunningMatch(null);
       setLatestGameDiff(null);
+
+      setAutoAdvance(false);
 
       toast({
         toastTitle: `Match ${exitCode === 0? 'completed' : 'errored'}`,
