@@ -80,20 +80,22 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
     : // else:
       "Undecided";
 
+  const blueScore = Object.keys(props.matchData.blueWins).length + Object.keys(props.matchData.draws).length/2;
+  const greenScore = Object.keys(props.matchData.greenWins).length + Object.keys(props.matchData.draws).length/2;
+
   return (
     <div className={`completed-match-card ${winnerClass}`}>
 
-
       <div className="completed-match-card-header" {...getToggleProps()}>
         <h3 className='match-card-blue-header flex gap-4 items-center' title={props.matchData.teamBlue}>
-          <b className='text-4xl align-middle flex-shrink-0'>{Object.keys(props.matchData.blueWins).length}</b>
+          <b className='text-4xl align-middle flex-shrink-0'>{blueScore.toFixed(1)}</b>
           <Image src="/blue_team_icon.svg" alt="*" width={12} height={12} />
           <span className='ellipsis'>{props.matchData.teamBlue}</span>
         </h3>
         <h3 className='match-card-green-header flex justify-end gap-4 items-center' title={props.matchData.teamGreen}>
           <span className='ellipsis'>{props.matchData.teamGreen}</span>
           <Image src="/green_team_icon.svg" alt="*" width={12} height={12} />
-          <b className='text-4xl align-middle flex-shrink-0'>{Object.keys(props.matchData.greenWins).length}</b>
+          <b className='text-4xl align-middle flex-shrink-0'>{greenScore.toFixed(1)}</b>
         </h3>
       </div>
 
@@ -101,13 +103,20 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
         {props.matchData.maps.map(map => {
 
           let winObj;
-          let winnerStr;
+          let resultDisplay;
+          let winnerClassName;
           if (props.matchData.greenWins[map]) {
             winObj = props.matchData.greenWins[map];
-            winnerStr = "Green";
+            winnerClassName = "Green";
+            resultDisplay = "Green won";
           } else if (props.matchData.blueWins[map]) {
             winObj = props.matchData.blueWins[map];
-            winnerStr = "Blue";
+            winnerClassName = "Blue";
+            resultDisplay = "Blue won";
+          } else if (props.matchData.draws[map]) {
+            winObj = props.matchData.draws[map];
+            winnerClassName = "undecided";
+            resultDisplay = "Draw";
           } else {
             return (
               <div
@@ -125,11 +134,11 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
             key={map} 
             disabled={loadings.loadGameIntoPlayer}
             onClick={handleOpenGameReplay}
-            className={`completed-match-card-map ${winnerStr}`}>
+            className={`completed-match-card-map ${winnerClassName}`}>
               { loadings.loadGameIntoPlayer && <LoadingSpinner /> }
               <span className='font-bold text-foreground'>{map}</span>
               &middot;
-              <span>{winnerStr} won</span>
+              <span>{resultDisplay}</span>
               &middot;
               <span>{word(winObj.numRounds, "round", "rounds")}</span>
               &middot;

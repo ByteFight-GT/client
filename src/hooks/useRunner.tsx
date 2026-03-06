@@ -182,6 +182,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       teamBlue: params.selectedBlueTeam,
       greenWins: {},
       blueWins: {},
+      draws: {},
       status: 'queued',
     } as MatchMetadata;
 
@@ -291,6 +292,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     } else if (data.result.winner === 'blue') {
       updatedMatchData.blueWins[updatedMatchData.maps[0]] = {
+        reason: data.result.reason || "unknown",
+        numRounds: data.result.numRounds || 0
+      }
+    } else if (data.result.winner === 'draw') {
+      updatedMatchData.draws[updatedMatchData.maps[0]] = {
         reason: data.result.reason || "unknown",
         numRounds: data.result.numRounds || 0
       }

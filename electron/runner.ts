@@ -4,7 +4,7 @@ import path from 'path';
 import net from 'net';
 import fs from 'fs';
 import { getCachedSettingOrDefault } from './settings.ts';
-import { type Team_t, type MatchMetadata } from '../common/types.ts';
+import { type Team_t, type MatchMetadata, type GameResult } from '../common/types.ts';
 import { tryGetConfiguredDir } from './utils.ts';
 import { readMap } from './maps.ts';
 import { TcpClientManager } from './TcpClientManager.ts';
@@ -72,17 +72,14 @@ export function closePython() {
  * 
  * Or null if not found/nonexistent.
  */
-export function TEMP_getResultsFromGameOutputFile(fp: string): {
-	winner: Team_t | null;
-	numRounds: number | null;
-	reason: string | null;
-} {
+export function TEMP_getResultsFromGameOutputFile(fp: string): GameResult{
 	try {
 		const fileData = fs.readFileSync(fp, 'utf-8');
 		const jsonData = JSON.parse(fileData);
 		const result = jsonData.result;
 		if (result === "PLAYER_1") return { winner: 'blue', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
 		else if (result === "PLAYER_2") return { winner: 'green', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
+		else if (result === "DRAW") return { winner: 'draw', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
 		else return { winner: null, numRounds: null, reason: null };
 	} catch (err) {
 		console.error("Error reading winner from game output file:", err);

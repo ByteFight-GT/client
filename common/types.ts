@@ -13,7 +13,7 @@ export type MatchStatus =
 	| 'completed'; // (end state) game finished successfully
 
 export type GameResult = {
-	winner: Team_t | null; // null if draw or unknown
+	winner: Team_t | 'draw' | null;
 	numRounds: number | null; // how many rounds the game lasted, if known
 	reason: string | null; // reason for game end, if known (e.g. "time limit exceeded", "player 1 crashed", "max rounds reached", "player 2 wins by territory control", etc.)
 }
@@ -44,6 +44,12 @@ export type MatchMetadata = {
 		}
 	};
 	blueWins: {
+		[map: string]: {
+			reason: string, 
+			numRounds: number
+		}
+	};
+	draws: {
 		[map: string]: {
 			reason: string, 
 			numRounds: number

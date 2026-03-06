@@ -84,6 +84,7 @@ export function setupMatchesHandlers() {
 					const matchesDir = tryGetConfiguredDir("Matches Directory");
 					const filePath = path.join(matchesDir, `${fileName}.json`);
 					const data = await fs.promises.readFile(filePath, { encoding: 'utf8' });
+					console.log(`Read match file ${fileName}.json from disk. draws object:`, JSON.parse(data).draws);
 					return JSON.parse(data) as MatchMetadata;
 				})
 			);
