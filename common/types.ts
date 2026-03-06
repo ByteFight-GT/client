@@ -121,10 +121,10 @@ export type GameTurn =
 		move_type: MoveType_t;
 		place_beacon: boolean;
 		beacon_target: [number, number];
-	} | {
+	}[] | {
 		name: GameActionName_t;
 		location: MapLoc;
-	};
+	}[];
 
 /** Game PGN format (all data about a match) */
 export type GamePGN = {
@@ -180,6 +180,37 @@ export type GamePGN = {
 
 	cpu: string; // cpu info of how the game was run
 }
+
+/** the type that the python server sends to us each round. Used to update GamePGNs! */
+export type GamePGNDiff = {
+	p1_time_left: number;
+	p2_time_left: number;
+
+	p1_loc: [number, number]; // rc
+	p2_loc: [number, number]; // rc
+
+	p1_stamina: number;
+	p2_stamina: number;
+
+	p1_max_stamina: number;
+	p2_max_stamina: number;
+
+	paint_updates: {[key: `${number}`]: number}; // { FLATTENED tile : +- 1 }, +/- 1 means player 1/2 painted tile (or removed paint from tile)
+
+	beacon_updates: {[key: `${number}`]: number}; // { FLATTENED tile : +-1 }, +/- 1 means player 1/2 placed beacon
+
+	powerup_updates: {[key: `${number}`]: boolean}; // { FLATTENED tile : boolean }, true=powerup spawned, false=powerup despawned/was consumed.
+
+	p1_territory: number;
+	p2_territory: number;
+
+	hill_updates: any; // TODO - unused?
+
+	parity_playing: number; // which player is playing on this turn. We have this because one can spend stamina to take multiple turns in a row. +/-1 = p1/p2
+
+	actions: GameTurn; // action taken by player on this turn. Player is determined by parity_playing
+}
+
 /**
  * Represents all data about a map.
  * Map features like hills, walls, spawnpoints, etc. are all specified
