@@ -100,7 +100,10 @@ export function setupRunnerHandlers() {
 		// get output dir for the pgn file(s)
 		let outputDir: string;
 		try {
-			outputDir = tryGetConfiguredDir("Games Directory");
+			outputDir = path.join(
+				tryGetConfiguredDir("Games Directory"),
+				matchData.matchId
+			);
 		} catch (err: any) {
 			return {
 				success: false,
@@ -136,14 +139,14 @@ export function setupRunnerHandlers() {
 		// compiling args
 		const scriptArgs: string[] = [];
 		scriptArgs.push('--output_port', port.toString())
-		scriptArgs.push('--output_dir', outputDir);
 		scriptArgs.push('--a_dir', path.join(botsDir, matchData.teamGreen));
 		scriptArgs.push('--b_dir', path.join(botsDir, matchData.teamBlue));
 		
+		// TODO - server only handles 1 game at a time rn.
+		// pushing just first map/outfile for now, in the future we can try handling multiple
 		scriptArgs.push('--map_string', mapsData[0]);
-		// scriptArgs.push('--maps', ...mapsData); 
-		// ^ TODO - server only handles 1 game at a time rn.
-		// pushing just first map for now, in the future we can try handling multiple
+		const TEMP_map0_outfile = path.join(outputDir, matchData.maps[0] + ".json");
+		scriptArgs.push('--output_dir', TEMP_map0_outfile);
 
 		pythonProcess = child_process.spawn(`${pythonPath} ${LOCAL_SERVER_SCRIPT}`, [...scriptArgs], {
 			cwd: ENGINE_PATH,
@@ -185,7 +188,11 @@ export function setupRunnerHandlers() {
 				console.log(`[runner:start-match] Python process exited successfully with code ${code}`);
 			}
 			
-			event.sender.send('game-sys:process-closed', {code, finishTimestamp});
+			event.sender.send('game-sys:process-closed', {
+				code, 
+				finishTimestamp,
+				TEMP_map0_outfile
+			});
 			pythonProcess = null;
 		});
 

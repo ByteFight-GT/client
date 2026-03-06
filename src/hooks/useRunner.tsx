@@ -11,6 +11,7 @@ import { useGame } from '@/gamerenderer/useGame';
 // TODO - clean this up somehow 
 import _EMPTY_GAME_PGN from '@/gamerenderer/defaults/EMPTY_GAME_PGN.json'
 import { GamePGN } from '@/gametypes';
+import { Button } from '@/components';
 const EMPTY_GAME_PGN = _EMPTY_GAME_PGN as GamePGN;
 
 type QueueNewMatchParams = {
@@ -40,7 +41,7 @@ export type UseRunnerValue = {
   startMatch: (matchData: MatchMetadata) => Promise<boolean>;
 	startNextInQueue: () => void;
   terminateRunningMatch: (matchData: MatchMetadata) => void;
-  handleMatchEnd: (exitCode: number, finishTimestamp: number) => void;
+  handleMatchEnd: (exitCode: number, finishTimestamp: number, TEMP_map0_outfile: string) => void;
   updateRecentBots: (greenBot: string, blueBot: string) => void;
   saveLastRunnerSetup: (setup: QueueNewMatchParams) => void;
 };
@@ -247,7 +248,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   /** handles cleanup/takedown when a match completes for any reason (finished/termination),
    * and checks if we can move on to the next match in the queue.
    */
-  const handleMatchEnd = React.useCallback(async (exitCode: number, finishTimestamp: number) => {    
+  const handleMatchEnd = React.useCallback(async (exitCode: number, finishTimestamp: number, TEMP_map0_outfile: string) => {    
+    console.log(`[handleMatchEnd] handling end of match ${currentlyRunningMatch?.matchId} (exit=${exitCode} & game outfile=${TEMP_map0_outfile})`);
     if (!currentlyRunningMatch) {
       console.warn("[handleMatchEnd] Received match end event but no match was running?");
       return;
@@ -256,12 +258,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const updatedMatchData = {
       ...currentlyRunningMatch,
       finishTimestamp,
+      resultFiles: [TEMP_map0_outfile], // only map 1 for now (TODO)
       status: exitCode === 0? 'completed' : 'errored'
     } satisfies MatchMetadata;
 
-    console.log("[handleMatchEnd] handling end of match:", updatedMatchData);
     const writeSuccess = await writeMatchData(updatedMatchData);
-    
     if (writeSuccess) {
       addMatchToCompletedHistory(updatedMatchData);
 
@@ -279,7 +280,24 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 			// cant start next in queue immediately since setCurrentlyRunningMatch wont update immediately BRUH
 			// we will use an effect for that
 		} else {
-      console.log("[handleMatchEnd] failed to write match data!");
+      toastError(
+        "Failed to save match data",
+        <p>
+          An error occured while saving match to storage. Please report this!
+          <Button onClick={() => {
+            navigator.clipboard.writeText(JSON.stringify(updatedMatchData, null, 2))
+            .then(() => {
+              toast({
+                toastTitle: "Match data copied",
+                toastDescription: "The match data has been copied to your clipboard. Please share this with the developers to help debug this issue. Thanks!"
+              });
+            })
+            .catch((err) => {
+              toastError("Failed to copy match data!", err);
+            });
+          }}>Copy match data</Button>
+        </p>
+      )
       // TODO - enable "try again" action (popup or smth)
     }
   }, [currentlyRunningMatch, writeMatchData, toggleLoading, toastError]);

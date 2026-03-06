@@ -69,6 +69,12 @@ export function useIPC() {
         case 'update': {
           updateGamePGN(data);
         } break;
+
+        case 'game_complete': {
+          if (data.success) {
+
+          }
+        }
       }
     },
 
@@ -80,9 +86,9 @@ export function useIPC() {
 
     /** process closed for whatever reason - consider the current game as "ended" */
     'game-sys:process-closed':
-    function handleProcessClosed(res: {code: number, finishTimestamp: number}) {
+    function handleProcessClosed(res: {code: number, finishTimestamp: number, TEMP_map0_outfile: string}) {
       setDebugIPCEventLog(prev => [...prev, 'game-sys:process-closed']);
-      handleMatchEndRef.current(res.code, res.finishTimestamp);
+      handleMatchEndRef.current(res.code, res.finishTimestamp, res.TEMP_map0_outfile);
     },
 
     'game-sys:socket-error':
