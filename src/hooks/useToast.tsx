@@ -184,7 +184,7 @@ function useToast() {
     }
   }, [state])
 
-  const toastError = React.useCallback((title: string, error: string | Error) => {
+  const toastError = React.useCallback((title: string | React.ReactNode, error: string | Error | React.ReactNode) => {
     toast({
       toastTitle: <span className='text-destructiveBright'>{title}</span>,
       toastDescription: error instanceof Error? error.message : error,
