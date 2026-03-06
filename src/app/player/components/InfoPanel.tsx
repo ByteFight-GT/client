@@ -2,8 +2,8 @@
 
 import React from 'react';
 
-type InfoPanelProps = PlayerGameState_t & {
-	playerColor: PlayerColor_t;
+type InfoPanelProps = {
+	playerColor: string;
 	botName: string; // name of the directory for local games, and team name for actual games
 	botPath?: string; // dir path for the bot, only for local games
 };

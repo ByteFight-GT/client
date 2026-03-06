@@ -7,7 +7,7 @@ import './page.css'
 import { type MapData } from '@/gametypes';
 
 import _DEFAULT_MAP_DATA from './defaultMapData.json';
-const DEFAULT_MAP_DATA = _DEFAULT_MAP_DATA as MapData;
+const DEFAULT_MAP_DATA = _DEFAULT_MAP_DATA as unknown as MapData;
 
 export default function MapBuilderPage() {
 

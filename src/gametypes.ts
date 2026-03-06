@@ -137,14 +137,23 @@ export type GamePGN = {
  * No computation necessary
  */
 export type MapData = {
-	size: MapLoc; // r, c (height, width)
-	hillLocs: {
+	name: string;
+	width: number;
+	height: number;
+	symmetry: keyof typeof Symmetry;
+	powerupSpawnRate: number;
+	powerupSpawnNum: number;
+	wallLocs: MapLoc[];
+	spawnpointGreen: MapLoc;
+
+	// Legacy/compat fields that may exist in imported maps.
+	size?: MapLoc; // r, c (height, width)
+	hillLocs?: {
 		[hillId: string]: MapLoc[];
 	};
-	wallLocs: MapLoc[];
-	spawnpointBlue: MapLoc;
-	spawnpointGreen: MapLoc;
-	symmetry: Symmetry_t;
-	powerupSpawnInterval: number;
-	powerupSpawnNum: number;
+	hillCenters?: MapLoc[];
+	spawnpointBlue?: MapLoc;
+	healthPowerupSpawns?: MapLoc[];
+	staminaPowerupSpawns?: MapLoc[];
+	powerupSpawnInterval?: number;
 }

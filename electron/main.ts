@@ -36,13 +36,8 @@ async function initMetadata() {
     try {
         await fs.access(matchPath);
     } catch {
-        await fs.mkdir(matchPath, { recursive: true }, (err) => {
-            if (err) {
-                console.error('Error creating directory:', err);
-            } else {
-                console.log('Directory created successfully!');
-            }
-        })
+        await fs.mkdir(matchPath, { recursive: true });
+        console.log('Directory created successfully!');
 
     }
 }
