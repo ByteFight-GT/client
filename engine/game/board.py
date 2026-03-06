@@ -1035,11 +1035,13 @@ class Board:
             return Result.PLAYER_1, WinReason.STAMINA_LOSS
         
         if self.current_round >= GameConstants.MAX_ROUNDS:
+            if len(self.p1.controlled_hills) > len(self.p2.controlled_hills):
+                return Result.PLAYER_1, WinReason.TIEBREAK
+            if len(self.p1.controlled_hills) < len(self.p2.controlled_hills):
+                return Result.PLAYER_2, WinReason.TIEBREAK
 
-            
             p1_territory = self.get_territory_count(1)
-            p2_territory = self.get_territory_count(-1)
-            
+            p2_territory = self.get_territory_count(-1)            
             
             if p1_territory > p2_territory:
                 return Result.PLAYER_1, WinReason.TIEBREAK
