@@ -24,7 +24,6 @@ const MatchReplayerPage = () => {
 	const filterInputRef = React.useRef<HTMLInputElement>(null);
 
 	const filterMatches = React.useCallback((matches: MatchMetadata[], filter?: string) => {
-		console.log("filtering matches with filter: ", filter);
 		if (!filter) return matches;
 
 		const lowercaseFilter = filter.toLowerCase();

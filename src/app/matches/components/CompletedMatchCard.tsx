@@ -38,15 +38,15 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
     <div className="completed-match-card">
 
       <div className="completed-match-card-header" {...getToggleProps()}>
-        <h3 className='match-card-green-header flex gap-4 items-center' title={props.matchData.teamGreen}>
-          <b className='text-4xl align-middle flex-shrink-0'>{Object.keys(props.matchData.greenWins).length}</b>
-          <Image src="/green_team_icon.svg" alt="*" width={12} height={12} />
-          <span className='ellipsis'>{props.matchData.teamGreen}</span>
-        </h3>
-        <h3 className='match-card-blue-header flex justify-end gap-4 items-center' title={props.matchData.teamBlue}>
-          <span className='ellipsis'>{props.matchData.teamBlue}</span>
-          <Image src="/blue_team_icon.svg" alt="*" width={12} height={12} />
+        <h3 className='match-card-blue-header flex gap-4 items-center' title={props.matchData.teamBlue}>
           <b className='text-4xl align-middle flex-shrink-0'>{Object.keys(props.matchData.blueWins).length}</b>
+          <Image src="/blue_team_icon.svg" alt="*" width={12} height={12} />
+          <span className='ellipsis'>{props.matchData.teamBlue}</span>
+        </h3>
+        <h3 className='match-card-green-header flex justify-end gap-4 items-center' title={props.matchData.teamGreen}>
+          <span className='ellipsis'>{props.matchData.teamGreen}</span>
+          <Image src="/green_team_icon.svg" alt="*" width={12} height={12} />
+          <b className='text-4xl align-middle flex-shrink-0'>{Object.keys(props.matchData.greenWins).length}</b>
         </h3>
       </div>
 
@@ -83,7 +83,7 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
               &middot;
               <span>{word(winObj.numRounds, "round", "rounds")}</span>
               &middot;
-              <span>{winObj.reason}</span>
+              <span>by {winObj.reason}</span>
             </div>
           );
         })}
