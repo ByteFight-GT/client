@@ -56,7 +56,7 @@ const MatchReplayerPage = () => {
 
 				<div className='flex gap-4 mt-2 items-center'>
 					
-					<Button variant="secondary">Import from file</Button>
+					{/*<Button variant="secondary">Import from file</Button>*/}
 
 					<Input 
 					placeholder="Search by ID or Teams" 

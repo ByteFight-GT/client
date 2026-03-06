@@ -167,7 +167,7 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
               <SwordsIcon />
             </Button>*/}
 
-            <Button 
+            {/*<Button 
             onClick={() => {
               if (props.matchData.outputDir) {
                 window.electron.openPathInExplorer(props.matchData.outputDir);
@@ -179,7 +179,7 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
             variant="ghost" 
             size="iconsm">
               <FolderIcon />
-            </Button>
+            </Button>*/}
 
             <Button tooltip='Collapse' className='ml-auto' variant="ghost" size="iconsm" {...getToggleProps()}>
               <EyeOffIcon />
