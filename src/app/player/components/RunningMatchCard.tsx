@@ -23,7 +23,7 @@ export const RunningMatchCard = () => {
   // stored in state so we can update every min
   const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(
     matchToShow?.startTimestamp?
-      fmtTime(matchToShow.startTimestamp) 
+      fmtTime(Date.now() - matchToShow.startTimestamp) 
     : 
       "-"
   );
