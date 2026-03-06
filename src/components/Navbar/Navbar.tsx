@@ -23,11 +23,11 @@ const NAVBAR_LINKS = [
   //   label: 'Run',
   //   link: '/runner',
   // },
-  {
-    icon: 'map',
-    label: 'Maps',
-    link: '/mapbuilder',
-  },
+  // { // TEMP - removed while its still under construction
+  //   icon: 'map',
+  //   label: 'Maps',
+  //   link: '/mapbuilder',
+  // },
   {
     icon: 'config',
     label: 'Config',
@@ -60,14 +60,14 @@ function Navbar() {
         selected={item.link === pathName} />
       )}
 
-      <div className='navbar-bottom-buttons'>
+      {/*<div className='navbar-bottom-buttons'>
         {NAVBAR_LINKS_BOTTOM.map((item) => 
           <NavbarLinkBottom 
           {...item} 
           key={item.label}
           selected={item.link === pathName} />
         )}
-      </div>
+      </div>*/}
 
       </div>
   );
