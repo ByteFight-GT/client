@@ -128,8 +128,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 				});
 
         reset(res.TEMP_mapData0, EMPTY_GAME_PGN); // reset game state to empty for the new game
-        setAutoAdvance(true);
-        setPlaybackSpeed(0); // set to render as fast as possible by default since it's a live game
+        setAutoAdvance(false); // TEMP: we want autoadvance during games, but useGame currently handles it differently SPECIFICALLY for live games 
+        setTEMP_gameDataPacketsReceived(0);
 
         return true;
 
@@ -269,7 +269,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       // cleanup state
       setCurrentlyRunningMatch(null);
-      setTEMP_gameDataPacketsReceived(0);
 
       setAutoAdvance(false);
 

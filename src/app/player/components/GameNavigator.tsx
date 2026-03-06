@@ -53,7 +53,10 @@ export const GameNavigator = () => {
 				disabled={renderedGameFrame <= 0}
 				title='Previous Move'
 				size="iconsm"
-				onClick={() => incrementRenderedGameFrame(-1)}>
+				onClick={() => {
+					setAutoAdvance(false);
+					incrementRenderedGameFrame(-1);
+				}}>
 					<ChevronLeftIcon />
 				</Button>
 
@@ -61,7 +64,10 @@ export const GameNavigator = () => {
 				disabled={renderedGameFrame >= TEMP_maxGameFrame} // TODO
 				title='Next Move'
 				size="iconsm"
-				onClick={() => incrementRenderedGameFrame(1)}>
+				onClick={() => {
+					setAutoAdvance(false);
+					incrementRenderedGameFrame(1);
+				}}>
 					<ChevronRightIcon />
 				</Button>
 			</div>
@@ -73,7 +79,10 @@ export const GameNavigator = () => {
 				step={1}
 				min={0}
 				max={TEMP_maxGameFrame <= 0? 1 : TEMP_maxGameFrame} // TODO. setting to 1 as min because it errors if min=max. Should be disabled tho so it should be fine
-				onChange={(values) => setRenderedGameFrame(values[0])}
+				onChange={(values) => {
+					setAutoAdvance(false);
+					setRenderedGameFrame(values[0]);
+				}}
 				renderTrack={RangeTrack}
 				renderThumb={RangeThumb} />
 			</div>
