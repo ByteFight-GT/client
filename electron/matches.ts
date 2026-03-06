@@ -22,10 +22,11 @@ export function rebuildMatchesIndex() {
 
   const files = fs.readdirSync(matchesPath);
   MATCHES_INDEX.length = 0; // clear the index
-  for (const filename of files) {
-    if (filename.endsWith('.json')) {
+  for (const filePath of files) {
+    if (filePath.endsWith('.json')) {
       // extract queuedTime from filename
-      const queuedTime = parseInt(filename.split('-')[0]);
+      const queuedTime = parseInt(filePath.split('-')[0]);
+			const filename = filePath.slice(0, -5); // remove .json extension
       MATCHES_INDEX.push({ matchId: filename, queuedTimestamp: queuedTime });
     }
   }
@@ -37,7 +38,7 @@ export function rebuildMatchesIndex() {
 }
 
 export async function updateMatchStatus(matchId: string, newStatus: MatchMetadata["status"]): Promise<boolean> {
-  const matchPath = path.join(tryGetConfiguredDir("Matches Directory"), matchId);
+  const matchPath = path.join(tryGetConfiguredDir("Matches Directory"), `${matchId}.json`);
 
   try {
     const data = await fs.promises.readFile(matchPath, { encoding: 'utf8' });
@@ -79,9 +80,9 @@ export function setupMatchesHandlers() {
 			
       // read all of them
 			const matches = await Promise.all(
-				paginatedFiles.map(async (file) => {
+				paginatedFiles.map(async (fileName) => {
 					const matchesDir = tryGetConfiguredDir("Matches Directory");
-					const filePath = path.join(matchesDir, file);
+					const filePath = path.join(matchesDir, `${fileName}.json`);
 					const data = await fs.promises.readFile(filePath, { encoding: 'utf8' });
 					return JSON.parse(data) as MatchMetadata;
 				})
@@ -102,7 +103,7 @@ export function setupMatchesHandlers() {
 
 	ipcMain.handle('matches:write', async (event, matchData: MatchMetadata) => {
 		const matchesDir = tryGetConfiguredDir("Matches Directory");
-		const matchPath = path.join(matchesDir, matchData.matchId + ".json");
+		const matchPath = path.join(matchesDir, `${matchData.matchId}.json`);
 		console.log(`[matches:write] Writing match ${matchData.matchId} to ${matchPath}`);
 
 		try {
@@ -124,7 +125,7 @@ export function setupMatchesHandlers() {
 		const deleted: Set<string> = new Set();
 		for (const fileName of fileNames) {
 			const matchesDir = tryGetConfiguredDir("Matches Directory");
-			const matchPath = path.join(matchesDir, fileName);
+			const matchPath = path.join(matchesDir, `${fileName}.json`);
 			try {
 				await fs.promises.unlink(matchPath);
 				deleted.add(fileName);
