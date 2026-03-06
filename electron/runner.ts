@@ -178,18 +178,19 @@ export function setupRunnerHandlers() {
 
 		// compiling args
 		const scriptArgs: string[] = [];
-		scriptArgs.push('--output_port', `""${port.toString()}""`);
-		scriptArgs.push('--a_dir', `""${path.join(botsDir, matchData.teamGreen)}""`);
-		scriptArgs.push('--b_dir', `""${path.join(botsDir, matchData.teamBlue)}""`);
+		scriptArgs.push('--output_port', port.toString());
+		scriptArgs.push('--a_dir', path.join(botsDir, matchData.teamGreen));
+		scriptArgs.push('--b_dir', path.join(botsDir, matchData.teamBlue));
 		
 		// TODO - server only handles 1 game at a time rn.
 		// pushing just first map/outfile for now, in the future we can try handling multiple
-		scriptArgs.push('--map_string', `""${stringFromMapData(mapsData[0])}""`);
-		scriptArgs.push('--output_dir', `""${TEMP_map0_outfile}""`);
+		scriptArgs.push('--map_string', stringFromMapData(mapsData[0]));
+		scriptArgs.push('--output_dir', TEMP_map0_outfile);
 
-		pythonProcess = child_process.spawn(`""${pythonPath}"" ""${LOCAL_SERVER_SCRIPT}""`, [...scriptArgs], {
+		// Run python directly (without shell) so argument values with spaces stay intact.
+		pythonProcess = child_process.spawn(pythonPath, [LOCAL_SERVER_SCRIPT, ...scriptArgs], {
 			cwd: ENGINE_PATH,
-			shell: true
+			shell: false
 		});
 		const startTimestamp = Date.now();
 
