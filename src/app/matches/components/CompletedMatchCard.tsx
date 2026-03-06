@@ -10,7 +10,6 @@ import { EyeOffIcon, FolderIcon, SwordsIcon } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { useRunner } from '@/hooks/useRunner';
 import { useLoadings } from '@/hooks/useLoadings';
-import { useMatches } from '@/hooks/useMatches';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { redirect } from 'next/navigation';
 
@@ -26,8 +25,8 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
 
   const {toastError} = useToast();
   const {loadings} = useLoadings();
-  const {currentlyRunningMatch} = useRunner();
-  const {loadGameIntoPlayer} = useMatches();
+  const {currentlyRunningMatch, setTEMP_currentlyViewingMatch} = useRunner();
+  const {loadGameIntoPlayer} = useRunner();
 
   const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(fmtTime(Date.now() - (props.matchData.finishTimestamp ?? 0)));
 
@@ -65,7 +64,7 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
       redirect("/player");
     } // else: loadGameIntoPlayer will handle error display
 
-  }, [loadGameIntoPlayer, currentlyRunningMatch]);
+  }, [loadGameIntoPlayer, currentlyRunningMatch, setTEMP_currentlyViewingMatch]);
 
 
   if (props.matchData.finishTimestamp === null || props.matchData.startTimestamp === null) {

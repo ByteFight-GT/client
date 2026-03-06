@@ -3,7 +3,6 @@
 import { useGame } from '@/gamerenderer/useGame';
 import { useRunner } from '@/hooks/useRunner';
 import { ClockIcon, LandPlotIcon, SmartphoneChargingIcon } from 'lucide-react';
-import Image from 'next/image';
 import React from 'react';
 
 export const GameInfo = () => {
@@ -13,7 +12,7 @@ export const GameInfo = () => {
 		renderedGameFrame, 
 	} = useGame();
 
-	const {TEMP_gameDataPacketsReceived} = useRunner();
+	const {TEMP_gameDataPacketsReceived, currentlyRunningMatch, TEMP_currentlyViewingMatch} = useRunner();
 	
 	const [TEMP_maxGameFrame, setTEMP_maxGameFrame] = React.useState(0);
 
@@ -22,6 +21,10 @@ export const GameInfo = () => {
 		const newMaxFrame = gameManagerRef.current.gamePGN.turn_count;
 		setTEMP_maxGameFrame(newMaxFrame);
 	}, [TEMP_gameDataPacketsReceived]);
+
+	if (!currentlyRunningMatch && !TEMP_currentlyViewingMatch) {
+		return null;
+	}
 
 	return (
 		<div className='game-info-container'>

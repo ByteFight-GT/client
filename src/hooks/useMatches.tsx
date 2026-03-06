@@ -13,7 +13,6 @@ export type UseMatchesValue = {
   fetchMatchHistoryNextPage: (count: number) => void;
   writeMatchData: (matchData: MatchMetadata) => Promise<boolean>;
   addMatchToCompletedHistory: (matchData: MatchMetadata) => void;
-  loadGameIntoPlayer: (matchData: MatchMetadata, mapName: string) => Promise<boolean>;
 };
 
 const MatchesContext = React.createContext<UseMatchesValue | undefined>(undefined);
@@ -92,30 +91,6 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setTotalMatchesIndexed(prev => prev + 1);
   }, []);
 
-  const loadGameIntoPlayer = React.useCallback(async (matchData: MatchMetadata, mapName: string) => {
-    if (loadings.loadGameIntoPlayer) return false;
-    toggleLoading("loadGameIntoPlayer", true);
-
-    console.log(`[loadGameIntoPlayer] Attempting to load game data, match:`, matchData, `map:`, mapName);
-
-    try {
-      const res = await window.electron.invoke('matches:readgame', matchData, mapName);
-      if (res.success) {
-        const {mapData, gameData} = res;
-        reset(mapData, gameData);
-        return true;
-      } else {
-        toastError("Failed to load game replay", res.error);
-        return false;
-      }
-    } catch (err: any) {
-      toastError("Failed to load game replay", err);
-      return false;
-    } finally {
-      toggleLoading("loadGameIntoPlayer", false);
-    }
-  }, [toastError, reset]);
-
   // >>> INITIAL SETUP
 
   React.useEffect(() => {
@@ -128,14 +103,12 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
     fetchMatchHistoryNextPage,
     writeMatchData,
     addMatchToCompletedHistory,
-    loadGameIntoPlayer,
   } satisfies UseMatchesValue), [
     completedMatchHistory,
     totalMatchesIndexed,
     fetchMatchHistoryNextPage,
     writeMatchData,
     addMatchToCompletedHistory,
-    loadGameIntoPlayer,
   ]);
 
   return (

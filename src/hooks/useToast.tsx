@@ -184,12 +184,27 @@ function useToast() {
     }
   }, [state])
 
-  const toastError = React.useCallback((title: string | React.ReactNode, error: string | Error | React.ReactNode) => {
+  const toastError = React.useCallback(
+  (title: string | React.ReactNode, error: unknown) => {
+    let description: React.ReactNode;
+
+    if (error instanceof Error) {
+      description = error.message;
+    } else if (typeof error === "string") {
+      description = error;
+    } else if (React.isValidElement(error)) {
+      description = error;
+    } else {
+      description = JSON.stringify(error);
+    }
+
     toast({
-      toastTitle: <span className='text-destructiveBright'>{title}</span>,
-      toastDescription: error instanceof Error? error.message : error,
+      toastTitle: <span className="text-destructiveBright">{title}</span>,
+      toastDescription: description,
     });
-  }, [])
+  },
+  []
+);
 
   return {
     ...state,
