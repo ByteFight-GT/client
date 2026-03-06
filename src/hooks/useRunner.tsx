@@ -3,9 +3,16 @@
 import React from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
-import { MatchMetadata } from '../../common/types';
+import { GameResult, MatchMetadata, Team_t } from '../../common/types';
 import { useMatches } from './useMatches';
-import { generateMatchId } from '../../common/utils';
+import { generateMatchId, word } from '../../common/utils';
+import { useGame } from '@/gamerenderer/useGame';
+
+// TODO - clean this up somehow 
+import _EMPTY_GAME_PGN from '@/gamerenderer/defaults/EMPTY_GAME_PGN.json'
+const EMPTY_GAME_PGN = _EMPTY_GAME_PGN as GamePGN;
+import { GamePGN } from '../../common/types';
+import { Button } from '@/components';
 
 type QueueNewMatchParams = {
   selectedGreenTeam: string;
@@ -18,14 +25,14 @@ export type UseRunnerValue = {
   queuedMatches: MatchMetadata[];
   stdOutChunksRef: React.RefObject<string[]>;
   stdErrChunksRef: React.RefObject<string[]>;
-  latestGameDiff: any; // TODO: type
+  TEMP_gameDataPacketsReceived: number; // TEMP for causing game info and game nav to rerender on new game data
   recentBots: {
     green: string[];
     blue: string[];
   }
   lastRunnerSetup: QueueNewMatchParams | null;
   debugIPCEventLog: string[]; // for debugging - logs the ipc events received from electron
-  setLatestGameDiff: React.Dispatch<React.SetStateAction<any>>;
+  setTEMP_gameDataPacketsReceived: React.Dispatch<React.SetStateAction<number>>;
   setDebugIPCEventLog: React.Dispatch<React.SetStateAction<string[]>>;
   queueNewMatch: (params: QueueNewMatchParams) => void;
   dequeueMatch: (index: number) => void;
@@ -34,7 +41,12 @@ export type UseRunnerValue = {
   startMatch: (matchData: MatchMetadata) => Promise<boolean>;
 	startNextInQueue: () => void;
   terminateRunningMatch: (matchData: MatchMetadata) => void;
-  handleMatchEnd: (exitCode: number, finishTimestamp: number) => void;
+  handleMatchEnd: (data: {
+    exitCode: number, 
+    finishTimestamp: number, 
+    result: GameResult,
+    outputDir: string
+  }) => void;
   updateRecentBots: (greenBot: string, blueBot: string) => void;
   saveLastRunnerSetup: (setup: QueueNewMatchParams) => void;
 };
@@ -48,6 +60,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const {toast, toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
   const {writeMatchData, addMatchToCompletedHistory} = useMatches();
+  const {reset, setPlaybackSpeed, setAutoAdvance} = useGame();
  
   const [currentlyRunningMatch, setCurrentlyRunningMatch] = React.useState<MatchMetadata | null>(null);
 
@@ -60,8 +73,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const stdOutChunksRef = React.useRef<string[]>([]);
   const stdErrChunksRef = React.useRef<string[]>([]);
 
-  /** the most recently obtained diff (move/board update) from the engine */
-  const [latestGameDiff, setLatestGameDiff] = React.useState<any>(null); // TODO: type
+  // maybe TEMP: used for causing things like game info and game nav to rerender upon new game data
+  const [TEMP_gameDataPacketsReceived, setTEMP_gameDataPacketsReceived] = React.useState(0);
 
   /** recent bots: stores the last 2 unique bots used */
   const [recentBots, setRecentBots] = React.useState<UseRunnerValue['recentBots']>({
@@ -93,7 +106,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return false;
     }
 
-    setDebugIPCEventLog(prev => [...prev, `--- starting match ${matchData.matchId} ---`]);
+    //setDebugIPCEventLog(prev => [...prev, `--- starting match ${matchData.matchId} ---`]);
 
     try {
       const res = await window.electron.invoke('runner:start-match', matchData);
@@ -116,8 +129,12 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 					toastTitle: "Match started",
 					toastDescription: `\
 						Started match between ${matchData.teamGreen} and ${matchData.teamBlue}\
-						on ${matchData.maps.length} map(s)!`
+						on ${word(matchData.maps.length, 'map', 'maps')}!`
 				});
+
+        reset(res.TEMP_mapData0, EMPTY_GAME_PGN); // reset game state to empty for the new game
+        setAutoAdvance(false); // TEMP: we want autoadvance during games, but useGame currently handles it differently SPECIFICALLY for live games 
+        setTEMP_gameDataPacketsReceived(0);
 
         return true;
 
@@ -150,7 +167,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       finishTimestamp: null,
       notes: "",
       maps: params.selectedMaps,
-      resultFiles: [],
+      outputDir: null,
       teamGreen: params.selectedGreenTeam,
       teamBlue: params.selectedBlueTeam,
       greenWins: {},
@@ -165,7 +182,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setQueuedMatches(prev => [...prev, matchData]);
       toast({
         toastTitle: "Match queued",
-        toastDescription: `Queued ${matchData.teamGreen} v. ${matchData.teamBlue} on ${matchData.maps.length} map(s) at position ${queuedMatches.length + 1}. It will be started automatically if you leave the client open.`
+        toastDescription: `Queued ${matchData.teamGreen} v. ${matchData.teamBlue} on ${word(matchData.maps.length, 'map', 'maps')} at position ${queuedMatches.length + 1}. It will be started automatically if you leave the client open.`
       });
     }
   }, [currentlyRunningMatch, queuedMatches, startMatch]);
@@ -237,7 +254,13 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   /** handles cleanup/takedown when a match completes for any reason (finished/termination),
    * and checks if we can move on to the next match in the queue.
    */
-  const handleMatchEnd = React.useCallback(async (exitCode: number, finishTimestamp: number) => {    
+  const handleMatchEnd = React.useCallback(async (data: {
+    exitCode: number, 
+    finishTimestamp: number,
+    result: GameResult,
+    outputDir: string
+  }) => {
+    console.log(`[handleMatchEnd] handling end of match ${currentlyRunningMatch?.matchId}, data=`, data);
     if (!currentlyRunningMatch) {
       console.warn("[handleMatchEnd] Received match end event but no match was running?");
       return;
@@ -245,31 +268,61 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const updatedMatchData = {
       ...currentlyRunningMatch,
-      finishTimestamp,
-      status: exitCode === 0? 'completed' : 'errored'
+      finishTimestamp: data.finishTimestamp,
+      outputDir: data.outputDir,
+      status: data.exitCode === 0? 'completed' : 'errored'
     } satisfies MatchMetadata;
 
-    console.log("[handleMatchEnd] handling end of match:", updatedMatchData);
+    // TEMP - apply results
+    if (data.result.winner === 'green') {
+      updatedMatchData.greenWins[updatedMatchData.maps[0]] = {
+        reason: data.result.reason || "unknown",
+        numRounds: data.result.numRounds || 0
+      }
+    } else if (data.result.winner === 'blue') {
+      updatedMatchData.blueWins[updatedMatchData.maps[0]] = {
+        reason: data.result.reason || "unknown",
+        numRounds: data.result.numRounds || 0
+      }
+    }
+
     const writeSuccess = await writeMatchData(updatedMatchData);
-    
     if (writeSuccess) {
       addMatchToCompletedHistory(updatedMatchData);
 
       // cleanup state
       setCurrentlyRunningMatch(null);
-      setLatestGameDiff(null);
+
+      setAutoAdvance(false);
 
       toast({
-        toastTitle: `Match ${exitCode === 0? 'completed' : 'errored'}`,
-        toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${exitCode === 0? 'successfully' : 'with exit code ' + exitCode}!`
+        toastTitle: `Match ${data.exitCode === 0? 'completed' : 'errored'}`,
+        toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${data.exitCode === 0? 'successfully' : 'with exit code ' + data.exitCode}!`
       });
 
-      setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${exitCode} ---`]);
+      //setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${data.exitCode} ---`]);
     
 			// cant start next in queue immediately since setCurrentlyRunningMatch wont update immediately BRUH
 			// we will use an effect for that
 		} else {
-      console.log("[handleMatchEnd] failed to write match data!");
+      toastError(
+        "Failed to save match data",
+        <p>
+          An error occured while saving match to storage. Please report this!
+          <Button onClick={() => {
+            navigator.clipboard.writeText(JSON.stringify(updatedMatchData, null, 2))
+            .then(() => {
+              toast({
+                toastTitle: "Match data copied",
+                toastDescription: "The match data has been copied to your clipboard. Please share this with the developers to help debug this issue. Thanks!"
+              });
+            })
+            .catch((err) => {
+              toastError("Failed to copy match data!", err);
+            });
+          }}>Copy match data</Button>
+        </p>
+      )
       // TODO - enable "try again" action (popup or smth)
     }
   }, [currentlyRunningMatch, writeMatchData, toggleLoading, toastError]);
@@ -300,11 +353,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     queuedMatches,
     stdOutChunksRef,
     stdErrChunksRef,
-    latestGameDiff,
+    TEMP_gameDataPacketsReceived,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,
-    setLatestGameDiff,
+    setTEMP_gameDataPacketsReceived,
     queueNewMatch,
     dequeueMatch,
     moveWithinQueue,
@@ -319,7 +372,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   } satisfies UseRunnerValue), [
     currentlyRunningMatch,
     queuedMatches,
-    latestGameDiff,
+    TEMP_gameDataPacketsReceived,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,

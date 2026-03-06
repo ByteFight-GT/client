@@ -20,8 +20,8 @@
 # production
 /build
 /dist
-/engine
-!engine/placeholder.txt
+
+**/__pycache__/
 
 # misc
 .DS_Store

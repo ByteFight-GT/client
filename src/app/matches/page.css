@@ -11,6 +11,13 @@
 	border-width: 1px;
 	border-style: solid;
 }
+.completed-match-card.Blue {
+	border-left: 2px solid hsl(var(--team-blue-color));
+}
+.completed-match-card.Green {
+	border-right: 2px solid hsl(var(--team-green-color));
+}
+
 .completed-match-card-header {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -33,16 +40,21 @@
 	gap: 0.5rem;
 	padding: 0.5rem;
 	margin-top: 0.5rem;
+	width: 100%;
+}
+.completed-match-card-map:disabled {
+	opacity: 0.5;
+}
+
+.completed-match-card-map.Blue {
+	border: 1px solid hsl(var(--team-blue-color) / 0.5);
+	background-color: hsl(var(--team-blue-color) / 0.05);
+	background-image: linear-gradient(to right, hsl(var(--team-blue-color)/0.1), transparent);
 }
 .completed-match-card-map.Green {
 	border: 1px solid hsl(var(--team-green-color) / 0.5);
 	background-color: hsl(var(--team-green-color) / 0.05);
-	background-image: linear-gradient(to right, hsl(var(--team-green-color)/0.1), transparent);
-}
-.completed-match-card-map.Blue {
-	border: 1px solid hsl(var(--team-blue-color) / 0.5);
-	background-color: hsl(var(--team-blue-color) / 0.05);
-	background-image: linear-gradient(to left, hsl(var(--team-blue-color)/0.1), transparent);
+	background-image: linear-gradient(to left, hsl(var(--team-green-color)/0.1), transparent);
 }
 .completed-match-card-map.undecided {
 	border: 1px solid hsl(var(--muted-foreground) / 0.5);

@@ -6,15 +6,15 @@ import { LoadingSpinner } from "./LoadingSpinner"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./Tooltip"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition duration-100 cursor-default hover:brightness-[80%] active:brightness-[70%] disabled:pointer-events-none disabled:brightness-50 disabled:saturate-80 [&_svg.lucide]:text-muted-foreground",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition duration-100 cursor-default [&:not(:disabled)]:hover:brightness-[80%] [&:not(:disabled)]:active:brightness-[70%] disabled:brightness-50 disabled:saturate-80 [&_svg.lucide]:text-muted-foreground",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover",
+        default: "bg-primary text-primary-foreground",
         destructive: "bg-destructive text-destructive-foreground",
         outline: "border border-border bg-background text-foreground",
         secondary: "border border-border bg-secondary text-foreground",
-        ghost: "bg-transparent text-foreground hover:bg-secondary hover:text-secondary-foreground",
+        ghost: "bg-transparent text-foreground [&:not(:disabled)]:hover:bg-secondary [&:not(:disabled)]:hover:text-secondary-foreground",
         link: "bg-transparent text-muted-foreground underline underline-offset-2",
       },
       size: {
@@ -43,8 +43,9 @@ export interface ButtonProps extends
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, tooltip, asChild = false, loading = false, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return loading? (
+    const Comp = asChild ? Slot : "button";
+
+    const innerNode = loading? (
       <Comp
       ref={ref}
       disabled
@@ -56,31 +57,26 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </div>
       </Comp>
     ) : (
-      tooltip? (
-        <TooltipProvider>
-          <Tooltip delayDuration={100}>
-            <TooltipTrigger asChild>
-              <Comp
-              ref={ref}
-              className={cn(buttonVariants({ variant, size, className }))}
-              {...props}>
-                {children}
-              </Comp>
-            </TooltipTrigger>
-            <TooltipContent>
-              {tooltip}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ) : (
-        <Comp
-        ref={ref}
-        className={cn(buttonVariants({ variant, size, className }))}
-        {...props}>
-          {children}
-        </Comp>
-      )
+      <Comp
+      ref={ref}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}>
+        {children}
+      </Comp>
     );
+
+    return tooltip? (
+      <TooltipProvider>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            {innerNode}
+          </TooltipTrigger>
+          <TooltipContent>
+            {tooltip}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ) : innerNode;
   }
 )
 Button.displayName = "Button"

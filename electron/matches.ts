@@ -1,8 +1,9 @@
-import { app, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { type MatchMetadata } from '../common/types.ts';
+import { ipcMain } from 'electron';
 import { tryGetConfiguredDir } from './utils.ts';
+import { readMap } from './maps.ts';
+import type { MapData, MatchMetadata, GamePGN } from '../common/types.ts';
 
 /**
  * In-memory cache of files in the matches directory.
@@ -21,10 +22,11 @@ export function rebuildMatchesIndex() {
 
   const files = fs.readdirSync(matchesPath);
   MATCHES_INDEX.length = 0; // clear the index
-  for (const filename of files) {
-    if (filename.endsWith('.json')) {
+  for (const filePath of files) {
+    if (filePath.endsWith('.json')) {
       // extract queuedTime from filename
-      const queuedTime = parseInt(filename.split('-')[0]);
+      const queuedTime = parseInt(filePath.split('-')[0]);
+			const filename = filePath.slice(0, -5); // remove .json extension
       MATCHES_INDEX.push({ matchId: filename, queuedTimestamp: queuedTime });
     }
   }
@@ -36,7 +38,7 @@ export function rebuildMatchesIndex() {
 }
 
 export async function updateMatchStatus(matchId: string, newStatus: MatchMetadata["status"]): Promise<boolean> {
-  const matchPath = path.join(tryGetConfiguredDir("Matches Directory"), matchId);
+  const matchPath = path.join(tryGetConfiguredDir("Matches Directory"), `${matchId}.json`);
 
   try {
     const data = await fs.promises.readFile(matchPath, { encoding: 'utf8' });
@@ -78,9 +80,9 @@ export function setupMatchesHandlers() {
 			
       // read all of them
 			const matches = await Promise.all(
-				paginatedFiles.map(async (file) => {
+				paginatedFiles.map(async (fileName) => {
 					const matchesDir = tryGetConfiguredDir("Matches Directory");
-					const filePath = path.join(matchesDir, file);
+					const filePath = path.join(matchesDir, `${fileName}.json`);
 					const data = await fs.promises.readFile(filePath, { encoding: 'utf8' });
 					return JSON.parse(data) as MatchMetadata;
 				})
@@ -101,7 +103,7 @@ export function setupMatchesHandlers() {
 
 	ipcMain.handle('matches:write', async (event, matchData: MatchMetadata) => {
 		const matchesDir = tryGetConfiguredDir("Matches Directory");
-		const matchPath = path.join(matchesDir, matchData.matchId + ".json");
+		const matchPath = path.join(matchesDir, `${matchData.matchId}.json`);
 		console.log(`[matches:write] Writing match ${matchData.matchId} to ${matchPath}`);
 
 		try {
@@ -123,7 +125,7 @@ export function setupMatchesHandlers() {
 		const deleted: Set<string> = new Set();
 		for (const fileName of fileNames) {
 			const matchesDir = tryGetConfiguredDir("Matches Directory");
-			const matchPath = path.join(matchesDir, fileName);
+			const matchPath = path.join(matchesDir, `${fileName}.json`);
 			try {
 				await fs.promises.unlink(matchPath);
 				deleted.add(fileName);
@@ -143,5 +145,29 @@ export function setupMatchesHandlers() {
     MATCHES_INDEX.length = writeIndex; // truncate the rest
 
 		return { success: deleted.size === fileNames.length, deleted: Array.from(deleted) };
+	});
+
+	/** reads a single game (map) from a match, returning mapData and gamePGN */
+	ipcMain.handle('matches:readgame', async(event, matchData: MatchMetadata, mapName: string) => {
+		if (!matchData.outputDir) {
+			return { success: false, error: `Can't find game file for ${mapName} because match ${matchData.matchId} does not specify its games directory!` };
+		}
+
+		// read map data
+		const readMapRes = await readMap(mapName);
+		if (!readMapRes.success) {
+			return readMapRes;
+		}
+		const mapData = JSON.parse(readMapRes.mapData) as MapData;
+
+		const gamePath = path.join(matchData.outputDir, `${mapName}.json`);
+		try {
+			const data = await fs.promises.readFile(gamePath, { encoding: 'utf8' });
+			const gameData = JSON.parse(data) as GamePGN;
+			return { success: true, gameData, mapData };
+		} catch (err: any) {
+			console.error(`[matches:readgame] Failed to read game data for match ${matchData.matchId} map ${mapName}: ${err.message}`);
+			return { success: false, error: err.message };
+		}
 	});
 }

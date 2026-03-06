@@ -14,7 +14,7 @@ export default function DebugPage() {
     <GenericPage titleEle="Debug Log">
       <div className='flex gap-2'>
         <Button onClick={() => {
-          setDebugIPCEventLog([]);
+          //setDebugIPCEventLog([]);
         }}>Clear Log</Button>
         <Button onClick={() => {
           toast({

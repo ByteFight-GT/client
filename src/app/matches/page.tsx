@@ -24,7 +24,6 @@ const MatchReplayerPage = () => {
 	const filterInputRef = React.useRef<HTMLInputElement>(null);
 
 	const filterMatches = React.useCallback((matches: MatchMetadata[], filter?: string) => {
-		console.log("filtering matches with filter: ", filter);
 		if (!filter) return matches;
 
 		const lowercaseFilter = filter.toLowerCase();
@@ -57,7 +56,7 @@ const MatchReplayerPage = () => {
 
 				<div className='flex gap-4 mt-2 items-center'>
 					
-					<Button variant="secondary">Import from file</Button>
+					{/*<Button variant="secondary">Import from file</Button>*/}
 
 					<Input 
 					placeholder="Search by ID or Teams" 

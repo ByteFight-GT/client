@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld('electron', {
 
 	openUrl: (url: string) => shell.openExternal(url),
 
+	openPathInExplorer: (filePath: string) => shell.showItemInFolder(filePath),
+
 	registerTcpListener: (channel: string, fn: (data: any) => void) => {
 		const handler = (_, data) => fn(data);
 		ipcRenderer.on(channel, handler);

@@ -5,6 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon, PauseIcon, PlayIcon } from 'lucide-r
 import { Range } from 'react-range';
 
 import { useGame } from '@/gamerenderer/useGame';
+import { useRunner } from '@/hooks/useRunner';
 
 const speeds = [
 	{ label: "1x", value: 1 },
@@ -16,7 +17,7 @@ const speeds = [
 export const GameNavigator = () => {
 
 	const { 
-		gameManagerRef, 
+		gameManagerRef,
 		renderedGameFrame, 
 		setRenderedGameFrame,
 		incrementRenderedGameFrame,
@@ -26,17 +27,25 @@ export const GameNavigator = () => {
 		setPlaybackSpeed
 	} = useGame();
 
-	const MAX_ROUNDS_TEMP = gameManagerRef.current.gamePGN.turn_count; // TODO - wont cause rerenders - we gotta make it reactive somehow
+	const {TEMP_gameDataPacketsReceived} = useRunner();
+
+	const [TEMP_maxGameFrame, setTEMP_maxGameFrame] = React.useState(0);
+
+	// TEMP: for now, update our local state to the source of truth (from gameManagerRef) whenever we got new packet (TEMP_gameDataPacketsReceived changes)
+	React.useEffect(() => {
+		const newMaxFrame = gameManagerRef.current.gamePGN.turn_count;
+		setTEMP_maxGameFrame(newMaxFrame);
+	}, [TEMP_gameDataPacketsReceived]);
 
 	return (
 		<div className="game-navigator-container">
 			<div className='flex gap-2 items-center gamenav-area-1 w-fit'>
 				<span className='text-xl'>
 					<span className='font-bold tabular-nums'>
-						{(renderedGameFrame + 1).toString()}
+						{(renderedGameFrame).toString()}
 					</span>
 					<span className='text-secondary-foreground'>
-						/{MAX_ROUNDS_TEMP}
+						/{Math.max(0, TEMP_maxGameFrame).toString() /* (TEMP) this is so stupid lol */}
 					</span>
 				</span>
 
@@ -44,31 +53,42 @@ export const GameNavigator = () => {
 				disabled={renderedGameFrame <= 0}
 				title='Previous Move'
 				size="iconsm"
-				onClick={() => incrementRenderedGameFrame(-1)}>
+				onClick={() => {
+					setAutoAdvance(false);
+					incrementRenderedGameFrame(-1);
+				}}>
 					<ChevronLeftIcon />
 				</Button>
 
 				<Button 
-				disabled={renderedGameFrame >= MAX_ROUNDS_TEMP - 1} // TODO
+				disabled={renderedGameFrame >= TEMP_maxGameFrame} // TODO
 				title='Next Move'
 				size="iconsm"
-				onClick={() => incrementRenderedGameFrame(1)}>
+				onClick={() => {
+					setAutoAdvance(false);
+					incrementRenderedGameFrame(1);
+				}}>
 					<ChevronRightIcon />
 				</Button>
 			</div>
 
-			{MAX_ROUNDS_TEMP > 0 && 
-				<div className='gamenav-area-2'>
-					<Range
-					values={renderedGameFrame !== undefined ? [renderedGameFrame] : [0]}
-					step={1}
-					min={0}
-					max={MAX_ROUNDS_TEMP - 1}
-					onChange={(values) => setRenderedGameFrame(values[0])}
-					renderTrack={RangeTrack}
-					renderThumb={RangeThumb} />
-				</div>
-			}
+			<div className={`gamenav-area-2 ${TEMP_maxGameFrame <= 0 && 'pointer-events-none opacity-50'}`}>
+				<Range
+				disabled={TEMP_maxGameFrame <= 0} // < and ^: TODO: make this cleaner lol
+				// TEMP: when navigating back to /player, max starts off at 0. it should update when the effect runs
+				values={renderedGameFrame !== undefined ? [Math.min(renderedGameFrame, TEMP_maxGameFrame)] : [0]}
+				step={1}
+				min={0}
+				max={TEMP_maxGameFrame <= 0? 1 : TEMP_maxGameFrame} // TODO. setting to 1 as min because it errors if min=max. Should be disabled tho so it should be fine
+				onChange={(values) => {
+					// blur this element to prevent keybinds from doublecounting (see GameWindow)
+					document.activeElement instanceof HTMLElement && document.activeElement.blur(); 
+					setAutoAdvance(false);
+					setRenderedGameFrame(values[0]);
+				}}
+				renderTrack={RangeTrack}
+				renderThumb={TEMP_maxGameFrame <= 0? () => null : RangeThumb} />
+			</div>
 
 			<ButtonGroup className='gamenav-area-3 w-fit'>
 				<Button title="Play/Pause" variant="secondary" size="iconsm" onClick={() => setAutoAdvance(!autoAdvance)}>
