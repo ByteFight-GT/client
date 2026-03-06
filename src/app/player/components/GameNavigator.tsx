@@ -81,6 +81,8 @@ export const GameNavigator = () => {
 				min={0}
 				max={TEMP_maxGameFrame <= 0? 1 : TEMP_maxGameFrame} // TODO. setting to 1 as min because it errors if min=max. Should be disabled tho so it should be fine
 				onChange={(values) => {
+					// blur this element to prevent keybinds from doublecounting (see GameWindow)
+					document.activeElement instanceof HTMLElement && document.activeElement.blur(); 
 					setAutoAdvance(false);
 					setRenderedGameFrame(values[0]);
 				}}
