@@ -18,7 +18,7 @@ type CompletedMatchCardProps = {
  */
 export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
   const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(fmtTime(Date.now() - (props.matchData.finishTimestamp ?? 0)));
-  
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       setTimeElapsedDisplay(fmtTime(Date.now() - (props.matchData.finishTimestamp ?? 0)));
@@ -112,14 +112,24 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
           <div className='ml-auto'>
 
             {/* TODO: go to runmatchtab and input these specs (dont immediately queue) */}
-            <Button tooltip="Rerun" className='ml-auto' variant="ghost" size="iconsm">
+            {/*<Button tooltip="Rerun" className='ml-auto' variant="ghost" size="iconsm">
               <SwordsIcon />
-            </Button>
+            </Button>*/}
 
-            {/* TODO: open folder where the games are */}
-            <Button tooltip='Open Games Folder' className='ml-auto' variant="ghost" size="iconsm">
+            <Button 
+            onClick={() => {
+              if (props.matchData.outputDir) {
+                window.electron.openPathInExplorer(props.matchData.outputDir);
+              }
+            }}
+            tooltip={props.matchData.outputDir? "Open games folder" : "No games folder found"}
+            disabled={!props.matchData.outputDir}
+            className='ml-auto' 
+            variant="ghost" 
+            size="iconsm">
               <FolderIcon />
             </Button>
+
             <Button tooltip='Collapse' className='ml-auto' variant="ghost" size="iconsm" {...getToggleProps()}>
               <EyeOffIcon />
             </Button>

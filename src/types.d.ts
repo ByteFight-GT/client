@@ -5,6 +5,7 @@ declare global {
     electron: {
       invoke: (channel: string, ...args: any[]) => Promise<any>;
       openUrl: (url: string) => void;
+      openPathInExplorer: (filePath: string) => void;
       registerTcpListener: (channel: string, fn: (data: any) => void) => () => void;
     };
   }
