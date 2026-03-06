@@ -6,6 +6,9 @@ type SidebarItemProps = {
 	label: string | React.ReactNode; // thing in the header
 	disableDefaultHeader?: boolean; // whether to include the default header styling (brackets and lines)
 	children: React.ReactNode;
+} | {
+	disableDefaultHeader: true;
+	children: React.ReactNode;
 };
 
 export const SidebarItem = (props: SidebarItemProps) => {

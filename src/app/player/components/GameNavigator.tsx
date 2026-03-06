@@ -87,7 +87,7 @@ export const GameNavigator = () => {
 					setRenderedGameFrame(values[0]);
 				}}
 				renderTrack={RangeTrack}
-				renderThumb={RangeThumb} />
+				renderThumb={TEMP_maxGameFrame <= 0? () => null : RangeThumb} />
 			</div>
 
 			<ButtonGroup className='gamenav-area-3 w-fit'>

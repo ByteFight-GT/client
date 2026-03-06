@@ -1,10 +1,11 @@
 "use client";
 
 import React from 'react';
-import { CollapsibleDocker } from './CollapsibleDocker';
 import { useRunner } from '@/hooks/useRunner';
+import { ChevronDownIcon } from 'lucide-react';
+import { useCollapse } from 'react-collapsed';
 
-const CONSOLE_UPDATE_INTERVAL_MS = 500;
+const CONSOLE_UPDATE_INTERVAL_MS = 250;
 
 /**
  * Console docker for match player.
@@ -12,8 +13,7 @@ const CONSOLE_UPDATE_INTERVAL_MS = 500;
  */
 export const Console = () => {
 
-	const [selectedTab, setSelectedTab] = React.useState<string>('blue');
-	const {currentlyRunningMatch, stdOutChunksRef, stdErrChunksRef} = useRunner();
+	const {stdOutChunksRef, stdErrChunksRef} = useRunner();
 
 	const [stdOutChunks, setStdOutChunks] = React.useState<string[]>([]);
 	React.useEffect(() => {
@@ -29,36 +29,18 @@ export const Console = () => {
 		return () => clearInterval(interval);
 	}, []);
 
-	React.useEffect(() => {
-		// clears console on new match
-		setStdOutChunks([]); 
-	}, [currentlyRunningMatch]);
-
 	return (
-		<CollapsibleDocker title="Console">
-			<div className='Console-tabs-bar'>
-				<div
-				title={currentlyRunningMatch?.teamBlue || 'Blue'} 
-				className={`Console-tab blue ${selectedTab === 'blue'? 'selected' : ''}`} 
-				onClick={() => setSelectedTab('blue')}>
-					<img src='/blue_team_icon.svg' alt={selectedTab[0]} className='Console-tab-icon' />
-					<span>&nbsp;{currentlyRunningMatch?.teamBlue || 'Blue'}</span>
-				</div>
+		<div className='ConsoleContainer-container'>
+			<div className="ConsoleContainer-header-bar">Console</div>
+			<div className='ConsoleContainer-body'>
 
-				<div 
-				title={currentlyRunningMatch?.teamGreen || 'Green'}
-				className={`Console-tab green ${selectedTab === 'green'? 'selected' : ''}`} 
-				onClick={() => setSelectedTab('green')}>
-					<img src='/green_team_icon.svg' alt={selectedTab[0]} className='Console-tab-icon' />
-					<span>&nbsp;{currentlyRunningMatch?.teamGreen || 'Green'}</span>
+
+				<div className='Console-body'>
+					{stdOutChunks.map((chunk, index) => (
+						<p key={`stdout-${index}`} className='Console-stdout'>{chunk}<br /></p>
+					))}
 				</div>
 			</div>
-
-			<div className='Console-body'>
-				{stdOutChunks.map((chunk, index) => (
-					<p key={`stdout-${index}`} className='Console-stdout'>{chunk}<br /></p>
-				))}
-			</div>
-		</CollapsibleDocker>
+		</div>
 	);
 };

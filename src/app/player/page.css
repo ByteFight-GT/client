@@ -45,42 +45,33 @@
 	font-weight: 600;
 }
 
-.CollapsibleDocker-header-bar {
+.ConsoleContainer-container {
 	display: flex;
-	align-items: center;
-	gap: 0.5em;
+	flex-direction: column;
+	flex-grow: 1;
+	overflow: hidden;
+}
+.ConsoleContainer-header-bar {
+	font-size: 0.875rem;
+	font-weight: 500;
 	width: 100%;
-	user-select: none;
-
-	justify-content: space-between;
-	font-size: 0.9em;
-	padding: 0.2rem 1rem;
-	
+	padding: 0.25rem 1rem;
 	color: hsl(var(--muted-foreground));
 	background-color: hsl(var(--secondary));
+	border-top: 2px solid hsl(var(--border)); /* TEMP - ok for now since there arent other ConsoleContainers on MatchInfoTab */
 	border-bottom: 2px solid hsl(var(--border));
-	transition: 0.1s;
-}
-.CollapsibleDocker-header-bar:hover {
-	color: hsl(var(--secondary-foreground));
-}
-.CollapsibleDocker-header-bar.isExpanded {
-	color: hsl(var(--foreground));
-}
-.CollapsibleDocker-header-bar h2 {
-	font-size: 1em;
-	font-weight: 500;
 }
 
-.CollapsibleDocker-toggle-icon {
+.ConsoleContainer-toggle-icon {
 	font-size: 1.25em;
 	transition: transform 0.1s;
 }
-.CollapsibleDocker-header-bar.isExpanded .CollapsibleDocker-toggle-icon {
+.ConsoleContainer-header-bar.isExpanded .ConsoleContainer-toggle-icon {
 	transform: rotate(180deg);
 }
 
-.CollapsibleDocker-body {
+.ConsoleContainer-body {
+	height: 100%;
 	border-bottom: 2px solid hsl(var(--border));
 }
 
@@ -136,10 +127,14 @@
 	padding: 0.5rem;
 	background-color: hsl(var(--themecolor));
 	color: hsl(var(--foreground));
-	height: 30rem;
-	overflow-y: auto;
+	height: 100%;
+	flex-grow: 1;
+	overflow: auto;
 }
-
+.Console-stdout {
+	width: fit-content;
+	white-space: nowrap;
+}
 
 
 .matchplayer-map-list {
@@ -310,4 +305,54 @@
 .gamenav-slider-thumb:focus, .gamenav-slider-thumb:focus-visible, .gamenav-slider-thumb:active {
 	outline: none;
 	box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+
+
+.game-info-container {
+	display: flex;
+	flex-direction: column;
+	font-size: 2rem;
+	gap: 0.5rem;
+}
+.game-info-row {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	font-variant-numeric: tabular-nums;
+}
+.game-info-row > :first-child {
+	flex-grow: 1;
+	width: 100%;
+	text-align: right;
+	color: hsl(var(--team-blue-color));
+}
+.game-info-row > :last-child {
+	flex-grow: 1;
+	width: 100%;
+	text-align: left;
+	color: hsl(var(--team-green-color));
+}
+.game-info-row svg.lucide {
+	flex-shrink: 0;
+	font-size: 2.5rem;
+	color: hsl(var(--foreground));
+}
+
+.game-info-header-blue {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-grow: 1;
+	justify-content: flex-end;
+	color: hsl(var(--team-blue-color));
+	font-size: 1.25rem;
+}
+.game-info-header-green {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-grow: 1;
+	color: hsl(var(--team-green-color));
+	font-size: 1.25rem;
 }
