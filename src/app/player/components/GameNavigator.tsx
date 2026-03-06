@@ -33,7 +33,7 @@ export const GameNavigator = () => {
 			<div className='flex gap-2 items-center gamenav-area-1 w-fit'>
 				<span className='text-xl'>
 					<span className='font-bold tabular-nums'>
-						{(renderedGameFrame + 1).toString()}
+						{(renderedGameFrame).toString()}
 					</span>
 					<span className='text-secondary-foreground'>
 						/{MAX_ROUNDS_TEMP}
@@ -57,18 +57,17 @@ export const GameNavigator = () => {
 				</Button>
 			</div>
 
-			{MAX_ROUNDS_TEMP > 0 && 
-				<div className='gamenav-area-2'>
-					<Range
-					values={renderedGameFrame !== undefined ? [renderedGameFrame] : [0]}
-					step={1}
-					min={0}
-					max={MAX_ROUNDS_TEMP - 1}
-					onChange={(values) => setRenderedGameFrame(values[0])}
-					renderTrack={RangeTrack}
-					renderThumb={RangeThumb} />
-				</div>
-			}
+			<div className={`gamenav-area-2 ${MAX_ROUNDS_TEMP <= 0 && 'pointer-events-none opacity-50'}`}>
+				<Range
+				disabled={MAX_ROUNDS_TEMP <= 0} // < and ^: TODO: make this cleaner lol
+				values={renderedGameFrame !== undefined ? [renderedGameFrame] : [0]}
+				step={1}
+				min={0}
+				max={MAX_ROUNDS_TEMP}
+				onChange={(values) => setRenderedGameFrame(values[0])}
+				renderTrack={RangeTrack}
+				renderThumb={RangeThumb} />
+			</div>
 
 			<ButtonGroup className='gamenav-area-3 w-fit'>
 				<Button title="Play/Pause" variant="secondary" size="iconsm" onClick={() => setAutoAdvance(!autoAdvance)}>
