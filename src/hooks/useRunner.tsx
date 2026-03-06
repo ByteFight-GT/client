@@ -260,7 +260,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     result: GameResult,
     TEMP_map0_outfile: string
   }) => {
-    console.log(`[handleMatchEnd] handling end of match ${currentlyRunningMatch?.matchId} (exit=${data.exitCode} & game outfile=${data.TEMP_map0_outfile})`);
+    console.log(`[handleMatchEnd] handling end of match ${currentlyRunningMatch?.matchId}, data=`, data);
     if (!currentlyRunningMatch) {
       console.warn("[handleMatchEnd] Received match end event but no match was running?");
       return;

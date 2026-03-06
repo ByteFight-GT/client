@@ -88,7 +88,12 @@ export function useIPC() {
 
     /** process closed for whatever reason - consider the current game as "ended" */
     'game-sys:process-closed':
-    function handleProcessClosed(data: {exitCode: number, finishTimestamp: number, result: GameResult, TEMP_map0_outfile: string}) {
+    function handleProcessClosed(data: {
+      exitCode: number, 
+      finishTimestamp: number, 
+      result: GameResult, 
+      TEMP_map0_outfile: string
+    }) {
       //setDebugIPCEventLog(prev => [...prev, 'game-sys:process-closed']);
       handleMatchEndRef.current(data);
     },

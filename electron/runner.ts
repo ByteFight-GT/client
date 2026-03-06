@@ -4,7 +4,7 @@ import path from 'path';
 import net from 'net';
 import fs from 'fs';
 import { getCachedSettingOrDefault } from './settings.ts';
-import { Team_t, type MatchMetadata } from '../common/types.ts';
+import { type Team_t, type MatchMetadata } from '../common/types.ts';
 import { tryGetConfiguredDir } from './utils.ts';
 import { readMap } from './maps.ts';
 import { TcpClientManager } from './TcpClientManager.ts';
@@ -227,12 +227,12 @@ export function setupRunnerHandlers() {
 				console.log(`[runner:start-match] Python process exited successfully with code ${exitCode}`);
 			}
 
-			const results = TEMP_getResultsFromGameOutputFile(TEMP_map0_outfile);
-			
+			const result = TEMP_getResultsFromGameOutputFile(TEMP_map0_outfile);
+
 			event.sender.send('game-sys:process-closed', {
 				exitCode, 
 				finishTimestamp,
-				results,
+				result,
 				TEMP_map0_outfile
 			});
 			pythonProcess = null;
