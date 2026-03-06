@@ -5,7 +5,7 @@ import React from 'react';
 import { MapList } from './MapList';
 import { BotSelector } from './BotSelector';
 import { Button } from '@/components';
-import { ArrowLeftRightIcon, ClockIcon, ImportIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
+import { ArrowLeftRightIcon, ClockIcon, FolderIcon, ImportIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
 import { useMaps } from '@/hooks/useMaps';
 import { useLoadings } from '@/hooks/useLoadings';
 import { useBots } from '@/hooks/useBots';
@@ -13,7 +13,7 @@ import { useRunner } from '@/hooks/useRunner';
 
 export const RunMatchTab = () => {
   const {maps, fetchMapList} = useMaps();
-  const {bots, fetchBotList} = useBots();
+  const {bots, fetchBotList, handleImportBots} = useBots();
   const {queueNewMatch, currentlyRunningMatch, recentBots, updateRecentBots, lastRunnerSetup, saveLastRunnerSetup} = useRunner();
   const {loadings} = useLoadings()
 
@@ -149,6 +149,10 @@ export const RunMatchTab = () => {
       </SidebarItem>
 
       <div className='flex flex-col gap-2 w-full'>
+        <Button loading={loadings.fetchBotList} onClick={handleImportBots}>
+          <FolderIcon className='inline align-sub text-primary' />
+          Import Bots
+        </Button>
         <Button variant="secondary" loading={loadings.fetchBotList} onClick={handleRefreshBots}>
           <RefreshCwIcon className='inline align-sub text-primary' />
           Refresh Bots

@@ -1,13 +1,7 @@
 import { app, dialog, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
-
-export const USER_BOTS_PATH = path.join(
-	app.getPath("userData"),
-	"bots"
-);
-
-
+import { tryGetConfiguredDir } from './utils';
 
 export const DEFAULT_BOT_PATH = path.join(
 	app.isPackaged ? process.resourcesPath : app.getAppPath(),
@@ -19,13 +13,15 @@ export const DEFAULT_BOT_PATH = path.join(
  */
 export function initBots() {
 	// create bots dir if it doesn't exist
-	if (!fs.existsSync(USER_BOTS_PATH)) {
-		fs.mkdirSync(USER_BOTS_PATH, { recursive: true });
+	const botsDir = tryGetConfiguredDir("Bots Directory");
+
+	if (!fs.existsSync(botsDir)) {
+		fs.mkdirSync(botsDir, { recursive: true });
 	}
 
 	// copy default bot if it doesn't exist yet
 	const defaultBotName = path.basename(DEFAULT_BOT_PATH);
-	const userDefaultBotPath = path.join(USER_BOTS_PATH, defaultBotName);
+	const userDefaultBotPath = path.join(botsDir, defaultBotName);
 	if (!fs.existsSync(userDefaultBotPath)) {
 		fs.cpSync(DEFAULT_BOT_PATH, userDefaultBotPath, { recursive: true });
 	}
@@ -33,8 +29,11 @@ export function initBots() {
 
 export function setupBotsHandlers() {
 	ipcMain.handle('bots:list', async (event) => {
+
+		const botsDir = tryGetConfiguredDir("Bots Directory");
+
 		try {
-			const entries = await fs.promises.readdir(USER_BOTS_PATH, { withFileTypes: true });
+			const entries = await fs.promises.readdir(botsDir, { withFileTypes: true });
 			const botFolders = entries
 				.filter(entry => entry.isDirectory())
 				.map(entry => entry.name);
@@ -46,6 +45,9 @@ export function setupBotsHandlers() {
 	});
 
 	ipcMain.handle('bots:import', async (event) => {
+
+		const botsDir = tryGetConfiguredDir("Bots Directory");
+
 		const { canceled, filePaths } = await dialog.showOpenDialog({
 			title: "Import Bots",
 			properties: ['openDirectory', 'multiSelections']
@@ -57,10 +59,10 @@ export function setupBotsHandlers() {
 			for (const filePath of filePaths) {
 				try {
 					const botName = path.basename(filePath);
-					const userBotPath = path.join(USER_BOTS_PATH, botName);
+					const dstBotPath = path.join(botsDir, botName);
 					
-					if (!fs.existsSync(userBotPath)) {
-						fs.cpSync(filePath, userBotPath, { recursive: true });
+					if (!fs.existsSync(dstBotPath)) {
+						fs.cpSync(filePath, dstBotPath, { recursive: true });
 						importedNames.push(botName);
 					}
 				} catch (err: any) {
