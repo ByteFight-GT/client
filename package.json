@@ -18,7 +18,8 @@
     "package": "npm run compile-preload && next build && npm run fixindex && electron-builder build --publish never && npm run build:dll",
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "compile-preload": "esbuild electron/preload.ts --bundle --platform=node --outfile=build/preload.js --external:electron",
-    "electron:build": "npm run compile-preload && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false next build && npm run fixindex && electron-builder --mac zip --publish never"
+    "electron:build": "npm run compile-preload && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false next build && npm run fixindex && electron-builder",
+    "electron:buildmac": "npm run compile-preload && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false next build && npm run fixindex && electron-builder --mac zip --publish never"
   },
   "dependencies": {
     "@electron/asar": "^4.0.1",
