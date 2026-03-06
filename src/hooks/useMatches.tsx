@@ -85,7 +85,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [toastError]);
 
   const addMatchToCompletedHistory = React.useCallback((matchData: MatchMetadata) => {
-    setCompletedMatchHistory(prev => [...prev, matchData]);
+    setCompletedMatchHistory(prev => [matchData, ...prev]);
     setTotalMatchesIndexed(prev => prev + 1);
   }, []);
 
