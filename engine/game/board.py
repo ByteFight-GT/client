@@ -559,7 +559,6 @@ class Board:
 
         if moves_this_turn >= 1:
             cost = GameConstants.EXTRA_MOVE_COST * moves_this_turn
-            #cost = player.stamina < GameConstants.EXTRA_MOVE_COST * moves_this_turn <-this line seemed off
             if player.stamina < cost:
                 return False 
             player.stamina -= cost
@@ -586,11 +585,10 @@ class Board:
         if target_cell.is_wall:
             return False
 
+        player.loc = target_loc
+
         if self._resolve_collision(player_parity):
             return True
-
-        previous_loc = player.loc
-        player.loc = target_loc
         
         # handle movement effects
         self._handle_erase_effects(player_parity, target_cell, move.move_type)
@@ -695,8 +693,10 @@ class Board:
             return False
         
         player = self.get_player(player_parity)
+        opponent_parity = Parity.get_opponent_parity(player_parity)
+        
         cell = self.cells[origin.r][origin.c]
-        if cell.owner_parity != player_parity:
+        if cell.owner_parity == opponent_parity:
             return False
         if cell.beacon_parity != 0:
             return False
@@ -708,7 +708,7 @@ class Board:
         
         friendly_cells: List[CellState] = []
         enemy_cells: List[CellState] = []
-        opponent_parity = Parity.get_opponent_parity(player_parity)
+        
 
         for loc in window_cells:
             if self.oob(loc):
@@ -928,7 +928,7 @@ class Board:
         regen += self._count_adjacent_friendly(player_parity) * GameConstants.ADJACENT_REGEN_BONUS
         # if player.beacon_count > 0:
         #     regen += player.beacon_count * GameConstants.BEACON_REGEN_BONUS
-        regen += min(self.get_territory_count(1) // GameConstants.GLOBAL_PAINT_REGEN_RATIO,
+        regen += min(self.get_territory_count(player_parity) // GameConstants.GLOBAL_PAINT_REGEN_RATIO,
                       GameConstants.GLOBAL_PAINT_REGEN_CAP) 
 
         if self.turn_count > GameConstants.GLOBAL_DECAY_TURN_THRESHOLD:
