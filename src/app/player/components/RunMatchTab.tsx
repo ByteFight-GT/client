@@ -14,7 +14,14 @@ import { useRunner } from '@/hooks/useRunner';
 export const RunMatchTab = () => {
   const {maps, fetchMapList} = useMaps();
   const {bots, fetchBotList, handleImportBots} = useBots();
-  const {queueNewMatch, currentlyRunningMatch, recentBots, updateRecentBots, lastRunnerSetup, saveLastRunnerSetup} = useRunner();
+  const {
+    queueNewMatch, 
+    currentlyRunningMatch, 
+    recentBots, 
+    updateRecentBots, 
+    lastRunnerSetup, 
+    saveLastRunnerSetup
+  } = useRunner();
   const {loadings} = useLoadings()
 
   // 1. Changed from a Set to a single string (or null)

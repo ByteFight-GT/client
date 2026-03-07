@@ -18,7 +18,7 @@ export function Toaster() {
       {toasts.map(function ({ id, toastTitle, toastDescription, action, ...props }) {
         return (
           <Toast key={id} {...props}>
-            <div className="grid gap-1">
+            <div className="flex flex-col gap-1 w-full">
               {toastTitle && <ToastTitle>{toastTitle}</ToastTitle>}
               {toastDescription && (
                 <ToastDescription>{toastDescription}</ToastDescription>

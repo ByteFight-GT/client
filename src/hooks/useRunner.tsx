@@ -126,16 +126,17 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         toast({
 					toastTitle: "Match started",
-					toastDescription: <p>
-            Started match between&nbsp;
-            <span className='text-[hsl(var(--team-green-color))]'>{matchData.teamGreen}</span>
-            &nbsp;and&nbsp;
-            <span className='text-[hsl(var(--team-blue-color))]'>{matchData.teamBlue}</span>
-            &nbsp;on&nbsp;
-            <span className='text-foreground'>
-              {startedMatchData.maps.join(', ')}
-            </span>!`
-          </p>
+					toastDescription: (
+            <p>
+              Started <span className='text-[hsl(var(--team-green-color))]'>{matchData.teamGreen}</span>
+              {' '}vs.{' '}
+              <span className='text-[hsl(var(--team-blue-color))]'>{matchData.teamBlue}</span>
+              {' '}on{' '}
+              <span className='text-foreground'>
+                {startedMatchData.maps.join(', ')}
+              </span>!
+            </p>
+          )
 				});
 
         return true;
@@ -185,7 +186,19 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setQueuedMatches(prev => [...prev, matchData]);
       toast({
         toastTitle: "Match queued",
-        toastDescription: `Queued ${matchData.teamGreen} v. ${matchData.teamBlue} on ${word(matchData.maps.length, 'map', 'maps')} at position ${queuedMatches.length + 1}. It will be started automatically if you leave the client open.`
+        toastDescription: (
+          <p>
+            Queued <span className='text-[hsl(var(--team-green-color))]'>{matchData.teamGreen}</span>
+            {' '}vs.{' '}
+            <span className='text-[hsl(var(--team-blue-color))]'>{matchData.teamBlue}</span>
+            {' '}on{' '}
+            <span className='text-foreground'>
+              {matchData.maps.join(', ')}
+            </span>!
+            <br />
+            Queue Position: <span className='text-primary'>{queuedMatches.length + 1}</span>
+          </p>
+        )
       });
     }
   }, [currentlyRunningMatch, queuedMatches, startMatch]);
