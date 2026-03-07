@@ -79,7 +79,7 @@ export function TEMP_getResultsFromGameOutputFile(fp: string): GameResult{
 		const result = jsonData.result;
 		if (result === "PLAYER_1") return { winner: 'blue', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
 		else if (result === "PLAYER_2") return { winner: 'green', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
-		else if (result === "DRAW") return { winner: 'draw', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
+		else if (result === "TIE") return { winner: 'draw', numRounds: jsonData.turn_count || null, reason: jsonData.reason || null };
 		else return { winner: null, numRounds: null, reason: null };
 	} catch (err) {
 		console.error("Error reading winner from game output file:", err);
