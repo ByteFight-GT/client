@@ -10,7 +10,7 @@ import { useVisualizer } from '@/gamerenderer/useVisualizer';
  * displays MatchMetadata objects that are currently running!
  * For use in MatchInfoTab
  */
-export const RunningMatchCard = () => {
+export const CurrentMatchCard = () => {
 
   const {currentMatchData} = useVisualizer();
 
@@ -49,13 +49,13 @@ export const RunningMatchCard = () => {
   return (
     <div className="match-card border-border">
       <div>
-        <h3 className='match-card-green-header ellipsis' title={currentMatchData.teamGreen}>
-          <Image className='inline' src="/green_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
-          {currentMatchData.teamGreen}
-        </h3>
         <h3 className='match-card-blue-header ellipsis' title={currentMatchData.teamBlue}>
           <Image className='inline' src="/blue_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
           {currentMatchData.teamBlue}
+        </h3>
+        <h3 className='match-card-green-header ellipsis' title={currentMatchData.teamGreen}>
+          <Image className='inline' src="/green_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
+          {currentMatchData.teamGreen}
         </h3>
       </div>
 
