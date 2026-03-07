@@ -149,7 +149,7 @@ export const RunMatchTab = () => {
       </SidebarItem>
 
       <div className='flex flex-col gap-2 w-full'>
-        <Button loading={loadings.fetchBotList} onClick={handleImportBots}>
+        <Button variant="secondary" loading={loadings.fetchBotList} onClick={handleImportBots}>
           <FolderIcon className='inline align-sub text-primary' />
           Import Bots
         </Button>
