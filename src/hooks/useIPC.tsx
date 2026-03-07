@@ -5,7 +5,7 @@ import React from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useRunner } from '@/hooks/useRunner';
 
-import { useGame } from '@/gamerenderer/useGame';
+import { useVisualizer } from '@/gamerenderer/useVisualizer';
 import { GameResult, Team_t } from '../../common/types';
 
 /**
@@ -23,7 +23,7 @@ export function useIPC() {
     handleMatchEnd,
   } = useRunner();
 
-  const {updateGamePGN} = useGame();
+  const {updateGamePGN} = useVisualizer();
 
   // REFS
   // only for the unstable stuff from useRunner so we dont need to reregister all the time

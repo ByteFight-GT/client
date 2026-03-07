@@ -4,8 +4,7 @@ import { ButtonGroup } from '@/components/ui/button-group';
 import { ChevronLeftIcon, ChevronRightIcon, PauseIcon, PlayIcon } from 'lucide-react';
 import { Range } from 'react-range';
 
-import { useGame } from '@/gamerenderer/useGame';
-import { useRunner } from '@/hooks/useRunner';
+import { useVisualizer } from '@/gamerenderer/useVisualizer';
 
 const speeds = [
 	{ label: "1x", value: 1 },
@@ -15,92 +14,123 @@ const speeds = [
 ];
 
 export const GameNavigator = () => {
-
 	const { 
-		gameManagerRef,
-		renderedGameFrame, 
+		subscribeToGameOrFrameChanges,
+		currentMatchData,
 		setRenderedGameFrame,
 		incrementRenderedGameFrame,
 		autoAdvance,
 		setAutoAdvance,
 		playbackSpeed,
 		setPlaybackSpeed
-	} = useGame();
+	} = useVisualizer();
 
-	const {TEMP_gameDataPacketsReceived} = useRunner();
+	// state to show, received from visualizer subscription
+	const [maxGameFrame, setMaxGameFrame] = React.useState(0);
+	const [renderedGameFrame, setRenderedGameFrameState] = React.useState<number>(0);
 
-	const [TEMP_maxGameFrame, setTEMP_maxGameFrame] = React.useState(0);
-
-	// TEMP: for now, update our local state to the source of truth (from gameManagerRef) whenever we got new packet (TEMP_gameDataPacketsReceived changes)
 	React.useEffect(() => {
-		const newMaxFrame = gameManagerRef.current.gamePGN.turn_count;
-		setTEMP_maxGameFrame(newMaxFrame);
-	}, [TEMP_gameDataPacketsReceived]);
+		return subscribeToGameOrFrameChanges(
+			(entirePGN, currentFrame) => {
+				setMaxGameFrame(entirePGN.turn_count);
+				setRenderedGameFrameState(currentFrame);
+			}
+		);
+	}, []);
 
-	const maxFrameString = Math.max(0, TEMP_maxGameFrame).toString();
+	/** 
+	 * Disabled means user cant control anything except for setting playback speed.
+	 * We disable when theres no game running, or at the very beginning of a game
+	 * when only the  map has been loaded and not any data (turn_count should be -1 then)
+	 */
+	const controlsDisabled = !currentMatchData || maxGameFrame <= 0;
 
+	// components for the slider
+	const RenderSliderTrack = React.useCallback(({ props, children }) => {
+		const {key, ...rest} = props;
+		return (
+			<div key={key} {...rest} className={`gamenav-slider-track ${controlsDisabled? "disabled" : ""}`}>
+				{children}
+			</div>
+		);
+	}, [controlsDisabled]);
+
+	const RenderSliderThumb = React.useCallback(({ props }) => {
+		if (controlsDisabled) return null; // hide the thumb if controls are disabled
+		const {key, ...rest} = props;
+		return (
+			<div key={key} {...rest} className="gamenav-slider-thumb" />
+		);
+	}, [controlsDisabled]);
 
 	return (
-		<div className="game-navigator-container">
-			<div className='flex gap-2 items-center gamenav-area-1 w-fit'>
-				<span className='text-xl'>
-					<span className='font-bold tabular-nums'>
-						{(renderedGameFrame).toString().padStart(maxFrameString.length, '0') /* TEMP: pad this with 0s so it doesn't jump around when the number of digits changes */}
+		<div className="gamenav-container">
+			<div className='flex gap-2 items-center gamenav-area-1'>
+				<div className='flex justify-center text-secondary-foreground'>
+					<span className='w-[4ch] text-right tabular-nums text-foreground font-bold'>
+						{controlsDisabled? "-" : renderedGameFrame}
 					</span>
-					<span className='text-secondary-foreground'>
-						/{maxFrameString /* (TEMP) this is so stupid lol */}
+					/
+					<span className='w-[4ch] text-left tabular-nums'>
+						{controlsDisabled? "-" : maxGameFrame}
 					</span>
-				</span>
+				</div>
 
-				<Button 
-				disabled={renderedGameFrame <= 0}
-				title='Previous Move'
-				size="iconsm"
-				onClick={() => {
-					setAutoAdvance(false);
-					incrementRenderedGameFrame(-1);
-				}}>
-					<ChevronLeftIcon />
-				</Button>
+				<ButtonGroup>
+					<Button 
+					disabled={controlsDisabled}
+					tooltip='Previous Move'
+					size="iconsm"
+					onClick={() => {
+						setAutoAdvance(false);
+						incrementRenderedGameFrame(-1);
+					}}>
+						<ChevronLeftIcon />
+					</Button>
 
-				<Button 
-				disabled={renderedGameFrame >= TEMP_maxGameFrame} // TODO
-				title='Next Move'
-				size="iconsm"
-				onClick={() => {
-					setAutoAdvance(false);
-					incrementRenderedGameFrame(1);
-				}}>
-					<ChevronRightIcon />
-				</Button>
+					<Button 
+					disabled={controlsDisabled}
+					tooltip='Next Move'
+					size="iconsm"
+					onClick={() => {
+						setAutoAdvance(false);
+						incrementRenderedGameFrame(1);
+					}}>
+						<ChevronRightIcon />
+					</Button>
+				</ButtonGroup>
 			</div>
 
-			<div className={`gamenav-area-2 ${TEMP_maxGameFrame <= 0 && 'pointer-events-none opacity-50'}`}>
+			<div className="gamenav-area-2">
 				<Range
-				disabled={TEMP_maxGameFrame <= 0} // < and ^: TODO: make this cleaner lol
-				// TEMP: when navigating back to /player, max starts off at 0. it should update when the effect runs
-				values={renderedGameFrame !== undefined ? [Math.min(renderedGameFrame, TEMP_maxGameFrame)] : [0]}
-				step={1}
+				disabled={controlsDisabled}
 				min={0}
-				max={TEMP_maxGameFrame <= 0? 1 : TEMP_maxGameFrame} // TODO. setting to 1 as min because it errors if min=max. Should be disabled tho so it should be fine
+				max={controlsDisabled? 1 : maxGameFrame} // 1 if disabled just so rendering doesnt break. Shouldnt be usable anyway
+				step={1}
+				values={controlsDisabled? [0] : [Math.min(renderedGameFrame, maxGameFrame)]}
 				onChange={(values) => {
 					// blur this element to prevent keybinds from doublecounting (see GameWindow)
 					document.activeElement instanceof HTMLElement && document.activeElement.blur(); 
 					setAutoAdvance(false);
 					setRenderedGameFrame(values[0]);
 				}}
-				renderTrack={RangeTrack}
-				renderThumb={TEMP_maxGameFrame <= 0? () => null : RangeThumb} />
+				renderTrack={RenderSliderTrack}
+				renderThumb={RenderSliderThumb} />
 			</div>
 
-			<ButtonGroup className='gamenav-area-3 w-fit'>
-				<Button title="Play/Pause" variant="secondary" size="iconsm" onClick={() => setAutoAdvance(!autoAdvance)}>
+			<ButtonGroup className='gamenav-area-3'>
+				<Button 
+				disabled={controlsDisabled}
+				tooltip="Play/Pause" 
+				variant="secondary" 
+				size="iconsm" 
+				onClick={() => setAutoAdvance(prev => !prev)}>
 					{autoAdvance? <PauseIcon /> : <PlayIcon />}
 				</Button>
 
 				{speeds.map((speed) => (
 					<Button 
-					title={`${speed.label} Speed`}
+					tooltip={`${speed.label} Speed`}
 					variant={speed.value === playbackSpeed? "default": "secondary"}
 					size="iconsm" 
 					onClick={() => setPlaybackSpeed(speed.value)}
@@ -110,21 +140,5 @@ export const GameNavigator = () => {
 				))}
 			</ButtonGroup>
 		</div>
-	);
-}
-
-// this stuff is for the slider 
-function RangeTrack({ props, children }) {
-	const {key, ...rest} = props;
-	return (
-		<div key={key} {...rest} className='gamenav-slider-track'>
-			{children}
-		</div>
-	);
-}
-function RangeThumb({ props }) {
-	const {key, ...rest} = props;
-	return (
-		<div key={key} {...rest} className='gamenav-slider-thumb' />
 	);
 }

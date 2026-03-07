@@ -6,7 +6,7 @@ import { useLoadings } from './useLoadings';
 import { GameResult, MatchMetadata, Team_t } from '../../common/types';
 import { useMatches } from './useMatches';
 import { generateMatchId, word } from '../../common/utils';
-import { useGame } from '@/gamerenderer/useGame';
+import { useVisualizer } from '@/gamerenderer/useVisualizer';
 
 // TODO - clean this up somehow 
 import _EMPTY_GAME_PGN from '@/gamerenderer/defaults/EMPTY_GAME_PGN.json'
@@ -22,7 +22,6 @@ type QueueNewMatchParams = {
 
 export type UseRunnerValue = {
   currentlyRunningMatch: MatchMetadata | null;
-  TEMP_currentlyViewingMatch: MatchMetadata | null; // TEMP - for game info page, should be the match whose info we're currently viewing, but for now just set to currentlyRunningMatch
   queuedMatches: MatchMetadata[];
   stdOutChunksRef: React.RefObject<string[]>;
   TEMP_gameDataPacketsReceived: number; // TEMP for causing game info and game nav to rerender on new game data
@@ -33,7 +32,6 @@ export type UseRunnerValue = {
   lastRunnerSetup: QueueNewMatchParams | null;
   debugIPCEventLog: string[]; // for debugging - logs the ipc events received from electron
   setTEMP_gameDataPacketsReceived: React.Dispatch<React.SetStateAction<number>>;
-  setTEMP_currentlyViewingMatch: React.Dispatch<React.SetStateAction<MatchMetadata | null>>;
   setDebugIPCEventLog: React.Dispatch<React.SetStateAction<string[]>>;
   queueNewMatch: (params: QueueNewMatchParams) => void;
   dequeueMatch: (index: number) => void;
@@ -62,8 +60,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const {toast, toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
   const {addMatchToCompletedHistory} = useMatches();
-  const {reset, setAutoAdvance} = useGame();
- 
+  const {setVisualizerState, setAutoAdvance} = useVisualizer();
+
   const [currentlyRunningMatch, setCurrentlyRunningMatch] = React.useState<MatchMetadata | null>(null);
 
   /** 
@@ -73,12 +71,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [queuedMatches, setQueuedMatches] = React.useState<MatchMetadata[]>([]);
 
   const stdOutChunksRef = React.useRef<string[]>([]);
-
-  /**
-   * TEMP - this for now is used for keeping track of any completed match that the user has loaded into
-   * the game renderer. Used for the RunningMatchCard component
-   */
-  const [TEMP_currentlyViewingMatch, setTEMP_currentlyViewingMatch] = React.useState<MatchMetadata | null>(null);
 
   // maybe TEMP: used for causing things like game info and game nav to rerender upon new game data
   const [TEMP_gameDataPacketsReceived, setTEMP_gameDataPacketsReceived] = React.useState(0);
@@ -125,23 +117,26 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           startTimestamp: res.startTimestamp,
           status: 'in-progress'
         } satisfies MatchMetadata;
-
-        // clear terminal buffers
-        stdOutChunksRef.current.length = 0;
-
+              
+        stdOutChunksRef.current.length = 0; // clear terminal buffers
         setCurrentlyRunningMatch(startedMatchData);
-
-				toast({
-					toastTitle: "Match started",
-					toastDescription: `\
-						Started match between ${matchData.teamGreen} and ${matchData.teamBlue}\
-						on ${word(matchData.maps.length, 'map', 'maps')}!`
-				});
-
-        reset(res.TEMP_mapData0, EMPTY_GAME_PGN); // reset game state to empty for the new game
-        setTEMP_currentlyViewingMatch(null);
+        setVisualizerState(startedMatchData, EMPTY_GAME_PGN, res.TEMP_mapData0);
         setAutoAdvance(false); // TEMP: we want autoadvance during games, but useGame currently handles it differently SPECIFICALLY for live games 
         setTEMP_gameDataPacketsReceived(0);
+
+        toast({
+					toastTitle: "Match started",
+					toastDescription: <p>
+            Started match between&nbsp;
+            <span className='text-[hsl(var(--team-green-color))]'>{matchData.teamGreen}</span>
+            &nbsp;and&nbsp;
+            <span className='text-[hsl(var(--team-blue-color))]'>{matchData.teamBlue}</span>
+            &nbsp;on&nbsp;
+            <span className='text-foreground'>
+              {startedMatchData.maps.join(', ')}
+            </span>!`
+          </p>
+				});
 
         return true;
 
@@ -363,8 +358,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     setAutoAdvance(false);
-    // "demote" the match to a viewing match
-    setTEMP_currentlyViewingMatch(currentlyRunningMatch);
     setCurrentlyRunningMatch(null);
 
   }, [currentlyRunningMatch, toggleLoading, toastError]);
@@ -388,8 +381,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const res = await window.electron.invoke('matches:readgame', matchData, mapName);
       if (res.success) {
         const {mapData, gameData} = res;
-        setTEMP_currentlyViewingMatch(matchData);
-        reset(mapData, gameData);
+        setVisualizerState(matchData, gameData, mapData);
         return true;
       } else {
         toastError("Failed to load game replay", res.error);
@@ -401,7 +393,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } finally {
       toggleLoading("loadGameIntoPlayer", false);
     }
-  }, [toastError, reset]);
+  }, [toastError]);
 
 	// EFFECTS
 
@@ -418,12 +410,10 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     queuedMatches,
     stdOutChunksRef,
     TEMP_gameDataPacketsReceived,
-    TEMP_currentlyViewingMatch,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,
     setTEMP_gameDataPacketsReceived,
-    setTEMP_currentlyViewingMatch,
     queueNewMatch,
     dequeueMatch,
     moveWithinQueue,
@@ -439,8 +429,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   } satisfies UseRunnerValue), [
     currentlyRunningMatch,
     queuedMatches,
-    TEMP_gameDataPacketsReceived,
-    TEMP_currentlyViewingMatch,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,

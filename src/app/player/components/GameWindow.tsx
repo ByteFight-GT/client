@@ -3,7 +3,7 @@
 import React from 'react';
 import { GameNavigator } from './GameNavigator';
 import { GameRenderer } from '@/gamerenderer/GameRenderer';
-import { useGame } from '@/gamerenderer/useGame';
+import { useVisualizer } from '@/gamerenderer/useVisualizer';
 
 type GameWindowProps = {
 	
@@ -11,7 +11,7 @@ type GameWindowProps = {
 
 export const GameWindow = (props: GameWindowProps) => {
 
-	const {incrementRenderedGameFrame, setAutoAdvance, setPlaybackSpeed} = useGame();
+	const {incrementRenderedGameFrame, setAutoAdvance, setPlaybackSpeed} = useVisualizer();
 	
 	// keybinds map
 	const KEYBINDS_MAP = React.useMemo(() => ({

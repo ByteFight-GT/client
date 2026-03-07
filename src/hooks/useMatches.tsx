@@ -5,7 +5,6 @@ import { MatchMetadata } from '../../common/types';
 
 import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
-import { useGame } from '@/gamerenderer/useGame';
 
 export type UseMatchesValue = {
   completedMatchHistory: MatchMetadata[];
@@ -26,7 +25,6 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const {toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
-  const {reset} = useGame();
 
   // >>> HANDLERS
 

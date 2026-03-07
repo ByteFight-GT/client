@@ -7,7 +7,7 @@ import { SettingsProvider } from './useSettings';
 import { MatchesProvider } from './useMatches';
 import { LoadingsProvider } from './useLoadings';
 import { RunnerProvider } from './useRunner';
-import { GameProvider } from '@/gamerenderer/useGame';
+import { VisualizerProvider } from '@/gamerenderer/useVisualizer';
 
 /**
  * Combined provider that wraps all app-wide state providers.
@@ -22,13 +22,13 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       <SettingsProvider>
         <BotsProvider>
           <MapsProvider>
-            <GameProvider>
+            <VisualizerProvider>
               <MatchesProvider>
                 <RunnerProvider>
                   {children}
                 </RunnerProvider>
               </MatchesProvider>
-            </GameProvider>
+            </VisualizerProvider>
           </MapsProvider>
         </BotsProvider>
       </SettingsProvider>

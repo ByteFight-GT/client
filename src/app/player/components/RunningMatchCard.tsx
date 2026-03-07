@@ -3,9 +3,8 @@
 import React from 'react';
 import { fmtTime, word } from '../../../../common/utils';
 import Image from 'next/image';
-import { useRunner } from '@/hooks/useRunner';
 import { SidebarItem } from '@/components/SidebarItem';
-import { Button } from '@/components';
+import { useVisualizer } from '@/gamerenderer/useVisualizer';
 
 /** 
  * displays MatchMetadata objects that are currently running!
@@ -13,17 +12,12 @@ import { Button } from '@/components';
  */
 export const RunningMatchCard = () => {
 
-  const {currentlyRunningMatch, TEMP_currentlyViewingMatch} = useRunner();
-
-  const matchToShow = React.useMemo(() => {
-    // TEMP - show running with higher prio, or viewing if no running
-    return currentlyRunningMatch ?? TEMP_currentlyViewingMatch;
-  }, [currentlyRunningMatch, TEMP_currentlyViewingMatch]);
+  const {currentMatchData} = useVisualizer();
 
   // stored in state so we can update every min
   const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(
-    matchToShow?.startTimestamp?
-      fmtTime(Date.now() - matchToShow.startTimestamp) 
+    currentMatchData?.startTimestamp?
+      fmtTime(Date.now() - currentMatchData.startTimestamp) 
     : 
       "-"
   );
@@ -31,17 +25,17 @@ export const RunningMatchCard = () => {
   React.useEffect(() => {
     const interval = setInterval(() => {
       setTimeElapsedDisplay(
-        matchToShow?.startTimestamp?
-          fmtTime(Date.now() - matchToShow.startTimestamp) 
+        currentMatchData?.startTimestamp?
+          fmtTime(Date.now() - currentMatchData.startTimestamp) 
         : 
           "-"
       );
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [matchToShow?.startTimestamp]);
+  }, [currentMatchData?.startTimestamp]);
   
-  if (!matchToShow) {
+  if (!currentMatchData) {
     return (
       <SidebarItem disableDefaultHeader>
         <span className="text-center text-sm text-muted-foreground">
@@ -55,21 +49,21 @@ export const RunningMatchCard = () => {
   return (
     <div className="match-card border-border">
       <div>
-        <h3 className='match-card-green-header ellipsis' title={matchToShow.teamGreen}>
+        <h3 className='match-card-green-header ellipsis' title={currentMatchData.teamGreen}>
           <Image className='inline' src="/green_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
-          {matchToShow.teamGreen}
+          {currentMatchData.teamGreen}
         </h3>
-        <h3 className='match-card-blue-header ellipsis' title={matchToShow.teamBlue}>
+        <h3 className='match-card-blue-header ellipsis' title={currentMatchData.teamBlue}>
           <Image className='inline' src="/blue_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
-          {matchToShow.teamBlue}
+          {currentMatchData.teamBlue}
         </h3>
       </div>
 
       <div>
         <h4 className='text-sm text-muted-foreground'>
-          On {word(matchToShow.maps.length, "map", "maps")}:
+          On {word(currentMatchData.maps.length, "map", "maps")}:
         </h4>
-        {matchToShow.maps.map((map, index) => (
+        {currentMatchData.maps.map((map, index) => (
           <p key={index} className='text-sm'>{map}</p>
         ))}
       </div>
@@ -77,15 +71,15 @@ export const RunningMatchCard = () => {
       <hr />
 
       <div>
-        {matchToShow.startTimestamp !== null &&
-          <p className='text-sm text-muted-foreground' title={new Date(matchToShow.startTimestamp).toLocaleString()}>
+        {currentMatchData.startTimestamp !== null &&
+          <p className='text-sm text-muted-foreground' title={new Date(currentMatchData.startTimestamp).toLocaleString()}>
             Started&nbsp;
             <span className='text-secondary-foreground'>{timeElapsedDisplay} ago</span>
           </p>
         }
         <p className='text-sm text-muted-foreground'>
           Match ID&nbsp;
-          <span className='text-secondary-foreground'>{matchToShow.matchId}</span>
+          <span className='text-secondary-foreground'>{currentMatchData.matchId}</span>
         </p>
       </div>
     </div>

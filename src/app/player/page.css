@@ -248,7 +248,7 @@
 }
 
 
-.game-navigator-container {
+.gamenav-container {
 	position: absolute;
 	margin: 0 auto;
 	bottom: 1rem;
@@ -264,6 +264,7 @@
 }
 .gamenav-area-1 {
 	grid-area: gamenav-area-1;
+	width: fit-content;
 }
 .gamenav-area-2 {
 	grid-area: gamenav-area-2;
@@ -273,6 +274,7 @@
 }
 .gamenav-area-3 {
 	grid-area: gamenav-area-3;
+	width: fit-content;
 }
 @media (max-width: 1024px) {
 	.game-navigator-container {
@@ -283,7 +285,7 @@
 			"gamenav-area-1 gamenav-area-3" !important;
 	}
 	.gamenav-area-3 {
-		width: 100%;
+		width: 100% !important;
 		display: flex;
 		justify-content: flex-end;
 	}
@@ -297,6 +299,9 @@
 	height: 0.5rem;
 	border-radius: var(--radius2);
 	position: relative;
+}
+.gamenav-slider-track.disabled {
+	opacity: 0.5;
 }
 .gamenav-slider-thumb {
 	height: 1rem;

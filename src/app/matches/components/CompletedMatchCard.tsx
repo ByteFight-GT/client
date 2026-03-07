@@ -25,7 +25,7 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
 
   const {toastError} = useToast();
   const {loadings} = useLoadings();
-  const {currentlyRunningMatch, setTEMP_currentlyViewingMatch} = useRunner();
+  const {currentlyRunningMatch} = useRunner();
   const {loadGameIntoPlayer} = useRunner();
 
   const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(fmtTime(Date.now() - (props.matchData.finishTimestamp ?? 0)));
@@ -50,21 +50,13 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
       return;
     }
 
-    if (currentlyRunningMatch) {
-      toastError(
-        "Game currently running",
-        "You currently have a match running, please stop it or wait for it to finish before opening a replay."
-      );
-      return;
-    }
-
     // TEMP - only have 1 map per match rn so just use [0]
     const success = await loadGameIntoPlayer(props.matchData, props.matchData.maps[0]);
     if (success) {
       redirect("/player");
     } // else: loadGameIntoPlayer will handle error display
 
-  }, [loadGameIntoPlayer, currentlyRunningMatch, setTEMP_currentlyViewingMatch]);
+  }, [loadGameIntoPlayer]);
 
 
   if (props.matchData.finishTimestamp === null || props.matchData.startTimestamp === null) {
