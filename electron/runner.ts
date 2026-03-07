@@ -176,8 +176,8 @@ export function setupRunnerHandlers() {
 		// compiling args
 		const scriptArgs: string[] = [];
 		scriptArgs.push('--output_port', port.toString());
-		scriptArgs.push('--a_dir', path.join(botsDir, matchData.teamGreen));
-		scriptArgs.push('--b_dir', path.join(botsDir, matchData.teamBlue));
+		scriptArgs.push('--a_dir', path.join(botsDir, matchData.teamBlue));
+		scriptArgs.push('--b_dir', path.join(botsDir, matchData.teamGreen));
 		
 		// TODO - server only handles 1 game at a time rn.
 		// pushing just first map/outfile for now, in the future we can try handling multiple

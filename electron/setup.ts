@@ -4,6 +4,7 @@ import { setupSettingsHandlers } from './settings.ts';
 import { setupMapsHandlers } from './maps.ts';
 import { setupBotsHandlers } from './bots.ts';
 import { setupMatchesHandlers } from './matches.ts';
+import { setupLogsHandlers } from './logs.ts';
 
 export function setupAllHandlers(store: ElectronStore) {
   setupSettingsHandlers();
@@ -11,4 +12,5 @@ export function setupAllHandlers(store: ElectronStore) {
   setupBotsHandlers();
   setupMatchesHandlers();
   setupRunnerHandlers();
+  setupLogsHandlers();
 }
