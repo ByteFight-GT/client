@@ -50,13 +50,13 @@ export const QueuedMatchCard = (props: QueuedMatchCardProps) => {
   return (
     <div className={`match-card ${props.queueIndex === 0? "border-primary" : "border-border"}`}>
       <div>
-        <h3 className='match-card-green-header ellipsis' title={props.matchData.teamGreen}>
-          <Image className='inline' src="/green_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
-          {props.matchData.teamGreen}
-        </h3>
         <h3 className='match-card-blue-header ellipsis' title={props.matchData.teamBlue}>
           <Image className='inline' src="/blue_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
           {props.matchData.teamBlue}
+        </h3>
+        <h3 className='match-card-green-header ellipsis' title={props.matchData.teamGreen}>
+          <Image className='inline' src="/green_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
+          {props.matchData.teamGreen}
         </h3>
       </div>
 
