@@ -30,7 +30,7 @@ class Parity:
                 - -1 if the value is negative
                 - 0 if the value is zero
         """
-        return 0 if value == 0 else value / abs(value)
+        return 0 if value == 0 else value // abs(value)
     
     @staticmethod
     def get_opponent_parity(parity: int) -> int:
@@ -694,7 +694,7 @@ class Board:
         
         player = self.get_player(player_parity)
         opponent_parity = Parity.get_opponent_parity(player_parity)
-        
+
         cell = self.cells[origin.r][origin.c]
         if cell.owner_parity == opponent_parity:
             return False
@@ -908,6 +908,12 @@ class Board:
             opponent = self.get_player(opponent_parity)
             opponent.gain_hill_control(hill.id)
             hill.controller_parity = opponent_parity
+
+            if( len(self.hills) > 0 and 
+                  len(opponent.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
+                
+                owner = self.get_player(owner_parity)
+                owner.stamina = -1
     
     
     def _apply_regeneration(self, player_parity) -> None:
@@ -1019,7 +1025,7 @@ class Board:
         """
         if self.p1.is_dead():
             if (len(self.hills) > 0 and 
-                len(self.p1.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
+                len(self.p2.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
                 return Result.PLAYER_2, WinReason.DOMINATION
             if self.p1.loc == self.p2.loc:
                 return Result.PLAYER_2, WinReason.COLLISION
@@ -1027,7 +1033,7 @@ class Board:
             return Result.PLAYER_2, WinReason.STAMINA_LOSS
         if self.p2.is_dead():
             if (len(self.hills) > 0 and 
-                len(self.p2.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
+                len(self.p1.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
                 return Result.PLAYER_1, WinReason.DOMINATION
             if self.p1.loc == self.p2.loc:
                 return Result.PLAYER_1, WinReason.COLLISION
