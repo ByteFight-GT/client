@@ -13,7 +13,7 @@ const CONSOLE_UPDATE_INTERVAL_MS = 250;
  */
 export const Console = () => {
 
-	const {stdOutChunksRef, stdErrChunksRef} = useRunner();
+	const {stdOutChunksRef} = useRunner();
 
 	const [stdOutChunks, setStdOutChunks] = React.useState<string[]>([]);
 	React.useEffect(() => {
@@ -23,7 +23,6 @@ export const Console = () => {
 				setStdOutChunks(prev => [...prev, ...stdOutChunksRef.current]);
 				stdOutChunksRef.current = [];
 			}
-			// TODO - somehow interleave stderr, or just combine them on the backend (make stderr red or smth?)
 		}, CONSOLE_UPDATE_INTERVAL_MS);
 
 		return () => clearInterval(interval);
@@ -33,7 +32,6 @@ export const Console = () => {
 		<div className='ConsoleContainer-container'>
 			<div className="ConsoleContainer-header-bar">Console</div>
 			<div className='ConsoleContainer-body'>
-
 
 				<div className='Console-body'>
 					{stdOutChunks.map((chunk, index) => (

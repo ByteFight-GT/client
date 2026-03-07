@@ -18,7 +18,6 @@ export function useIPC() {
   const {
     currentlyRunningMatch, 
     stdOutChunksRef,
-    stdErrChunksRef,
     setDebugIPCEventLog, 
     setTEMP_gameDataPacketsReceived,
     handleMatchEnd,
@@ -44,13 +43,6 @@ export function useIPC() {
     function handleStdOut(chunk: string) {
       //setDebugIPCEventLog(prev => [...prev, 'game-usr:stdout']);
       stdOutChunksRef.current.push(chunk);
-    },
-
-    /** in a perfect world, also user-only data */
-    'game-usr:stderr': 
-    function handleStdErr(chunk: string) {
-      //setDebugIPCEventLog(prev => [...prev, 'game-usr:stderr']);
-      stdErrChunksRef.current.push(chunk);
     },
 
     /** game data from the runner, like moves and events */

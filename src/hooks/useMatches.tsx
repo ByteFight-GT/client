@@ -11,7 +11,6 @@ export type UseMatchesValue = {
   completedMatchHistory: MatchMetadata[];
   totalMatchesIndexed: number;
   fetchMatchHistoryNextPage: (count: number) => void;
-  writeMatchData: (matchData: MatchMetadata) => Promise<boolean>;
   addMatchToCompletedHistory: (matchData: MatchMetadata) => void;
 };
 
@@ -63,29 +62,6 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
       });
   }, [loadings.fetchMatchHistoryNextPage, completedMatchHistory.length, toggleLoading, toastError]);
 
-  /**
-   * Use solely for updating existing matches in state/files.
-   * Writes `matchData` directly, doesnt update it or anything (e.g. if a match completed,
-   * update it first before passing it into this)
-   * use queueNewMatch for new ones!
-   * 
-   * Returns bool specifying whether write was successful
-   */
-  const writeMatchData = React.useCallback(async (matchData: MatchMetadata) => {
-    try {
-      const res = await window.electron.invoke('matches:write', matchData)
-      if (res.success) {
-        return true;
-      } else {
-        toastError("Failed to update match", res.error);
-      }
-    } catch (err: any) {
-      toastError("Failed to update match", err);
-    }
-
-    return false;
-  }, [toastError]);
-
   const addMatchToCompletedHistory = React.useCallback((matchData: MatchMetadata) => {
     setCompletedMatchHistory(prev => [matchData, ...prev]);
     setTotalMatchesIndexed(prev => prev + 1);
@@ -101,13 +77,11 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({ child
     completedMatchHistory,
     totalMatchesIndexed,
     fetchMatchHistoryNextPage,
-    writeMatchData,
     addMatchToCompletedHistory,
   } satisfies UseMatchesValue), [
     completedMatchHistory,
     totalMatchesIndexed,
     fetchMatchHistoryNextPage,
-    writeMatchData,
     addMatchToCompletedHistory,
   ]);
 

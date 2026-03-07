@@ -134,7 +134,7 @@
 }
 .Console-stdout {
 	width: fit-content;
-	white-space: nowrap;
+	white-space: pre;
 }
 
 

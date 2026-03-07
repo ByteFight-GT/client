@@ -25,7 +25,6 @@ export type UseRunnerValue = {
   TEMP_currentlyViewingMatch: MatchMetadata | null; // TEMP - for game info page, should be the match whose info we're currently viewing, but for now just set to currentlyRunningMatch
   queuedMatches: MatchMetadata[];
   stdOutChunksRef: React.RefObject<string[]>;
-  stdErrChunksRef: React.RefObject<string[]>;
   TEMP_gameDataPacketsReceived: number; // TEMP for causing game info and game nav to rerender on new game data
   recentBots: {
     green: string[];
@@ -62,7 +61,7 @@ const RunnerContext = React.createContext<UseRunnerValue | undefined>(undefined)
 export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {toast, toastError} = useToast();
   const {loadings, toggleLoading} = useLoadings();
-  const {writeMatchData, addMatchToCompletedHistory} = useMatches();
+  const {addMatchToCompletedHistory} = useMatches();
   const {reset, setAutoAdvance} = useGame();
  
   const [currentlyRunningMatch, setCurrentlyRunningMatch] = React.useState<MatchMetadata | null>(null);
@@ -74,7 +73,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [queuedMatches, setQueuedMatches] = React.useState<MatchMetadata[]>([]);
 
   const stdOutChunksRef = React.useRef<string[]>([]);
-  const stdErrChunksRef = React.useRef<string[]>([]);
 
   /**
    * TEMP - this for now is used for keeping track of any completed match that the user has loaded into
@@ -130,7 +128,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         // clear terminal buffers
         stdOutChunksRef.current.length = 0;
-        stdErrChunksRef.current.length = 0;
 
         setCurrentlyRunningMatch(startedMatchData);
 
@@ -302,25 +299,28 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     }
 
-    const writeSuccess = await writeMatchData(updatedMatchData);
-    if (writeSuccess) {
-      addMatchToCompletedHistory(updatedMatchData);
+    let matchWriteRes;
+    try {
+      matchWriteRes = await window.electron.invoke('matches:write', updatedMatchData);
+    } catch (error) {
+      matchWriteRes = {success: false, error};
+    }
 
-      // "demote" the match to a viewing match
-      setTEMP_currentlyViewingMatch(currentlyRunningMatch);
-      setCurrentlyRunningMatch(null);
+    // TEMP - only need to write logs for first map rn since we only have 1 game per
+    const compiledLogs = stdOutChunksRef.current.join('');
+    let logWriteRes;
+    try {
+      logWriteRes = await window.electron.invoke('logs:write', updatedMatchData.matchId, updatedMatchData.maps[0], compiledLogs);
+    } catch (error) {
+      logWriteRes = {success: false, error};
+    }
 
-      setAutoAdvance(false);
-
+    if (matchWriteRes.success) {
+      addMatchToCompletedHistory(updatedMatchData);     
       toast({
-        toastTitle: `Match ${data.exitCode === 0? 'completed' : 'errored'}`,
+        toastTitle: `Match finished!`,
         toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${data.exitCode === 0? 'successfully' : 'with exit code ' + data.exitCode}!`
       });
-
-      //setDebugIPCEventLog(prev => [...prev, `--- match ${updatedMatchData.matchId} ended with code ${data.exitCode} ---`]);
-    
-			// cant start next in queue immediately since setCurrentlyRunningMatch wont update immediately BRUH
-			// we will use an effect for that
 		} else {
       toastError(
         "Failed to save match data",
@@ -331,7 +331,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             .then(() => {
               toast({
                 toastTitle: "Match data copied",
-                toastDescription: "The match data has been copied to your clipboard. Please share this with the developers to help debug this issue. Thanks!"
+                toastDescription: "Match data copied to clipboard. Please share this with the developers to help debug this issue. Thanks!"
               });
             })
             .catch((err) => {
@@ -340,9 +340,34 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           }}>Copy match data</Button>
         </p>
       )
-      // TODO - enable "try again" action (popup or smth)
     }
-  }, [currentlyRunningMatch, writeMatchData, toggleLoading, toastError]);
+
+    if (!logWriteRes.success) {
+      toastError(
+        "Failed to save match logs",
+        <p>
+          An error occured while saving match logs to storage. Please report this!
+          <Button onClick={() => {
+            navigator.clipboard.writeText(compiledLogs)
+            .then(() => {
+              toast({
+                toastTitle: "Match logs copied",
+                toastDescription: "Logs copied to clipboard. Please share this with the developers to help debug this issue. Thanks!"
+              });
+            }).catch((err) => {
+              toastError("Failed to copy match logs!", err);
+            });
+          }}>Copy logs</Button>
+        </p>
+      )
+    }
+
+    setAutoAdvance(false);
+    // "demote" the match to a viewing match
+    setTEMP_currentlyViewingMatch(currentlyRunningMatch);
+    setCurrentlyRunningMatch(null);
+
+  }, [currentlyRunningMatch, toggleLoading, toastError]);
 
   const updateRecentBots = React.useCallback((greenBot: string, blueBot: string) => {
     setRecentBots(prev => ({
@@ -392,7 +417,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     currentlyRunningMatch,
     queuedMatches,
     stdOutChunksRef,
-    stdErrChunksRef,
     TEMP_gameDataPacketsReceived,
     TEMP_currentlyViewingMatch,
     recentBots,

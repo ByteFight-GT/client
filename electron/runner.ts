@@ -236,8 +236,6 @@ export function setupRunnerHandlers() {
 		pythonProcess.stderr.on('data', (data) => {
 			const chunk = data.toString();
 			console.log('Python stderr:', chunk);
-			//event.sender.send('game-usr:stderr', chunk);
-			// TEMP - just send to stdout for now
 			event.sender.send('game-usr:stdout', chunk);
 		});
 
