@@ -30,10 +30,8 @@ export const MatchPlayerSidebar = () => {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab');
 
-  console.log("initialTab:", initialTab);
-
   const [currTab, setCurrTab] = React.useState<keyof typeof MATCHPLAYER_SIDEBAR_TABS>(
-    (initialTab && initialTab in MATCHPLAYER_SIDEBAR_TABS ? initialTab : 'runner') as keyof typeof MATCHPLAYER_SIDEBAR_TABS
+    (initialTab || 'runner') as keyof typeof MATCHPLAYER_SIDEBAR_TABS
   );
 
   // which thing torender

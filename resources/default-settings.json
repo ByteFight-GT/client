@@ -9,31 +9,36 @@
 	"Bots Directory": {
 		"__type": "string",
 		"__placeholder": "$/bots",
-		"__desc": "Directory to search in when looking for bots. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__desc": "Directory to search in when looking for bots. Will look for FOLDERS in this directory that have __init__.py and controller.py files. Do not set to the directory of any specific bot. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__showExplorerOpener": true,
 		"value": "$/bots"
 	},
 	"Maps Directory": {
 		"__type": "string",
 		"__placeholder": "$/maps",
 		"__desc": "Directory to search in when looking for maps. Attempts to parse all json files. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__showExplorerOpener": true,
 		"value": "$/maps"
 	},
 	"Matches Directory": {
 		"__type": "string",
 		"__placeholder": "$/matches",
 		"__desc": "Directory for saving and loading match data. These don't contain any information about the games themselves, only metadata. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__showExplorerOpener": true,
 		"value": "$/matches"
 	},
 	"Games Directory": {
 		"__type": "string",
 		"__placeholder": "$/games",
 		"__desc": "Directory for saving and loading game data. These are the PGNs that specify actual game states/moves. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__showExplorerOpener": true,
 		"value": "$/games"
 	},
 	"Logs Directory": {
 		"__type": "string",
 		"__placeholder": "$/logs",
 		"__desc": "Directory for saving and loading stdio logs of game runs. Prefix with \"$/\" to start relative to the default bytefight client userdata directory.",
+		"__showExplorerOpener": true,
 		"__addSeparatorBelow": true,
 		"value": "$/logs"
 	},

@@ -1,20 +1,30 @@
 "use client";
 
 import React from 'react';
-import { Checkbox, GenericPage, SelectContent, SelectTrigger, SelectValue } from '@/components';
+import { 
+	Button, 
+	ErrorBlock, 
+	Input, 
+	Checkbox, 
+	GenericPage, 
+	Select, 
+	SelectItem, 
+	SelectContent, 
+	SelectTrigger, 
+	SelectValue
+} from '@/components';
 import { SettingsItem } from './components/SettingsItem';
 
 import "./page.css";
-import { ErrorBlock, Input } from '@/components';
 import { SaveBar } from './components/SaveBar';
 import { Settings } from '../../../common/types';
-import { Select, SelectItem } from '@/components';
+import { FolderIcon } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
 
-type MatchPlayerPageProps = {
-	
-};
 
-export default function SettingsPage(props: MatchPlayerPageProps) {
+export default function SettingsPage() {
+
+	const {openAppRelativePathInExplorer} = useSettings();
 
 	const [frozenSettings, setFrozenSettings] = React.useState<Settings | null>(null);
 	const [draftChanges, setDraftChanges] = React.useState<Record<keyof Settings, Settings[keyof Settings]>>({});
@@ -100,9 +110,18 @@ export default function SettingsPage(props: MatchPlayerPageProps) {
 										desc={setting.__desc}
 										unsaved={key in draftChanges}>
 											{setting.__type === "string"?
+											<div className="flex gap-2">
 												<Input className='w-64' placeholder={setting.__placeholder} value={setting.value} onChange={(e) => {
 													updateSetting(key, e.target.value);
 												}} />
+												{setting.__showExplorerOpener &&
+													<Button variant="secondary" size="iconsm" onClick={() => {
+														openAppRelativePathInExplorer(setting.value);
+													}}>
+														<FolderIcon />
+													</Button>
+												}
+											</div>
 											: setting.__type === "toggle"?
 												<Checkbox checked={setting.value} onCheckedChange={(checked) => {
 													updateSetting(key, checked);

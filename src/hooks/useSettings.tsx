@@ -8,6 +8,7 @@ import { useLoadings } from './useLoadings';
 export type UseSettingsValue = {
   settings: Settings;
   fetchSettings: () => void;
+  openAppRelativePathInExplorer: (appRelativePath: string) => void;
 };
 
 const SettingsContext = React.createContext<UseSettingsValue | undefined>(undefined);
@@ -36,6 +37,25 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   }, [loadings.fetchSettings, toggleLoading, toastError]);
 
+  const openAppRelativePathInExplorer = React.useCallback((appRelativePath: string) => {
+    if (loadings.openExplorer) return;
+    toggleLoading('openExplorer', true);
+
+    window.electron.invoke('settings:open-explorer', appRelativePath)
+    .then((res) => {
+      if (!res.success) {
+        toastError("Failed to open explorer", new Error(res.error));
+      }
+    })
+    .catch((err) => {
+      toastError("Failed to open explorer", err);
+    })
+    .finally(() => {
+      toggleLoading('openExplorer', false);
+    });
+  }, [loadings.openExplorer, toggleLoading]);
+
+
   // >>> INITIAL SETUP
 
   React.useEffect(() => {
@@ -45,9 +65,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const value = React.useMemo(() => ({
     settings,
     fetchSettings,
+    openAppRelativePathInExplorer,
   } satisfies UseSettingsValue), [
     settings, 
     fetchSettings,
+    openAppRelativePathInExplorer,
   ]);
 
   return (

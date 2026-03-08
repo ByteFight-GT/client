@@ -1,7 +1,8 @@
-import { app, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import { app, ipcMain, shell } from 'electron';
 import { type Settings } from '../common/types.ts';
+import { resolveAppRelativePath } from './utils.ts';
 
 export const USER_SETTINGS_PATH = path.join(
   app.getPath("userData"),
@@ -121,6 +122,16 @@ export function setupSettingsHandlers() {
         return cachedSettings;
       }
       throw new Error(`Failed to save settings: ${err.message}`);
+    }
+  });
+
+  ipcMain.handle('settings:open-explorer', async (_, appRelativePath: string) => {
+    const resolvedPath = resolveAppRelativePath(appRelativePath);
+    if (fs.existsSync(resolvedPath)) {
+      await shell.openPath(resolvedPath);
+      return { success: true };
+    } else {
+      return { success: false, error: `Path does not exist: ${resolvedPath}` };
     }
   });
 }
