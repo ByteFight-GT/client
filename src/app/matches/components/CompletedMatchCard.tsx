@@ -25,7 +25,6 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
 
   const {toastError} = useToast();
   const {loadings} = useLoadings();
-  const {currentlyRunningMatch} = useRunner();
   const {loadGameIntoPlayer} = useRunner();
 
   const [timeElapsedDisplay, setTimeElapsedDisplay] = React.useState<string>(fmtTime(Date.now() - (props.matchData.finishTimestamp ?? 0)));

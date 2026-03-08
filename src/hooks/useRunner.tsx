@@ -394,6 +394,26 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (res.success) {
         const {mapData, gameData} = res;
         setVisualizerState(matchData, gameData, mapData);
+
+          // load logs too
+        try {
+          const res = await window.electron.invoke('logs:read', matchData.matchId, mapName);
+          if (res.success) {
+            const logData = res.logData;
+            if (logData) {
+              stdOutChunksRef.current = logData.split('\n');
+            } else {
+              stdOutChunksRef.current = [];
+            }
+          } else {
+            toastError("Failed to load game logs", `Match data loaded successfully, but an error encountered when fetching logs: ${res.error}`);
+            stdOutChunksRef.current = [];
+          }
+        } catch (err: any) {
+          toastError("Failed to load game logs", `Match data loaded successfully, but an error encountered when fetching logs: ${err.message}`);
+          stdOutChunksRef.current = [];
+        }
+
         return true;
       } else {
         toastError("Failed to load game replay", res.error);
