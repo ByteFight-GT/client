@@ -19,14 +19,12 @@ export function initMaps() {
 		fs.mkdirSync(mapsDir, { recursive: true });
 	}
 
-	// copying default maps over (but we wont overwrite existing ones)
+	// copying default maps over and always overwrite
 	const defaultMaps = fs.readdirSync(DEFAULT_MAPS_PATH);
 	defaultMaps.forEach(mapFile => {
 		const userMapPath = path.join(mapsDir, mapFile);
 		const defaultMapPath = path.join(DEFAULT_MAPS_PATH, mapFile);
-		if (!fs.existsSync(userMapPath)) {
-			fs.copyFileSync(defaultMapPath, userMapPath);
-		}
+		fs.copyFileSync(defaultMapPath, userMapPath);
 	});
 }
 
