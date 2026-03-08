@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import './Navbar.css';
-import React, { lazy } from 'react';
+import React from 'react';
 import { BugIcon } from 'lucide-react';
-import { Tooltip, Tooltipped, TooltipProvider } from '../Tooltip';
+import { Tooltipped } from '../Tooltip';
+import './Navbar.css';
 
 const NAVBAR_LINKS = [
   {
@@ -46,6 +46,7 @@ const NAVBAR_LINKS_BOTTOM = [
 function Navbar() {
 
   const pathName = usePathname();
+  const appVersion = process.env.NEXT_PUBLIC_APP_VERSION ?? 'dev';
 
 
   return (
@@ -60,14 +61,18 @@ function Navbar() {
         selected={item.link === pathName} />
       )}
 
-      {/*<div className='navbar-bottom-buttons'>
+      <div className='navbar-bottom-buttons'>
         {NAVBAR_LINKS_BOTTOM.map((item) => 
           <NavbarLinkBottom 
           {...item} 
           key={item.label}
           selected={item.link === pathName} />
         )}
-      </div>*/}
+        
+        <p className='navbar-bottom-version'>
+          {appVersion}
+        </p>
+      </div>
 
       </div>
   );
