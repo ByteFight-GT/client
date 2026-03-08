@@ -468,6 +468,6 @@
     16
   ],
   "symmetry": "Origin",
-  "powerupSpawnInterval": 5,
+  "powerupSpawnInterval": 50,
   "powerupSpawnNum": 3
 }

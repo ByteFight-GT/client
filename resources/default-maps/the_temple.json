@@ -622,6 +622,6 @@
     10
   ],
   "symmetry": "Horizontal",
-  "powerupSpawnInterval": 5,
-  "powerupSpawnNum": 3
+  "powerupSpawnInterval": 50,
+  "powerupSpawnNum": 5
 }

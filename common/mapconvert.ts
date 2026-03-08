@@ -157,7 +157,7 @@ Object.values(mapStrings).forEach((mapStr, idx) => {
 */
 
 /*
-// script to convert map strings in maps.json to map data objects and save them to ./parsedMaps
+// script to convert map strings in maps.json to map data objects and save them to resources/default-maps
 import fs from 'fs';
 import path from 'path';
 import mapStrings from '../engine/config/maps.json';
@@ -165,7 +165,7 @@ import mapStrings from '../engine/config/maps.json';
 Object.entries(mapStrings).forEach(([mapName, mapStr]) => {
   try {
     const mapData = mapDataFromString(mapStr);
-    const outputPath = path.join(__dirname, 'parsedMaps', `${mapName}.json`);
+    const outputPath = path.join(__dirname, '../resources/default-maps', `${mapName}.json`);
     fs.writeFileSync(outputPath, JSON.stringify(mapData, null, 2));
     console.log(`Successfully parsed and saved map ${mapName}`);
   } catch (e) {
