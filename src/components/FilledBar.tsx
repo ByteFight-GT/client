@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from '@/lib/utils';
 import React from 'react';
 
 type FilledBarProps = {
@@ -9,14 +10,14 @@ type FilledBarProps = {
 
 /** "Progress-bar" like thing */
 export const FilledBar = (
-  {className, ...rest}: FilledBarProps
+  {className, filledProportion, ...rest}: FilledBarProps
 ) => {
   return (
-    <div className='w-full h-4 bg-muted rounded overflow-hidden' {...rest}>
+    <div className={cn('w-full h-2 bg-muted overflow-hidden', className)} {...rest}>
       <div
-        className='h-full'
+        className='h-full transition-all duration-25'
         style={{
-          width: `${Math.min(Math.max(rest.filledProportion, 0), 1) * 100}%`,
+          width: `${Math.min(Math.max(filledProportion, 0), 1) * 100}%`,
           background: rest.background,
         }}
       />

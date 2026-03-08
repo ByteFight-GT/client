@@ -1,13 +1,17 @@
 "use client";
 
 import { useVisualizer } from '@/gamerenderer/useVisualizer';
-import { ClockIcon, LandPlotIcon, SmartphoneChargingIcon } from 'lucide-react';
 import React from 'react';
 import { GamePGN } from '../../../../common/types';
+import Image from 'next/image';
+import { FilledBar } from '@/components';
+import { GameInfoRow } from './GameInfoRow';
 
 type GameInfoVisibleState = {
 	p1_stamina: number | null;
 	p2_stamina: number | null;
+	p1_max_stamina: number | null;
+	p2_max_stamina: number | null;
 	p1_territory: number | null;
 	p2_territory: number | null;
 	p1_time_left: number | null;
@@ -20,73 +24,78 @@ export const GameInfo = () => {
 	
 	// state to show, received from visualizer subscription
 	const [renderedState, setRenderedState] = React.useState<GameInfoVisibleState | null>(null);
-	const [renderedGameFrame, setRenderedGameFrameState] = React.useState<number>(0);
+	const [maxTimePerBot, setMaxTimePerBot] = React.useState<number | null>(null); // set once on update 0
 	
 	React.useEffect(() => {
 		return subscribeToGameOrFrameChanges(
-			(entirePGN: GamePGN, frame: number) => setRenderedState({
-				p1_stamina: entirePGN.p1_stamina[frame] ?? null,
-				p2_stamina: entirePGN.p2_stamina[frame] ?? null,
-				p1_territory: entirePGN.p1_territory[frame] ?? null,
-				p2_territory: entirePGN.p2_territory[frame] ?? null,
-				p1_time_left: entirePGN.p1_time_left[frame] ?? null,
-				p2_time_left: entirePGN.p2_time_left[frame] ?? null,
-			})
+			(entirePGN: GamePGN, frame: number) => {
+				if (maxTimePerBot === null) {
+					setMaxTimePerBot(entirePGN.p2_time_left[frame] ?? 360);
+				}
+				setRenderedState({
+					p1_stamina: entirePGN.p1_stamina[frame] ?? null,
+					p2_stamina: entirePGN.p2_stamina[frame] ?? null,
+					p1_max_stamina: entirePGN.p1_max_stamina[frame] ?? null,
+					p2_max_stamina: entirePGN.p2_max_stamina[frame] ?? null,
+					p1_territory: entirePGN.p1_territory[frame] ?? null,
+					p2_territory: entirePGN.p2_territory[frame] ?? null,
+					p1_time_left: entirePGN.p1_time_left[frame] ?? null,
+					p2_time_left: entirePGN.p2_time_left[frame] ?? null,
+				});
+			}
 		);
 	}, []);
 
 	return (
 		<div className='game-info-container'>
 
-			{/*<div className='flex w-full gap-4'>
-				<div className='game-info-header-blue w-full flex-1'>
-					<span className='ellipsis'>{currentlyRunningMatch?.teamBlue ?? 'Blue'}</span>
-					<Image src="/blue_team_icon.svg" alt="*" width={16} height={16} />
-				</div>
-				<div className='game-info-header-green w-full flex-1'>
-					<Image src="/green_team_icon.svg" alt="*" width={16} height={16} />
-					<span className='ellipsis'>{currentlyRunningMatch?.teamGreen ?? 'Green'}</span>
-				</div>
-			</div>*/}
+			<GameInfoRow
+			label='STAMINA'
+			icon={<Image src="/sprites/stamina.png" alt="*" width={48} height={48} />}
+			blueVal={renderedState?.p1_stamina ?? '-'}
+			greenVal={renderedState?.p2_stamina ?? '-'}
+			blueFillProportion={
+				(renderedState?.p1_stamina != null && renderedState.p1_max_stamina)? 
+					1 - (renderedState.p1_stamina / Math.max(renderedState.p1_max_stamina, 1))
+				: 
+					0
+			}
+			greenFillProportion={
+				(renderedState?.p2_stamina != null && renderedState.p2_max_stamina)? 
+					renderedState.p2_stamina / renderedState.p2_max_stamina
+				: 
+					0
+			} />
 
-			<div className='game-info-row'>
-				<span>
-					{renderedState?.p1_stamina ?? '-'}
-				</span>
-				<div className='flex flex-col items-center'>
-					<SmartphoneChargingIcon />
-					<span className='text-xs text-muted-foreground'>STAMINA</span>
-				</div>
-				<span>
-					{renderedState?.p2_stamina ?? '-'}
-				</span>
-			</div>
+			<GameInfoRow
+			label='MAX STAMINA'
+			icon={<Image src="/sprites/max_stamina.png" alt="*" width={48} height={48} />}
+			blueVal={renderedState?.p1_max_stamina ?? '-'}
+			greenVal={renderedState?.p2_max_stamina ?? '-'} />
 
-			<div className='game-info-row'>
-				<span>
-					{renderedState?.p1_territory ?? '-'}
-				</span>
-				<div className='flex flex-col items-center'>
-					<LandPlotIcon />
-					<span className='text-xs text-muted-foreground'>TERRITORY</span>
-				</div>
-				<span>
-					{renderedState?.p2_territory ?? '-'}
-				</span>
-			</div>
+			<GameInfoRow
+			label='TERRITORY'
+			icon={<Image src="/sprites/territory.png" alt="*" width={48} height={48} />}
+			blueVal={renderedState?.p1_territory ?? '-'}
+			greenVal={renderedState?.p2_territory ?? '-'} />
 
-			<div className='game-info-row'>
-				<span>
-					{renderedState?.p1_time_left?.toFixed(2) ?? '-'}
-				</span>
-				<div className='flex flex-col items-center'>
-					<ClockIcon />
-					<span className='text-xs text-muted-foreground'>TIME</span>
-				</div>
-				<span>
-					{renderedState?.p2_time_left?.toFixed(2) ?? '-'}
-				</span>
-			</div>
+			<GameInfoRow
+			label='TIME'
+			icon={<Image src="/sprites/time.png" alt="*" width={48} height={48} />}
+			blueVal={renderedState?.p1_time_left ?? '-'}
+			greenVal={renderedState?.p2_time_left ?? '-'}
+			blueFillProportion={
+				(renderedState?.p1_time_left != null && maxTimePerBot)?
+					1 - (renderedState.p1_time_left / maxTimePerBot)
+				:
+					0
+			}
+			greenFillProportion={
+				(renderedState?.p2_time_left != null && maxTimePerBot)?
+					1 - (renderedState.p2_time_left / maxTimePerBot)
+				:
+					0
+			} />
 		</div>
 	);
 };

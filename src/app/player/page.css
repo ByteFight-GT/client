@@ -285,24 +285,29 @@
 	display: flex;
 	align-items: center;
 	gap: 1rem;
+	width: 100%;
 	font-variant-numeric: tabular-nums;
 }
 .game-info-row > :first-child {
+	display: flex;
+	flex-direction: column;
 	flex-grow: 1;
 	width: 100%;
 	text-align: right;
 	color: hsl(var(--team-blue-color));
 }
+.game-info-row img {
+	flex-shrink: 0;
+	width: 3rem;
+	image-rendering: pixelated;
+}
 .game-info-row > :last-child {
+	display: flex;
+	flex-direction: column;
 	flex-grow: 1;
 	width: 100%;
 	text-align: left;
 	color: hsl(var(--team-green-color));
-}
-.game-info-row svg.lucide {
-	flex-shrink: 0;
-	font-size: 2.5rem;
-	color: hsl(var(--foreground));
 }
 
 .game-info-header-blue {
