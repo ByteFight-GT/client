@@ -122,7 +122,7 @@ export const GameNavigator = () => {
 				<Button 
 				disabled={controlsDisabled}
 				tooltip="Play/Pause" 
-				variant="secondary" 
+				variant={autoAdvance? "default": "secondary"}
 				size="iconsm" 
 				onClick={() => setAutoAdvance(prev => !prev)}>
 					{autoAdvance? <PauseIcon /> : <PlayIcon />}
