@@ -82,10 +82,8 @@ export function setupBotsHandlers() {
 						continue;
 					}
 					
-					if (!fs.existsSync(dstBotPath)) {
-						fs.cpSync(filePath, dstBotPath, { recursive: true });
-						importedNames.push(botName);
-					}
+					fs.cpSync(filePath, dstBotPath, { recursive: true });
+					importedNames.push(botName);
 				} catch (err: any) {
 					return { success: false, error: err, imported: [], invalid: [] };
 				}

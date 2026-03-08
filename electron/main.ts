@@ -98,6 +98,7 @@ function createWindow() {
             preload: path.join(__dirname, '../build/preload.js'),
         },
         autoHideMenuBar: true,
+        icon: path.join(__dirname, '../public/logo.png'),
     });
 
     remoteMain.enable(win.webContents);
