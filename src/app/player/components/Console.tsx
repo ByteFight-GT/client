@@ -2,8 +2,6 @@
 
 import React from 'react';
 import { useRunner } from '@/hooks/useRunner';
-import { ChevronDownIcon } from 'lucide-react';
-import { useCollapse } from 'react-collapsed';
 
 const CONSOLE_UPDATE_INTERVAL_MS = 250;
 
@@ -29,15 +27,12 @@ export const Console = () => {
 	}, []);
 
 	return (
-		<div className='ConsoleContainer-container'>
-			<div className="ConsoleContainer-header-bar">Console</div>
-			<div className='ConsoleContainer-body'>
-
-				<div className='Console-body'>
-					{stdOutChunks.map((chunk, index) => (
-						<p key={`stdout-${index}`} className='Console-stdout'>{chunk}<br /></p>
-					))}
-				</div>
+		<div className='Console-container'>
+			<div className="Console-header-bar">Console</div>
+			<div className='Console-body'>
+				{stdOutChunks.map((chunk, index) => (
+					<p key={`stdout-${index}`} className='Console-data'>{chunk}<br /></p>
+				))}
 			</div>
 		</div>
 	);

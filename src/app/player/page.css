@@ -16,129 +16,6 @@
 }
 
 
-.matchplayer-sidebar {
-	display: flex;
-	flex-direction: column;
-	border-right: 2px solid hsl(var(--border));
-	background-color: hsl(var(--background));
-	overflow-y: auto;
-}
-.matchplayer-sidebar-tabs {
-	display: flex;
-	border-bottom: 2px solid hsl(var(--border));
-}
-.matchplayer-sidebar-tab {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.25rem;
-	padding: 0.5rem 0;
-	width: 100%;
-	color: hsl(var(--muted-foreground));
-}
-.matchplayer-sidebar-tab:hover {
-	background-color: hsl(var(--secondary));
-}
-.matchplayer-sidebar-tab.selected {
-	background-color: hsl(var(--primary));
-	color: hsl(var(--primary-foreground));
-	font-weight: 600;
-}
-
-.ConsoleContainer-container {
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
-	overflow: hidden;
-}
-.ConsoleContainer-header-bar {
-	font-size: 0.875rem;
-	font-weight: 500;
-	width: 100%;
-	padding: 0.25rem 1rem;
-	color: hsl(var(--muted-foreground));
-	background-color: hsl(var(--secondary));
-	border-top: 2px solid hsl(var(--border)); /* TEMP - ok for now since there arent other ConsoleContainers on MatchInfoTab */
-	border-bottom: 2px solid hsl(var(--border));
-}
-
-.ConsoleContainer-toggle-icon {
-	font-size: 1.25em;
-	transition: transform 0.1s;
-}
-.ConsoleContainer-header-bar.isExpanded .ConsoleContainer-toggle-icon {
-	transform: rotate(180deg);
-}
-
-.ConsoleContainer-body {
-	height: 100%;
-	border-bottom: 2px solid hsl(var(--border));
-}
-
-.GameWindow-container {
-	container-type: inline-size;
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: hsl(var(--background));
-	overflow: hidden;
-}
-
-
-.Console-tabs-bar {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	width: 100%;
-}
-.Console-tab {
-	font-size: 0.8em;
-	width: 100%;
-	padding: 0.5em 0.8em;
-	border-bottom: 2px solid hsl(var(--border));
-	overflow-x: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	transition: background-color 0.1s;
-	cursor: default;
-}
-.Console-tab.selected {
-	background-color: hsl(var(--themecolor));
-	border-bottom-color: hsl(var(--themecolor));
-	font-weight: 600;
-}
-.Console-tab.blue {
-	color: hsl(var(--team-blue-color));
-	border-right: 1px solid hsl(var(--border));
-}
-.Console-tab.green {
-	color: hsl(var(--team-green-color));
-	border-left: 1px solid hsl(var(--border));
-}
-
-.Console-tab-icon {
-	display: inline;
-	vertical-align: middle;
-	width: 1em;
-}
-
-
-.Console-body {
-	font-size: 0.8em;
-	line-height: 1.2;
-	padding: 0.5rem;
-	background-color: hsl(var(--themecolor));
-	color: hsl(var(--foreground));
-	height: 100%;
-	flex-grow: 1;
-	overflow: auto;
-}
-.Console-stdout {
-	width: fit-content;
-	white-space: pre;
-}
-
-
 .matchplayer-map-list {
 	display: flex;
 	flex-direction: column;
@@ -196,6 +73,82 @@
 	cursor: not-allowed;
 	opacity: 0.5;
 }
+
+.matchplayer-sidebar {
+	display: flex;
+	flex-direction: column;
+	border-right: 2px solid hsl(var(--border));
+	background-color: hsl(var(--background));
+	overflow-y: auto;
+}
+.matchplayer-sidebar-tabs {
+	display: flex;
+	border-bottom: 2px solid hsl(var(--border));
+}
+.matchplayer-sidebar-tab {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+	padding: 0.5rem 0;
+	width: 100%;
+	color: hsl(var(--muted-foreground));
+}
+.matchplayer-sidebar-tab:hover {
+	background-color: hsl(var(--secondary));
+}
+.matchplayer-sidebar-tab.selected {
+	background-color: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	font-weight: 600;
+}
+
+
+.GameWindow-container {
+	container-type: inline-size;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: hsl(var(--background));
+	overflow: hidden;
+}
+
+
+.Console-container {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	overflow: hidden;
+}
+.Console-header-bar {
+	font-size: 0.875rem;
+	font-weight: 500;
+	width: 100%;
+	padding: 0.25rem 1rem;
+	color: hsl(var(--muted-foreground));
+	background-color: hsl(var(--secondary));
+	border-top: 2px solid hsl(var(--border)); /* TEMP - ok for now since there arent other Consoles on MatchInfoTab */
+	border-bottom: 2px solid hsl(var(--border));
+}
+.Console-body {
+	height: 100%;
+	flex-grow: 1;
+	border-bottom: 2px solid hsl(var(--border));
+	font-size: 0.875em;
+	line-height: 1.2;
+	padding: 0.5rem;
+	background-color: hsl(var(--themecolor));
+	color: hsl(var(--foreground));
+	height: 100%;
+	flex-grow: 1;
+	overflow: auto;
+}
+.Console-data {
+	width: fit-content;
+	white-space: pre;
+}
+
 
 .bot-selector-recent-button {
 	background-color: hsl(var(--background));
