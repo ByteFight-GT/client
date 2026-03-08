@@ -1,4 +1,5 @@
 import { app, BrowserWindow, net, protocol } from 'electron';
+import ElectronUpdater from "electron-updater"
 import path from 'path';
 import { promises as fs } from 'fs';
 import * as remoteMain from '@electron/remote/main/index.js';
@@ -15,6 +16,11 @@ import { initBots } from './bots.ts';
 import { initMatches } from './matches.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
+app.whenReady().then(() => {
+    ElectronUpdater.autoUpdater.checkForUpdatesAndNotify();
+})
 
 protocol.registerSchemesAsPrivileged([
     {
