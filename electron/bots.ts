@@ -27,6 +27,13 @@ export function initBots() {
 	}
 }
 
+export function validateBot(botPath: string): boolean {
+	const initPath = path.join(botPath, "__init__.py");
+	const controllerPath = path.join(botPath, "controller.py");
+
+	return fs.existsSync(initPath) && fs.existsSync(controllerPath);
+}
+
 export function setupBotsHandlers() {
 	ipcMain.handle('bots:list', async (event) => {
 
@@ -39,12 +46,7 @@ export function setupBotsHandlers() {
 					if (!entry.isDirectory()) {
 						return false;
 					}
-
-					// make sure the folder contains __init__.py and controller.py
-					const initPath = path.join(botsDir, entry.name, "__init__.py");
-					const controllerPath = path.join(botsDir, entry.name, "controller.py");
-
-					return fs.existsSync(initPath) && fs.existsSync(controllerPath);
+					return validateBot(path.join(botsDir, entry.name));
 				})
 				.map(entry => entry.name);
 			return { success: true, bots: botFolders };
@@ -63,25 +65,34 @@ export function setupBotsHandlers() {
 			properties: ['openDirectory', 'multiSelections']
 		});
 
+		console.log(`[bots:import] User selected paths: ${filePaths.join(', ')}, canceled: ${canceled}`);
+
 		if (!canceled) {
 			const importedNames: string[] = [];
+			const invalidBots: string[] = [];
 			
 			for (const filePath of filePaths) {
 				try {
 					const botName = path.basename(filePath);
 					const dstBotPath = path.join(botsDir, botName);
+
+					// validate the bot before copying
+					if (!validateBot(filePath)) {
+						invalidBots.push(botName);
+						continue;
+					}
 					
 					if (!fs.existsSync(dstBotPath)) {
 						fs.cpSync(filePath, dstBotPath, { recursive: true });
 						importedNames.push(botName);
 					}
 				} catch (err: any) {
-					console.warn(`[bots:import] Failed to import from ${filePath}: ${err.message}`);
+					return { success: false, error: err, imported: [], invalid: [] };
 				}
 			}
 			
-			return { success: importedNames.length > 0, imported: importedNames };
+			return { success: true, imported: importedNames, invalid: invalidBots };
 		}
-		return { success: false, error: "Import canceled by user", imported: [] };
+		return { success: false, error: "Import canceled by user", imported: [], invalid: [] };
 	});
 }

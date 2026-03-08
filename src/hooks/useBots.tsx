@@ -3,6 +3,7 @@
 import React from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
+import { word } from '../../common/utils';
 
 export type UseBotsValue = {
   bots: string[];
@@ -43,12 +44,21 @@ export const BotsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const handleImportBots = React.useCallback(() => {
     window.electron.invoke('bots:import')
     .then((res) => {
-      if (res.success && res.imported.length > 0) {
+      if (res.success) {
         setBots(prev => [...prev, ...res.imported]);
         toast({
           toastTitle: "Bots Imported",
-          toastDescription: `Successfully imported ${res.imported.length} bot(s)!`,
+          toastDescription: 
+            ((res.invalid?.length ?? 0) > 0)?
+              <p>
+                Successfully imported {word(res.imported.length, 'bot', 'bots')},
+                and the following were invalid and not imported: <span className="text-destructiveBright">{res.invalid.join(', ')}</span>
+              </p>
+            : 
+              `Successfully imported ${word(res.imported.length, 'bot', 'bots')}!`,
         });
+      } else {
+        toastError("Failed to import bots", res.error);
       }
     })
     .catch((err: any) => {
