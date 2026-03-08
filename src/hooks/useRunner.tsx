@@ -39,7 +39,7 @@ export type UseRunnerValue = {
   clearAllQueued: () => void;
   startMatch: (matchData: MatchMetadata) => Promise<boolean>;
 	startNextInQueue: () => void;
-  terminateRunningMatch: (matchData: MatchMetadata) => void;
+  terminateRunningMatch: () => void;
   handleMatchEnd: (data: {
     exitCode: number, 
     finishTimestamp: number, 
@@ -265,7 +265,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     .finally(() => {
       toggleLoading("terminateMatch", false);
     });
-  }, []);
+  }, [currentlyRunningMatch, loadings.terminateMatch]);
 
   /** handles cleanup/takedown when a match completes for any reason (finished/termination),
    * and checks if we can move on to the next match in the queue.
@@ -408,6 +408,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [toastError]);
 
+
 	// EFFECTS
 
 	// start next in queue when current match is gone (is null)
@@ -416,6 +417,23 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 			startNextInQueue();
 		}
 	}, [currentlyRunningMatch, queuedMatches, startNextInQueue]);
+
+  // on init, check electron to see if theres anythign running
+  // this fixes things breaking if they somehow refresh the frontend lol
+  React.useEffect(() => {
+    window.electron.invoke('runner:getcurrent')
+    .then((res) => {
+      if (res) {
+        const matchData = res.matchData as MatchMetadata;
+        setCurrentlyRunningMatch(matchData);
+        // TODO - see runner.ts: need some way to get full pgn. altho this is an edge case so low prio
+        setVisualizerState(matchData, EMPTY_GAME_PGN, res.TEMP_mapData0);
+      }
+    })
+    .catch((err) => {
+      console.error("Failed to get current match data from electron on init", err);
+    });
+  }, [setVisualizerState, setAutoAdvance]);
 
 
   const value = React.useMemo(() => ({

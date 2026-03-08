@@ -21,6 +21,12 @@ export const LOCAL_SERVER_SCRIPT = "local_server.py";
 export let pythonProcess: child_process.ChildProcessWithoutNullStreams | null = null;
 export let tcpClientManager = new TcpClientManager();
 
+// store current stuff in case they somehow reload the frontend
+// TODO - uh store game pgn somehow, cuz python only gives us diffs
+// ^ maybe make engine expose an api that returns current pgn
+export let currentMatchData: MatchMetadata | null = null;
+export let currentTEMP_mapData0: MapData | null = null;
+
 /** tries finding a free tcp port by creating a server lol */
 function getFreePort() {
 	return new Promise<number>((resolve, reject) => {
@@ -220,6 +226,8 @@ export function setupRunnerHandlers() {
 			};
 		}
 		const startTimestamp = Date.now();
+		currentMatchData = matchData;
+		currentTEMP_mapData0 = mapsData[0];
 
 		console.log(`[runner:start-match]: spawned process w/ pid ${pythonProcess.pid}`);
 
@@ -263,7 +271,10 @@ export function setupRunnerHandlers() {
 				result,
 				outputDir,
 			});
+
 			pythonProcess = null;
+			currentMatchData = null;
+			currentTEMP_mapData0 = null;
 		});
 
 		pythonProcess.on('error', (err) => {
@@ -306,6 +317,13 @@ export function setupRunnerHandlers() {
 			TEMP_mapData0: mapsData[0],
 			startTimestamp,
 		}
+	});
+	
+	ipcMain.handle('runner:getcurrent', async (event) => {
+		return pythonProcess === null? null : {
+			matchData: currentMatchData,
+			TEMP_mapData0: currentTEMP_mapData0,
+		};
 	});
 
 	ipcMain.handle('runner:terminate', async (event) => {

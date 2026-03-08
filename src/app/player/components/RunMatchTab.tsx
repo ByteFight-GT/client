@@ -2,7 +2,6 @@
 
 import { SidebarItem } from '@/components/SidebarItem';
 import React from 'react';
-import { MapList } from './MapList';
 import { BotSelector } from './BotSelector';
 import { Button } from '@/components';
 import { ArrowLeftRightIcon, ClockIcon, FolderIcon, ImportIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
@@ -15,12 +14,13 @@ export const RunMatchTab = () => {
   const {maps, fetchMapList} = useMaps();
   const {bots, fetchBotList, handleImportBots} = useBots();
   const {
-    queueNewMatch, 
-    currentlyRunningMatch, 
-    recentBots, 
-    updateRecentBots, 
-    lastRunnerSetup, 
-    saveLastRunnerSetup
+    queueNewMatch,
+    currentlyRunningMatch,
+    terminateRunningMatch,
+    recentBots,
+    updateRecentBots,
+    lastRunnerSetup,
+    saveLastRunnerSetup,
   } = useRunner();
   const {loadings} = useLoadings()
 
@@ -71,6 +71,18 @@ export const RunMatchTab = () => {
   return (
     <div className='flex flex-col gap-4 p-4'>
       <h2>Run Match</h2>
+
+      {currentlyRunningMatch &&
+        <div className='bg-primary/10 border border-primary p-2 text-center text-sm'>
+          <p>Match {currentlyRunningMatch.matchId} is running.</p>
+          <Button
+          className='mt-2 w-full'
+          variant="destructive"
+          onClick={terminateRunningMatch}>
+            Terminate
+          </Button>
+        </div>
+      }
 
       <div className='flex gap-2'>
 
