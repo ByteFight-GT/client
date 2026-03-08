@@ -56,13 +56,13 @@ export const GameInfo = () => {
 			greenVal={renderedState?.p2_stamina ?? '-'}
 			blueFillProportion={
 				(renderedState?.p1_stamina != null && renderedState.p1_max_stamina)? 
-					1 - (renderedState.p1_stamina / Math.max(renderedState.p1_max_stamina, 1))
+					renderedState.p1_stamina / Math.max(renderedState.p1_max_stamina, 1)
 				: 
 					0
 			}
 			greenFillProportion={
 				(renderedState?.p2_stamina != null && renderedState.p2_max_stamina)? 
-					renderedState.p2_stamina / renderedState.p2_max_stamina
+					renderedState.p2_stamina / Math.max(renderedState.p2_max_stamina, 1)
 				: 
 					0
 			} />
@@ -86,13 +86,13 @@ export const GameInfo = () => {
 			greenVal={renderedState?.p2_time_left?.toFixed(2) ?? '-'}
 			blueFillProportion={
 				(renderedState?.p1_time_left != null && maxTimePerBot)?
-					1 - (renderedState.p1_time_left / maxTimePerBot)
+					renderedState.p1_time_left / maxTimePerBot
 				:
 					0
 			}
 			greenFillProportion={
 				(renderedState?.p2_time_left != null && maxTimePerBot)?
-					1 - (renderedState.p2_time_left / maxTimePerBot)
+					renderedState.p2_time_left / maxTimePerBot
 				:
 					0
 			} />
