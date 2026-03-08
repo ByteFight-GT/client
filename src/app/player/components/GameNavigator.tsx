@@ -29,6 +29,14 @@ export const GameNavigator = () => {
 	const [maxGameFrame, setMaxGameFrame] = React.useState(0);
 	const [renderedGameFrame, setRenderedGameFrameState] = React.useState<number>(0);
 
+	/** 
+	 * Disabled means user cant control anything except for setting playback speed.
+	 * We disable when theres no game running, or at the very beginning of a game
+	 * when only the  map has been loaded and not any data (turn_count should be -1 then)
+	 */
+	const controlsDisabled = !currentMatchData || maxGameFrame <= 0;
+
+	// get live updates from game managers
 	React.useEffect(() => {
 		return subscribeToGameOrFrameChanges(
 			(entirePGN, currentFrame) => {
@@ -38,12 +46,6 @@ export const GameNavigator = () => {
 		);
 	}, []);
 
-	/** 
-	 * Disabled means user cant control anything except for setting playback speed.
-	 * We disable when theres no game running, or at the very beginning of a game
-	 * when only the  map has been loaded and not any data (turn_count should be -1 then)
-	 */
-	const controlsDisabled = !currentMatchData || maxGameFrame <= 0;
 
 	// components for the slider
 	const RenderSliderTrack = React.useCallback(({ props, children }) => {
@@ -62,6 +64,35 @@ export const GameNavigator = () => {
 			<div key={key} {...rest} className="gamenav-slider-thumb" />
 		);
 	}, [controlsDisabled]);
+	
+
+	// keybinds map
+	const KEYBINDS_MAP = React.useMemo(() => ({
+		"Space": () => setAutoAdvance(prev => !prev),
+		"ArrowRight": () => incrementRenderedGameFrame(1),
+		"D": () => incrementRenderedGameFrame(1),
+		"ArrowLeft": () => incrementRenderedGameFrame(-1),
+		"A": () => incrementRenderedGameFrame(-1),
+		"Digit1": () => setPlaybackSpeed(1),
+		"Digit2": () => setPlaybackSpeed(2),
+		"Digit4": () => setPlaybackSpeed(4),
+		"Digit8": () => setPlaybackSpeed(8),
+	}), [incrementRenderedGameFrame, setAutoAdvance, setPlaybackSpeed]);
+
+	React.useEffect(() => {
+		if (controlsDisabled) return; // disable keybinds if controls are disabled
+
+		const handleKeyDown = (e: KeyboardEvent) => {
+			const keybind = KEYBINDS_MAP[e.code];
+			if (keybind) {
+				e.preventDefault();
+				keybind();
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [KEYBINDS_MAP, controlsDisabled]);
+
 
 	return (
 		<div className="gamenav-container">
