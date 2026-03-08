@@ -82,8 +82,8 @@ export const GameInfo = () => {
 			<GameInfoRow
 			label='TIME'
 			icon={<Image src="/sprites/time.png" alt="*" width={48} height={48} />}
-			blueVal={renderedState?.p1_time_left ?? '-'}
-			greenVal={renderedState?.p2_time_left ?? '-'}
+			blueVal={renderedState?.p1_time_left?.toFixed(2) ?? '-'}
+			greenVal={renderedState?.p2_time_left?.toFixed(2) ?? '-'}
 			blueFillProportion={
 				(renderedState?.p1_time_left != null && maxTimePerBot)?
 					1 - (renderedState.p1_time_left / maxTimePerBot)
