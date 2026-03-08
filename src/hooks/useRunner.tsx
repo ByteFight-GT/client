@@ -24,14 +24,12 @@ export type UseRunnerValue = {
   currentlyRunningMatch: MatchMetadata | null;
   queuedMatches: MatchMetadata[];
   stdOutChunksRef: React.RefObject<string[]>;
-  TEMP_gameDataPacketsReceived: number; // TEMP for causing game info and game nav to rerender on new game data
   recentBots: {
     green: string[];
     blue: string[];
   }
   lastRunnerSetup: QueueNewMatchParams | null;
   debugIPCEventLog: string[]; // for debugging - logs the ipc events received from electron
-  setTEMP_gameDataPacketsReceived: React.Dispatch<React.SetStateAction<number>>;
   setDebugIPCEventLog: React.Dispatch<React.SetStateAction<string[]>>;
   queueNewMatch: (params: QueueNewMatchParams) => boolean;
   dequeueMatch: (index: number) => void;
@@ -72,9 +70,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [queuedMatches, setQueuedMatches] = React.useState<MatchMetadata[]>([]);
 
   const stdOutChunksRef = React.useRef<string[]>([]);
-
-  // maybe TEMP: used for causing things like game info and game nav to rerender upon new game data
-  const [TEMP_gameDataPacketsReceived, setTEMP_gameDataPacketsReceived] = React.useState(0);
 
   /** recent bots: stores the last 2 unique bots used */
   const [recentBots, setRecentBots] = React.useState<UseRunnerValue['recentBots']>({
@@ -123,7 +118,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setCurrentlyRunningMatch(startedMatchData);
         setVisualizerState(startedMatchData, EMPTY_GAME_PGN, res.TEMP_mapData0);
         setAutoAdvance(false); // TEMP: we want autoadvance during games, but useGame currently handles it differently SPECIFICALLY for live games 
-        setTEMP_gameDataPacketsReceived(0);
 
         toast({
 					toastTitle: "Match started",
@@ -463,11 +457,9 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     currentlyRunningMatch,
     queuedMatches,
     stdOutChunksRef,
-    TEMP_gameDataPacketsReceived,
     recentBots,
     lastRunnerSetup,
     debugIPCEventLog,
-    setTEMP_gameDataPacketsReceived,
     queueNewMatch,
     dequeueMatch,
     moveWithinQueue,
