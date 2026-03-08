@@ -35,12 +35,16 @@ const NAVBAR_LINKS = [
   },
 ]
 
-const NAVBAR_LINKS_BOTTOM = [
-  {
-    icon: <BugIcon />,
-    label: 'Debug',
-    link: '/debug',
-  }
+const NAVBAR_LINKS_BOTTOM: {
+  icon: React.ReactNode;
+  label: string;
+  link: string;
+}[] = [
+  // {
+  //   icon: <BugIcon />,
+  //   label: 'Debug',
+  //   link: '/debug',
+  // }
 ]
 
 function Navbar() {
