@@ -4,6 +4,7 @@ import React from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
 import { MapData } from '@/gametypes';
+import { word } from '../../common/utils';
 
 export type UseMapsValue = {
   maps: string[];
@@ -70,7 +71,7 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setMaps(prev => [...prev, ...res.imported]);
           toast({
             toastTitle: "Maps Imported",
-            toastDescription: `Successfully imported ${res.imported.length} map(s)!`,
+            toastDescription: <p>Successfully imported <span className='text-foreground'>{word(res.imported.length, "map", "maps")}</span>!</p>,
           });
         }
       })
@@ -105,7 +106,7 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.success) {
           toast({
             toastTitle: "Map Saved",
-            toastDescription: `Successfully saved map "${mapData.name}"`,
+            toastDescription: <p>Successfully saved map "<span className='text-foreground'>{mapData.name}</span>"</p>
           });
           if (!maps.includes(mapData.name)) {
             setMaps(prev => [...prev, mapData.name]);
