@@ -324,7 +324,13 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       addMatchToCompletedHistory(updatedMatchData);     
       toast({
         toastTitle: `Match finished!`,
-        toastDescription: `Match between ${updatedMatchData.teamGreen} and ${updatedMatchData.teamBlue} finished ${data.exitCode === 0? 'successfully' : 'with exit code ' + data.exitCode}!`
+        toastDescription: <p>
+          Match between
+          <span className='text-[hsl(var(--team-green-color))]'> {updatedMatchData.teamGreen} </span>
+          and
+          <span className='text-[hsl(var(--team-blue-color))]'> {updatedMatchData.teamBlue} </span>
+          on <span className='text-foreground'>{updatedMatchData.maps.join(', ')}</span> finished {data.exitCode === 0? 'successfully' : 'with exit code ' + data.exitCode}!
+        </p>
       });
 		} else {
       toastError(
