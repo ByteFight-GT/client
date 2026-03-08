@@ -76,6 +76,7 @@
 }
 
 .GameWindow-container {
+	container-type: inline-size;
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -249,7 +250,7 @@
 
 
 .gamenav-container {
-	position: absolute;
+	position: fixed;
 	margin: 0 auto;
 	bottom: 1rem;
 	width: 40rem;
@@ -276,13 +277,15 @@
 	grid-area: gamenav-area-3;
 	width: fit-content;
 }
-@media (max-width: 1024px) {
-	.game-navigator-container {
+@container (max-width: 42rem) {
+	.gamenav-container {
 		display: grid !important;
 		width: fit-content !important;
+		max-width: 90% !important;
 		grid-template-areas: 
 			"gamenav-area-2 gamenav-area-2"
 			"gamenav-area-1 gamenav-area-3" !important;
+		overflow: auto;
 	}
 	.gamenav-area-3 {
 		width: 100% !important;
