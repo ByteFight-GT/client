@@ -5,8 +5,9 @@ import { MatchInfoTab } from './MatchInfoTab';
 import { RunMatchTab } from './RunMatchTab';
 import { QueueTab } from './QueueTab';
 import { ListIcon, PlayIcon, SwordsIcon } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
-const MATCHPLAYER_SIDEBAR_TABS = {
+export const MATCHPLAYER_SIDEBAR_TABS = {
   matchInfo: {
     label: <><SwordsIcon /> Match</>,
     component: MatchInfoTab
@@ -20,10 +21,20 @@ const MATCHPLAYER_SIDEBAR_TABS = {
     component: QueueTab
   }
 } as const;
-
+export type MatchPlayerTabProps = {
+  switchTab: (tab: keyof typeof MATCHPLAYER_SIDEBAR_TABS) => void;
+};
+  
 export const MatchPlayerSidebar = () => {
 
-  const [currTab, setCurrTab] = React.useState<keyof typeof MATCHPLAYER_SIDEBAR_TABS>("matchInfo");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab');
+
+  console.log("initialTab:", initialTab);
+
+  const [currTab, setCurrTab] = React.useState<keyof typeof MATCHPLAYER_SIDEBAR_TABS>(
+    (initialTab && initialTab in MATCHPLAYER_SIDEBAR_TABS ? initialTab : 'runner') as keyof typeof MATCHPLAYER_SIDEBAR_TABS
+  );
 
   // which thing torender
   const ActiveTabComponent = React.useMemo(
@@ -43,7 +54,7 @@ export const MatchPlayerSidebar = () => {
           </button>
         ))}
       </div>
-      <ActiveTabComponent />
+      <ActiveTabComponent switchTab={setCurrTab} />
     </div>
   );
 };

@@ -9,8 +9,9 @@ import { useMaps } from '@/hooks/useMaps';
 import { useLoadings } from '@/hooks/useLoadings';
 import { useBots } from '@/hooks/useBots';
 import { useRunner } from '@/hooks/useRunner';
+import { type MatchPlayerTabProps } from './MatchPlayerSidebar';
 
-export const RunMatchTab = () => {
+export const RunMatchTab = ({ switchTab }: MatchPlayerTabProps) => {
   const {maps, fetchMapList} = useMaps();
   const {bots, fetchBotList, handleImportBots} = useBots();
   const {
@@ -51,7 +52,7 @@ export const RunMatchTab = () => {
 
   const handleStartMatch = React.useCallback(() => {
     if (selectedMap && selectedGreenTeam && selectedBlueTeam) {
-      queueNewMatch({
+      const startedImmediately = queueNewMatch({
         selectedMaps: [selectedMap], // change to selectedMaps when we support multiple
         selectedGreenTeam,
         selectedBlueTeam,
@@ -65,6 +66,10 @@ export const RunMatchTab = () => {
       setSelectedMap(null);
       setSelectedGreenTeam(null);
       setSelectedBlueTeam(null);
+      
+      if (startedImmediately) {
+        switchTab("matchInfo")
+      }
     }
   }, [selectedMap, selectedGreenTeam, selectedBlueTeam, queueNewMatch, updateRecentBots]);
 

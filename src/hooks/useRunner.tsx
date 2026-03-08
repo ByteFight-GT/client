@@ -33,7 +33,7 @@ export type UseRunnerValue = {
   debugIPCEventLog: string[]; // for debugging - logs the ipc events received from electron
   setTEMP_gameDataPacketsReceived: React.Dispatch<React.SetStateAction<number>>;
   setDebugIPCEventLog: React.Dispatch<React.SetStateAction<string[]>>;
-  queueNewMatch: (params: QueueNewMatchParams) => void;
+  queueNewMatch: (params: QueueNewMatchParams) => boolean;
   dequeueMatch: (index: number) => void;
   moveWithinQueue: (index1: number, index2: number) => void;
   clearAllQueued: () => void;
@@ -160,6 +160,8 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
    * 
    * Does NOT handle actually starting the processes to run the games - this
    * solely handles creating and saving metadata.
+   * 
+   * Returns whether startMatch was called (ie. can be started immediately)
    */
   const queueNewMatch = React.useCallback((params: QueueNewMatchParams) => {
     const queuedTime = new Date();
@@ -182,6 +184,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     if (!currentlyRunningMatch) {
       startMatch(matchData);
+      return true;
     } else {
       // no error, there just happens to be another match running. just add to queue
       setQueuedMatches(prev => [...prev, matchData]);
@@ -202,6 +205,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         )
       });
     }
+    return false;
   }, [currentlyRunningMatch, queuedMatches, startMatch]);
 
   /** Remove a match from queue, for any reason, like cancelling or it getting started */

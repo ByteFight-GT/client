@@ -52,7 +52,7 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
     // TEMP - only have 1 map per match rn so just use [0]
     const success = await loadGameIntoPlayer(props.matchData, props.matchData.maps[0]);
     if (success) {
-      redirect("/player");
+      redirect("/player?tab=matchInfo");
     } // else: loadGameIntoPlayer will handle error display
 
   }, [loadGameIntoPlayer]);
