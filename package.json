@@ -74,7 +74,7 @@
     "forceCodeSigning": false,
     "publish": {
       "provider": "github",
-      "owner": "Bytefight-GT",
+      "owner": "ByteFight-GT",
       "repo": "client"
     },
     "files": [
