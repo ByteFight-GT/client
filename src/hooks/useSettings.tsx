@@ -8,6 +8,7 @@ import { useLoadings } from './useLoadings';
 export type UseSettingsValue = {
   settings: Settings;
   fetchSettings: () => void;
+  saveSettings: (draftSettings: Settings) => Promise<boolean>;
   openExplorerChooser: () => Promise<string | null>;
   openAppRelativePathInExplorer: (appRelativePath: string) => void;
 };
@@ -37,6 +38,27 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       toggleLoading('fetchSettings', false);
     });
   }, [loadings.fetchSettings, toggleLoading, toastError]);
+
+  const saveSettings = React.useCallback(async (draftSettings: Settings) => {
+    if (loadings.saveSettings) return false;
+    toggleLoading('saveSettings', true);
+
+		try {
+      const res = await window.electron.invoke('settings:set', draftSettings);
+      if (res.success) {
+        setSettings(res.settings); 
+        return true;
+      } else {
+        toastError("Failed to save settings", res.error);
+        return false;
+      }
+    } catch (err) {
+      toastError("Failed to save settings", err);
+      return false;
+    } finally {
+      toggleLoading('saveSettings', false);
+    }
+  }, []);
 
   const openExplorerChooser = React.useCallback(async (maybeAppRelativePath?: string) => {
     try {
@@ -79,6 +101,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const value = React.useMemo(() => ({
     settings,
     fetchSettings,
+    saveSettings,
     openExplorerChooser,
     openAppRelativePathInExplorer,
   } satisfies UseSettingsValue), [

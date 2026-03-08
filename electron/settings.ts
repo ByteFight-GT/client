@@ -114,14 +114,9 @@ export function setupSettingsHandlers() {
       const data = JSON.stringify(settings ?? {}, null, 2);
       await fs.promises.writeFile(USER_SETTINGS_PATH, data, { encoding: 'utf8' });
       cachedSettings = settings;
-      return settings;
+      return {success: true, settings};
     } catch (err: any) {
-      if (err?.code === 'ENOENT') {
-        // hmm, did they fkin delete their settings file WHILE on the page??? bruh. recreate
-        await initSettings();
-        return cachedSettings;
-      }
-      throw new Error(`Failed to save settings: ${err.message}`);
+      return {success: false, error: err,};
     }
   });
 
