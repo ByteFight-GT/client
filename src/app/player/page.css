@@ -122,19 +122,22 @@
 	overflow: hidden;
 }
 .Console-header-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
 	font-size: 0.875rem;
 	font-weight: 500;
 	width: 100%;
-	padding: 0.25rem 1rem;
+	padding-left: 1rem;
 	color: hsl(var(--muted-foreground));
 	background-color: hsl(var(--secondary));
-	border-top: 2px solid hsl(var(--border)); /* TEMP - ok for now since there arent other Consoles on MatchInfoTab */
+	border-top: 2px solid hsl(var(--border));
 	border-bottom: 2px solid hsl(var(--border));
 }
 .Console-body {
 	height: 100%;
 	flex-grow: 1;
-	border-bottom: 2px solid hsl(var(--border));
 	font-size: 0.875em;
 	line-height: 1.2;
 	padding: 0.5rem;
