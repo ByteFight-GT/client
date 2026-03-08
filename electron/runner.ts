@@ -292,11 +292,9 @@ export function setupRunnerHandlers() {
 					port, // port
 					(chunk) => { // onRawData
 						event.sender.send('game-sys:raw-data', chunk);
-						console.log('TCP raw data received');
 					},
 					(data) => { // onData
 						event.sender.send('game-sys:data', data);
-						console.log('TCP data parsed:', data);
 					}, 
 					() => { // onServerClosed
 						event.sender.send('game-sys:socket-end');
