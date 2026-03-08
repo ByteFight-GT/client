@@ -42,6 +42,7 @@ export type UseRunnerValue = {
   terminateRunningMatch: () => void;
   handleMatchEnd: (data: {
     exitCode: number, 
+    TEMP_requestedTermination: boolean,
     finishTimestamp: number, 
     result: GameResult,
     outputDir: string
@@ -263,6 +264,7 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
    */
   const handleMatchEnd = React.useCallback(async (data: {
     exitCode: number, 
+    TEMP_requestedTermination: boolean,
     finishTimestamp: number,
     result: GameResult,
     outputDir: string
@@ -277,7 +279,13 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       ...currentlyRunningMatch,
       finishTimestamp: data.finishTimestamp,
       outputDir: data.outputDir,
-      status: data.exitCode === 0? 'completed' : 'errored'
+      status: 
+        data.TEMP_requestedTermination? 
+          'terminated' 
+        : data.exitCode === 0?
+          'completed' 
+        :// else:
+          'errored'
     } satisfies MatchMetadata;
 
     // TEMP - apply results

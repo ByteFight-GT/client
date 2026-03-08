@@ -78,6 +78,7 @@ export const RunMatchTab = () => {
           <Button
           className='mt-2 w-full'
           variant="destructive"
+          loading={loadings.terminateMatch}
           onClick={terminateRunningMatch}>
             Terminate
           </Button>

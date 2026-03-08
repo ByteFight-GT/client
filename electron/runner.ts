@@ -24,8 +24,9 @@ export let tcpClientManager = new TcpClientManager();
 // store current stuff in case they somehow reload the frontend
 // TODO - uh store game pgn somehow, cuz python only gives us diffs
 // ^ maybe make engine expose an api that returns current pgn
-export let currentMatchData: MatchMetadata | null = null;
-export let currentTEMP_mapData0: MapData | null = null;
+let currentMatchData: MatchMetadata | null = null;
+let currentTEMP_mapData0: MapData | null = null;
+let TEMP_requestedTermination = false;
 
 /** tries finding a free tcp port by creating a server lol */
 function getFreePort() {
@@ -53,6 +54,7 @@ export function closeTCPClient() {
 /** Kills `pythonProcess` if its running (forcibly) */
 export function closePython() {
 	if (pythonProcess && !pythonProcess.killed) {
+		TEMP_requestedTermination = true;
 		const killResult = pythonProcess.kill();
 
 		// note killResult is true only if the signal is sent, technically the process could still be alive
@@ -267,6 +269,7 @@ export function setupRunnerHandlers() {
 
 			event.sender.send('game-sys:process-closed', {
 				exitCode, 
+				TEMP_requestedTermination,
 				finishTimestamp,
 				result,
 				outputDir,
@@ -275,6 +278,7 @@ export function setupRunnerHandlers() {
 			pythonProcess = null;
 			currentMatchData = null;
 			currentTEMP_mapData0 = null;
+			TEMP_requestedTermination = false;
 		});
 
 		pythonProcess.on('error', (err) => {
@@ -328,6 +332,7 @@ export function setupRunnerHandlers() {
 
 	ipcMain.handle('runner:terminate', async (event) => {
 		if (tcpClientManager) {
+			TEMP_requestedTermination = true;
 			return {
 				success: tcpClientManager.sendInterrupt()
 			};

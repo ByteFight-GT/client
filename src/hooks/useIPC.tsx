@@ -82,6 +82,7 @@ export function useIPC() {
     'game-sys:process-closed':
     function handleProcessClosed(data: {
       exitCode: number, 
+      TEMP_requestedTermination: boolean,
       finishTimestamp: number, 
       result: GameResult, 
       outputDir: string
