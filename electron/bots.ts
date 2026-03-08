@@ -35,7 +35,17 @@ export function setupBotsHandlers() {
 		try {
 			const entries = await fs.promises.readdir(botsDir, { withFileTypes: true });
 			const botFolders = entries
-				.filter(entry => entry.isDirectory())
+				.filter(entry => {
+					if (!entry.isDirectory()) {
+						return false;
+					}
+
+					// make sure the folder contains __init__.py and controller.py
+					const initPath = path.join(botsDir, entry.name, "__init__.py");
+					const controllerPath = path.join(botsDir, entry.name, "controller.py");
+
+					return fs.existsSync(initPath) && fs.existsSync(controllerPath);
+				})
 				.map(entry => entry.name);
 			return { success: true, bots: botFolders };
 		} catch (err: any) {
