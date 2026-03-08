@@ -30,7 +30,7 @@ class Parity:
                 - -1 if the value is negative
                 - 0 if the value is zero
         """
-        return 0 if value == 0 else value / abs(value)
+        return 0 if value == 0 else value // abs(value)
     
     @staticmethod
     def get_opponent_parity(parity: int) -> int:
@@ -559,7 +559,6 @@ class Board:
 
         if moves_this_turn >= 1:
             cost = GameConstants.EXTRA_MOVE_COST * moves_this_turn
-            #cost = player.stamina < GameConstants.EXTRA_MOVE_COST * moves_this_turn <-this line seemed off
             if player.stamina < cost:
                 return False 
             player.stamina -= cost
@@ -586,11 +585,10 @@ class Board:
         if target_cell.is_wall:
             return False
 
+        player.loc = target_loc
+
         if self._resolve_collision(player_parity):
             return True
-
-        previous_loc = player.loc
-        player.loc = target_loc
         
         # handle movement effects
         self._handle_erase_effects(player_parity, target_cell, move.move_type)
@@ -695,8 +693,10 @@ class Board:
             return False
         
         player = self.get_player(player_parity)
+        opponent_parity = Parity.get_opponent_parity(player_parity)
+
         cell = self.cells[origin.r][origin.c]
-        if cell.owner_parity != player_parity:
+        if cell.owner_parity == opponent_parity:
             return False
         if cell.beacon_parity != 0:
             return False
@@ -708,7 +708,7 @@ class Board:
         
         friendly_cells: List[CellState] = []
         enemy_cells: List[CellState] = []
-        opponent_parity = Parity.get_opponent_parity(player_parity)
+        
 
         for loc in window_cells:
             if self.oob(loc):
@@ -908,6 +908,12 @@ class Board:
             opponent = self.get_player(opponent_parity)
             opponent.gain_hill_control(hill.id)
             hill.controller_parity = opponent_parity
+
+            if( len(self.hills) > 0 and 
+                  len(opponent.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
+                
+                owner = self.get_player(owner_parity)
+                owner.stamina = -1
     
     
     def _apply_regeneration(self, player_parity) -> None:
@@ -928,7 +934,7 @@ class Board:
         regen += self._count_adjacent_friendly(player_parity) * GameConstants.ADJACENT_REGEN_BONUS
         # if player.beacon_count > 0:
         #     regen += player.beacon_count * GameConstants.BEACON_REGEN_BONUS
-        regen += min(self.get_territory_count(1) // GameConstants.GLOBAL_PAINT_REGEN_RATIO,
+        regen += min(self.get_territory_count(player_parity) // GameConstants.GLOBAL_PAINT_REGEN_RATIO,
                       GameConstants.GLOBAL_PAINT_REGEN_CAP) 
 
         if self.turn_count > GameConstants.GLOBAL_DECAY_TURN_THRESHOLD:
@@ -1019,7 +1025,7 @@ class Board:
         """
         if self.p1.is_dead():
             if (len(self.hills) > 0 and 
-                len(self.p1.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
+                len(self.p2.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
                 return Result.PLAYER_2, WinReason.DOMINATION
             if self.p1.loc == self.p2.loc:
                 return Result.PLAYER_2, WinReason.COLLISION
@@ -1027,7 +1033,7 @@ class Board:
             return Result.PLAYER_2, WinReason.STAMINA_LOSS
         if self.p2.is_dead():
             if (len(self.hills) > 0 and 
-                len(self.p2.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
+                len(self.p1.controlled_hills) >= GameConstants.DOMINATION_WIN_THRESHOLD * len(self.hills)):
                 return Result.PLAYER_1, WinReason.DOMINATION
             if self.p1.loc == self.p2.loc:
                 return Result.PLAYER_1, WinReason.COLLISION
