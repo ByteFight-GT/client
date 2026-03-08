@@ -18,13 +18,13 @@ import { SettingsItem } from './components/SettingsItem';
 import "./page.css";
 import { SaveBar } from './components/SaveBar';
 import { Settings } from '../../../common/types';
-import { FolderIcon } from 'lucide-react';
+import { FolderOpenIcon, ExternalLinkIcon } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 
 
 export default function SettingsPage() {
 
-	const {openAppRelativePathInExplorer} = useSettings();
+	const {openExplorerChooser, openAppRelativePathInExplorer} = useSettings();
 
 	const [frozenSettings, setFrozenSettings] = React.useState<Settings | null>(null);
 	const [draftChanges, setDraftChanges] = React.useState<Record<keyof Settings, Settings[keyof Settings]>>({});
@@ -114,12 +114,20 @@ export default function SettingsPage() {
 												<Input className='w-64' placeholder={setting.__placeholder} value={setting.value} onChange={(e) => {
 													updateSetting(key, e.target.value);
 												}} />
-												{setting.__showExplorerOpener &&
-													<Button variant="secondary" size="iconsm" onClick={() => {
-														openAppRelativePathInExplorer(setting.value);
-													}}>
-														<FolderIcon />
-													</Button>
+												{setting.__showExplorerOptions &&
+													<>
+														<Button variant="secondary" size="iconsm" onClick={async () => {
+															const selectedPath = await openExplorerChooser();
+															if (selectedPath) updateSetting(key, selectedPath);
+														}}>
+															<FolderOpenIcon />
+														</Button>
+														<Button variant="secondary" size="iconsm" onClick={() => {
+															openAppRelativePathInExplorer(setting.value);
+														}}>
+															<ExternalLinkIcon />
+														</Button>
+													</>
 												}
 											</div>
 											: setting.__type === "toggle"?

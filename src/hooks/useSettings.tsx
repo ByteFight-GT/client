@@ -8,6 +8,7 @@ import { useLoadings } from './useLoadings';
 export type UseSettingsValue = {
   settings: Settings;
   fetchSettings: () => void;
+  openExplorerChooser: () => Promise<string | null>;
   openAppRelativePathInExplorer: (appRelativePath: string) => void;
 };
 
@@ -37,11 +38,24 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   }, [loadings.fetchSettings, toggleLoading, toastError]);
 
-  const openAppRelativePathInExplorer = React.useCallback((appRelativePath: string) => {
+  const openExplorerChooser = React.useCallback(async (maybeAppRelativePath?: string) => {
+    try {
+      const res = await window.electron.invoke('settings:choose-dir', maybeAppRelativePath);
+      if (res.success) {
+        return res.selectedPath;
+      } // else: probably user-canceled
+    } catch (err) {
+      toastError("Failed to open directory chooser", err);
+    }
+
+    return null;
+  }, []);
+
+  const openAppRelativePathInExplorer = React.useCallback((maybeAppRelativePath: string) => {
     if (loadings.openExplorer) return;
     toggleLoading('openExplorer', true);
 
-    window.electron.invoke('settings:open-explorer', appRelativePath)
+    window.electron.invoke('settings:open-explorer', maybeAppRelativePath)
     .then((res) => {
       if (!res.success) {
         toastError("Failed to open explorer", new Error(res.error));
@@ -65,6 +79,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const value = React.useMemo(() => ({
     settings,
     fetchSettings,
+    openExplorerChooser,
     openAppRelativePathInExplorer,
   } satisfies UseSettingsValue), [
     settings, 

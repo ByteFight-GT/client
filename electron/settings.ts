@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { app, ipcMain, shell } from 'electron';
+import { app, dialog, ipcMain, shell } from 'electron';
 import { type Settings } from '../common/types.ts';
 import { resolveAppRelativePath } from './utils.ts';
 
@@ -125,14 +125,27 @@ export function setupSettingsHandlers() {
     }
   });
 
-  ipcMain.handle('settings:open-explorer', async (_, appRelativePath: string) => {
-    const resolvedPath = resolveAppRelativePath(appRelativePath);
+  ipcMain.handle('settings:open-explorer', async (_, possiblyAppRelativePath: string) => {
+    const resolvedPath = resolveAppRelativePath(possiblyAppRelativePath);
     if (fs.existsSync(resolvedPath)) {
       await shell.openPath(resolvedPath);
       return { success: true };
     } else {
       return { success: false, error: `Path does not exist: ${resolvedPath}` };
     }
+  });
+
+  ipcMain.handle('settings:choose-dir', async (event, maybeAppRelativePath?: string) => {
+
+    // if maybeAppRelativePath, then use as default, otherwise start at $ (userData dir)
+    let startDir = resolveAppRelativePath(maybeAppRelativePath ?? "$");
+
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      title: "Select Directory",
+      properties: ['openDirectory'],
+      defaultPath: startDir,
+    });
+    return { success: !canceled, selectedPath: filePaths[0] };
   });
 }
   

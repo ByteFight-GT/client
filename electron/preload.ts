@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('electron', {
 
 	openUrl: (url: string) => shell.openExternal(url),
 
-	openPathInExplorer: (filePath: string) => shell.showItemInFolder(filePath),
+	openPathInExplorer: (filePath: string) => shell.openPath(filePath),
 
 	registerTcpListener: (channel: string, fn: (data: any) => void) => {
 		const handler = (_, data) => fn(data);
