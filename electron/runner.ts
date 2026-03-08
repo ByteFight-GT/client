@@ -131,6 +131,22 @@ export function setupRunnerHandlers() {
 			};
 		} 
 
+		// check that both bot dirs are actually valid
+		const teamBlueDir = path.join(botsDir, matchData.teamBlue);
+		const teamGreenDir = path.join(botsDir, matchData.teamGreen);
+		if (!fs.existsSync(teamBlueDir) || !fs.statSync(teamBlueDir).isDirectory()) {
+			return {
+				success: false,
+				error: `Team blue bot directory not found or invalid: ${teamBlueDir}`
+			};
+		}
+		if (!fs.existsSync(teamGreenDir) || !fs.statSync(teamGreenDir).isDirectory()) {
+			return {
+				success: false,
+				error: `Team green bot directory not found or invalid: ${teamGreenDir}`
+			};
+		}
+
 		// get output dir for the pgn file(s)
 		let outputDir: string;
 		try {
@@ -181,11 +197,12 @@ export function setupRunnerHandlers() {
 			};
 		}
 
+
 		// compiling args
 		const scriptArgs: string[] = [];
 		scriptArgs.push('--output_port', port.toString());
-		scriptArgs.push('--a_dir', path.join(botsDir, matchData.teamBlue));
-		scriptArgs.push('--b_dir', path.join(botsDir, matchData.teamGreen));
+		scriptArgs.push('--a_dir', teamBlueDir);
+		scriptArgs.push('--b_dir', teamGreenDir);
 		
 		// TODO - server only handles 1 game at a time rn.
 		// pushing just first map/outfile for now, in the future we can try handling multiple
