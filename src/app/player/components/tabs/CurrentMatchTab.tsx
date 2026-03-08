@@ -5,8 +5,7 @@ import { GameInfo } from '../GameInfo';
 import { Console } from '../Console';
 import { CurrentMatchCard } from '../CurrentMatchCard';
 
-export const MatchInfoTab = () => {
-
+export const CurrentMatchTab = () => {
   return (
     <>
       <div className='flex flex-col gap-4 p-4'>

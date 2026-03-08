@@ -68,7 +68,7 @@ export const RunMatchTab = ({ switchTab }: MatchPlayerTabProps) => {
       setSelectedBlueTeam(null);
       
       if (startedImmediately) {
-        switchTab("matchInfo")
+        switchTab("currentMatch")
       }
     }
   }, [selectedMap, selectedGreenTeam, selectedBlueTeam, queueNewMatch, updateRecentBots]);

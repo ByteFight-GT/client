@@ -8,7 +8,7 @@ import { useVisualizer } from '@/gamerenderer/useVisualizer';
 
 /** 
  * displays MatchMetadata objects that are currently running!
- * For use in MatchInfoTab
+ * For use in CurrentMatchTab
  */
 export const CurrentMatchCard = () => {
 

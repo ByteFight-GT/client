@@ -1,16 +1,16 @@
 "use client";
 
 import React from 'react';
-import { MatchInfoTab } from './tabs/MatchInfoTab';
+import { CurrentMatchTab } from './tabs/CurrentMatchTab';
 import { RunMatchTab } from './tabs/RunMatchTab';
 import { QueueTab } from './tabs/QueueTab';
 import { ListIcon, PlayIcon, SwordsIcon } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
 export const MATCHPLAYER_SIDEBAR_TABS = {
-  matchInfo: {
+  currentMatch: {
     label: <><SwordsIcon /> Match</>,
-    component: MatchInfoTab
+    component: CurrentMatchTab
   },
   runner: {
     label: <><PlayIcon /> Run</>,
