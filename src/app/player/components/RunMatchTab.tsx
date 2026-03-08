@@ -116,18 +116,18 @@ export const RunMatchTab = () => {
       <SidebarItem label="Select Teams">
         <div className='grid grid-cols-2 gap-2'>
           <BotSelector 
-          team="green"
-          botNames={bots}
-          value={selectedGreenTeam}
-          recents={recentBots.green} 
-          onChange={(name) => setSelectedGreenTeam(name)} />
-
-          <BotSelector 
           team="blue"
           botNames={bots}
           value={selectedBlueTeam}
           recents={recentBots.blue} 
           onChange={(name) => setSelectedBlueTeam(name)} />
+          
+          <BotSelector 
+          team="green"
+          botNames={bots}
+          value={selectedGreenTeam}
+          recents={recentBots.green} 
+          onChange={(name) => setSelectedGreenTeam(name)} />
         </div>
         
         <hr />

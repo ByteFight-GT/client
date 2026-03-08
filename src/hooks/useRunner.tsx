@@ -250,15 +250,6 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     toggleLoading("terminateMatch", true);
 
     window.electron.invoke('runner:terminate')
-    .then(res => {
-      if (!res.success) {
-        toastError("No stop command sent", "No match is currently running");
-      }
-      toast({
-        toastTitle: "Stopping match...",
-        toastDescription: "Sent command for the python process to gracefully shutdown. Please wait..."
-      });
-    })
     .catch((err: any) => {
       toastError("Failed to stop match", err);
     })
