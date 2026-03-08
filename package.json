@@ -1,6 +1,6 @@
 {
   "name": "bytefight-client-2026",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "main": "electron/main.ts",
   "homepage": "./",
@@ -70,6 +70,11 @@
     "appId": "com.bytefight.bytefightclient2026",
     "productName": "Bytefight Client 2026",
     "forceCodeSigning": false,
+    "publish": {
+      "provider": "github",
+      "owner": "Bytefight-GT",
+      "repo": "client"
+    },
     "files": [
       {
         "from": "out/",
