@@ -71,8 +71,8 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
     : // else:
       "Undecided";
 
-  const blueScore = Object.keys(props.matchData.blueWins).length + Object.keys(props.matchData.draws).length/2;
-  const greenScore = Object.keys(props.matchData.greenWins).length + Object.keys(props.matchData.draws).length/2;
+  const blueScore = Object.keys(props.matchData.blueWins).length + Object.keys(props.matchData.draws ?? {}).length/2;
+  const greenScore = Object.keys(props.matchData.greenWins).length + Object.keys(props.matchData.draws ?? {}).length/2;
 
   return (
     <div className={`completed-match-card ${winnerClass}`}>
@@ -104,8 +104,8 @@ export const CompletedMatchCard = (props: CompletedMatchCardProps) => {
             winObj = props.matchData.blueWins[map];
             winnerClassName = "Blue";
             resultDisplay = "Blue won";
-          } else if (props.matchData.draws[map]) {
-            winObj = props.matchData.draws[map];
+          } else if (props.matchData.draws?.[map]) {
+            winObj = props.matchData.draws?.[map];
             winnerClassName = "undecided";
             resultDisplay = "Draw";
           } else {
