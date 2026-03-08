@@ -6,3 +6,5 @@ export * from "./Checkbox.tsx";
 export * from "./Select.tsx";
 export * from "./Dialog.tsx";
 export * from "./Tooltip.tsx";
+export * from "./FilledBar.tsx";
+export * from "./LoadingSpinner.tsx";

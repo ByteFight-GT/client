@@ -6,11 +6,11 @@ import { fmtTime, word } from '../../../../common/utils';
 import { Button } from '@/components';
 import Image from 'next/image';
 import { useCollapse } from 'react-collapsed';
-import { EyeOffIcon, FolderIcon, SwordsIcon } from 'lucide-react';
+import { EyeOffIcon } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { useRunner } from '@/hooks/useRunner';
 import { useLoadings } from '@/hooks/useLoadings';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@/components';
 import { redirect } from 'next/navigation';
 
 type CompletedMatchCardProps = {

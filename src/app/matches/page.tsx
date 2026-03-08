@@ -10,7 +10,7 @@ import { word } from '../../../common/utils';
 import { useLoadings } from '@/hooks/useLoadings';
 import { ArrowRightIcon } from 'lucide-react';
 import { MatchMetadata } from '../../../common/types';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@/components';
 
 const PAGE_SIZE = 30;
 
