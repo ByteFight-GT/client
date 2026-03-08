@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { MatchInfoTab } from './MatchInfoTab';
-import { RunMatchTab } from './RunMatchTab';
-import { QueueTab } from './QueueTab';
+import { MatchInfoTab } from './tabs/MatchInfoTab';
+import { RunMatchTab } from './tabs/RunMatchTab';
+import { QueueTab } from './tabs/QueueTab';
 import { ListIcon, PlayIcon, SwordsIcon } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 

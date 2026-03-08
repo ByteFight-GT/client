@@ -2,14 +2,14 @@
 
 import { SidebarItem } from '@/components/SidebarItem';
 import React from 'react';
-import { BotSelector } from './BotSelector';
+import { BotSelector } from '../BotSelector';
 import { Button } from '@/components';
 import { ArrowLeftRightIcon, ClockIcon, FolderIcon, ImportIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
 import { useMaps } from '@/hooks/useMaps';
 import { useLoadings } from '@/hooks/useLoadings';
 import { useBots } from '@/hooks/useBots';
 import { useRunner } from '@/hooks/useRunner';
-import { type MatchPlayerTabProps } from './MatchPlayerSidebar';
+import { type MatchPlayerTabProps } from '../MatchPlayerSidebar';
 
 export const RunMatchTab = ({ switchTab }: MatchPlayerTabProps) => {
   const {maps, fetchMapList} = useMaps();

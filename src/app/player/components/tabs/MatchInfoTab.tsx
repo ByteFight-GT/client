@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { GameInfo } from './GameInfo';
-import { Console } from './Console';
-import { CurrentMatchCard } from './CurrentMatchCard';
+import { GameInfo } from '../GameInfo';
+import { Console } from '../Console';
+import { CurrentMatchCard } from '../CurrentMatchCard';
 
 export const MatchInfoTab = () => {
 
