@@ -238,14 +238,12 @@ export function setupRunnerHandlers() {
 		pythonProcess.stdout.on('data', (data) => {
 			const chunk = data.toString();
 			event.sender.send('game-usr:stdout', chunk);
-			console.log('Python stdout:', chunk);
 		});
 
 		// Stream stderr for errors
 		// this should also mostly be user-created, errors, etc.
 		pythonProcess.stderr.on('data', (data) => {
 			const chunk = data.toString();
-			console.log('Python stderr:', chunk);
 			event.sender.send('game-usr:stdout', chunk);
 		});
 
