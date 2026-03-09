@@ -3,7 +3,7 @@
 import React from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
-import { MapData } from '@/gametypes';
+import { type MapData } from '../../common/types';
 import { word } from '../../common/utils';
 
 export type UseMapsValue = {
@@ -15,7 +15,7 @@ export type UseMapsValue = {
   /** attempts to delete all maps in mapNames, return array of successfully deleted maps. */
   handleDeleteMaps: (mapNames: Iterable<string>) => Promise<string[]>;
 
-  handleSaveMap: (mapData: MapData) => Promise<void>;
+  handleSaveMap: (mapName: string, mapData: MapData) => Promise<void>;
 };
 
 const MapsContext = React.createContext<UseMapsValue | undefined>(undefined);
@@ -100,16 +100,16 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleSaveMap = React.useCallback(asyncLoadingWrapper(
     "handleSaveMap",
-    async (mapData: MapData) => {
-      window.electron.invoke('maps:write', mapData.name, JSON.stringify(mapData, null, 2))
+    async (mapName: string, mapData: MapData) => {
+      window.electron.invoke('maps:write', mapName, JSON.stringify(mapData, null, 2))
       .then(res => {
         if (res.success) {
           toast({
             toastTitle: "Map Saved",
-            toastDescription: <p>Successfully saved map "<span className='text-foreground'>{mapData.name}</span>"</p>
+            toastDescription: <p>Successfully saved map as "<span className='text-foreground'>{mapName}</span>."</p>
           });
-          if (!maps.includes(mapData.name)) {
-            setMaps(prev => [...prev, mapData.name]);
+          if (!maps.includes(mapName)) {
+            setMaps(prev => [...prev, mapName]);
           }
         } else {
           toastError("Failed to save map", res.error);
