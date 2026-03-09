@@ -451,7 +451,7 @@ class PlayerProcess:
             return None, timeout, "Timeout"
         except:
             print(traceback.format_exc())
-            return None, -1, "Timeout"
+            return None, timeout, "Timeout"
 
     #runs player play command
     def run_timed_play(self, board_state, player_parity, timeout, extra_ret_time):
@@ -475,7 +475,7 @@ class PlayerProcess:
             return None, timeout, "Timeout"
         except:
             print(traceback.format_exc())
-            return None, -1, "Timeout"
+            return None, timeout, "Timeout"
         
     #runs player commentate command
     def run_timed_commentate(self, board_state, player_parity, timeout, extra_ret_time):
@@ -499,7 +499,7 @@ class PlayerProcess:
             return "", timeout, "Timeout"
         except:
             print(traceback.format_exc())
-            return "", -1, "Timeout"
+            return "", timeout, "Timeout"
 
 
 
