@@ -360,7 +360,7 @@ class Board:
         
         try:
             bid = int(bid)
-            return bid <= GameConstants.BASE_MAX_STAMINA
+            return bid <= GameConstants.BASE_MAX_STAMINA and bid >= 0 
         except:
             return False
     
@@ -438,7 +438,7 @@ class Board:
         
         # hill cells are copied by reference since they don't change between hills
         # reregistering hills is unnecessary because target hill_ids were set when copying cells
-        new_world.hills = {hid: Hill(h.id, h.cells, h.control_positive, h.control_negative) for hid, h in self.hills.items()}
+        new_world.hills = {hid: Hill(h.id, h.cells, h.control_positive, h.control_negative, h.controller_parity) for hid, h in self.hills.items()}
         
         return new_world
     
@@ -572,7 +572,7 @@ class Board:
         if move.move_type == MoveType.BEACON_TRAVEL:
             # use beacon to travel 
             target_loc = self._beacon_travel(player_parity, move)
-            if target_loc is None:
+            if target_loc is None or target_loc == player.loc:
                 return False
         else:
             # don't use beacon to travel

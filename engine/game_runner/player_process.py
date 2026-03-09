@@ -317,7 +317,7 @@ def run_player_process(player_name, submission_dir, player_queue,
                 stop = get_cur_time()
             except:
                 print(traceback.format_exc())
-                return_queue.put((None, -1, traceback.format_exc()))
+                return (None, -1, traceback.format_exc())
 
             memory_result = perform_memory_checks()
             if(memory_result != None):
@@ -372,17 +372,20 @@ def run_player_process(player_name, submission_dir, player_queue,
                         return time_left - (get_cur_time() - start)
                     player_controller= module.PlayerController(player_parity, time_left_func)
                     stop = get_cur_time()
+
+
+                    return_val = (True, stop-start, "")
                 except:
                     return_val = (False, -1,traceback.format_exc())
-                
+
                 memory_result = perform_memory_checks()
                 if(memory_result != None):
                     return_val = memory_result
-
-                return_val = (True, stop-start, "")
+                
+                
             except:
                 print(traceback.format_exc())
-                return ("Fail", -1, traceback.format_exc())
+                return_val = ("Fail", -1, traceback.format_exc())
         elif(func == "play"):
             return_val = controller_play(player_controller)
         elif(func == "bid"):
@@ -580,7 +583,7 @@ class PlayerProcess:
                     time.sleep(0.001) 
                     i+=1
                 if(parent_process.status() == psutil.STATUS_RUNNING):
-                    os.kill(child.pid, signal.SIGKILL)   
+                    os.kill(parent_process.pid, signal.SIGKILL)   
 
                 for child in children:
                     if child.is_running():
@@ -627,7 +630,7 @@ class PlayerProcess:
 
                 for child in children:
                     i = 0
-                    while(child.status() != psutil.STATUS_STOPPED and i < 50):
+                    while(child.status() == psutil.STATUS_STOPPED and i < 50):
                         time.sleep(0.001) 
                         i+=1
         
