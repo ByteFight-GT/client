@@ -116,7 +116,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               
         stdOutChunksRef.current.length = 0; // clear terminal buffers
         setCurrentlyRunningMatch(startedMatchData);
-        setVisualizerState(startedMatchData, EMPTY_GAME_PGN, res.TEMP_mapData0);
+        setVisualizerState({
+          matchData: startedMatchData,
+          gamePGN: EMPTY_GAME_PGN,
+          mapData: res.TEMP_mapData0
+        });
         setAutoAdvance(false); // TEMP: we want autoadvance during games, but useGame currently handles it differently SPECIFICALLY for live games 
 
         toast({
@@ -397,7 +401,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const res = await window.electron.invoke('matches:readgame', matchData, mapName);
       if (res.success) {
         const {mapData, gameData} = res;
-        setVisualizerState(matchData, gameData, mapData);
+        setVisualizerState({
+          matchData: matchData,
+          gamePGN: gameData,
+          mapData: mapData
+        });
 
           // load logs too
         try {
@@ -450,7 +458,11 @@ export const RunnerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const matchData = res.matchData as MatchMetadata;
         setCurrentlyRunningMatch(matchData);
         // TODO - see runner.ts: need some way to get full pgn. altho this is an edge case so low prio
-        setVisualizerState(matchData, EMPTY_GAME_PGN, res.TEMP_mapData0);
+        setVisualizerState({
+          matchData: matchData,
+          gamePGN: EMPTY_GAME_PGN,
+          mapData: res.TEMP_mapData0
+        });
       }
     })
     .catch((err) => {
