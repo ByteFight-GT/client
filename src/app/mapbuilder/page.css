@@ -29,17 +29,19 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
+	image-rendering: pixelated;
 }
 .mapbuilder-sidebar-tile-select {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(32px, 1fr));
-	gap: 0.5rem;
+	gap: 1rem;
 }
 
 .mapbuilder-tile-option {
 	border: 1px solid transparent;
 	cursor: pointer;
 	transition: 0.1s;
+	image-rendering: pixelated;
 }
 .mapbuilder-tile-option:hover img {
 	filter: brightness(0.8);
@@ -80,4 +82,9 @@
 }
 .mapbuilder-map-list-item.selected {
 	color: hsl(var(--foreground));
+}
+
+.mapbuilder-gamewindow {
+	width: 100%;
+	height: 100%;
 }

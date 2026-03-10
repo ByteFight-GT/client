@@ -23,11 +23,11 @@ const NAVBAR_LINKS = [
   //   label: 'Run',
   //   link: '/runner',
   // },
-  // { // TEMP - removed while its still under construction
-  //   icon: 'map',
-  //   label: 'Maps',
-  //   link: '/mapbuilder',
-  // },
+  {
+    icon: 'map',
+    label: 'Maps',
+    link: '/mapbuilder',
+  },
   {
     icon: 'config',
     label: 'Config',

@@ -68,6 +68,7 @@ export const TileType = {
 	BLUE_SPAWN: 'BLUE_SPAWN',
 	GREEN_SPAWN: 'GREEN_SPAWN',
 } as const;
+export type TileType_t = ValueType<typeof TileType>;
 
 export type MapLoc = [number, number];
 
@@ -97,8 +98,8 @@ export type PowerupCellState = {
 export type PowerupMatrix = PowerupCellState[][];
 
 export type GameRenderState = {
-	p1Loc: MapLoc;
-	p2Loc: MapLoc;
+	p1Loc: MapLoc | null;
+	p2Loc: MapLoc | null;
 	paint: PaintMatrix;
 	beacons: BeaconMatrix;
 	powerups: PowerupMatrix;
@@ -226,7 +227,6 @@ export type GamePGNDiff = {
 /**
  * Represents all data about a map.
  * Map features like hills, walls, spawnpoints, etc. are all specified
- * No computation necessary
  */
 export type MapData = {
 	size: MapLoc; // r, c (height, width)
@@ -236,6 +236,20 @@ export type MapData = {
 	wallLocs: MapLoc[];
 	spawnpointBlue: MapLoc;
 	spawnpointGreen: MapLoc;
+	symmetry: Symmetry_t;
+	powerupSpawnInterval: number;
+	powerupSpawnNum: number;
+}
+
+/** Same as MapData but used for the editor, where the spawnpoints might be unplaced */
+export type MapDataOptionalSpawnpts = {
+	size: MapLoc; // r, c (height, width)
+	hillLocs: {
+		[hillId: string]: MapLoc[];
+	};
+	wallLocs: MapLoc[];
+	spawnpointBlue: MapLoc | null;
+	spawnpointGreen: MapLoc | null;
 	symmetry: Symmetry_t;
 	powerupSpawnInterval: number;
 	powerupSpawnNum: number;

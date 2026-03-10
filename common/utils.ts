@@ -1,3 +1,4 @@
+import { MapLoc, Symmetry_t } from "./types";
 
 /**
  * Adds an item to the end of the array if it doesn't exist, or moves it to the end if it does.
@@ -43,6 +44,23 @@ export function word(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1? singular : plural}`;
 }
 
+export function arrayEq1D<T>(arr1: T[], arr2: T[], eqFn?: (a: T, b: T) => boolean): boolean {
+  if (arr1.length !== arr2.length) return false;
+
+  if (eqFn) {
+    for (let i = arr1.length; --i >= 0;) {
+      const eq = eqFn(arr1[i], arr2[i]);
+      if (!eq) return false;
+    }
+    return true;
+  } else {
+    for (let i = arr1.length; --i >= 0;) {
+      if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+  }
+}
+
 /**
  * Format a number of milliseconds into human-readable format
  * Forms:
@@ -65,5 +83,18 @@ export function fmtTime(ms: number): string {
     return `${minutes}m ${seconds % 60}s`;
   } else {
     return `${(ms / 1000).toFixed(2)}s`;
+  }
+}
+
+export function applySymmetry(mapLoc: MapLoc, mapSize: MapLoc, symmetry: Symmetry_t): MapLoc {
+  const [r, c] = mapLoc;
+  const [mapHeight, mapWidth] = mapSize;
+  switch (symmetry) {
+    case 'Vertical': // x (c) values are symmetric
+      return [r, mapWidth - 1 - c];
+    case 'Horizontal': // y (r) values are symmetric
+      return [mapHeight - 1 - r, c];
+    case 'Origin': // both
+      return [mapHeight - 1 - r, mapWidth - 1 - c];
   }
 }
