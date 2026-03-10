@@ -279,9 +279,9 @@ class GameController:
 			None if game is not over
 		"""
 		if self.p1_time_left <= 0:
-			return Result.PLAYER_1, WinReason.TIMEOUT
-		if self.p2_time_left <= 0:
 			return Result.PLAYER_2, WinReason.TIMEOUT
+		if self.p2_time_left <= 0:
+			return Result.PLAYER_1, WinReason.TIMEOUT
 		
 		winner = self.board.get_winner()
 		

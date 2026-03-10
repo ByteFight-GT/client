@@ -315,11 +315,11 @@ def _run_match(
         if actions is None:
             result = Result.PLAYER_2 if player_parity == 1 else Result.PLAYER_1
             if timer == -1:
-                reason = WinReason.TIMEOUT
+                reason = WinReason.CODE_CRASH
             elif timer == -2:
                 reason = WinReason.MEMORY_ERROR
             else:
-                reason = WinReason.CODE_CRASH
+                reason = WinReason.TIMEOUT
             if player_parity == 1:
                 message_a = message
             else:
@@ -475,12 +475,17 @@ def play_game(
             else:
                 commentate_timeout = 2 * GameConstants.COMMENTATE_TIME_LIMIT
 
+            player_a_process.restart_process_and_children()
             player_a_commentary, _ , _ = player_a_process.run_timed_commentate(
                 game_controller.board, 1, commentate_timeout, 1.0
             )
+            player_a_process.pause_process_and_children()
+
+            player_b_process.restart_process_and_children()            
             player_b_commentary, _ , _ = player_b_process.run_timed_commentate(
-                game_controller.board, 1, commentate_timeout, 1.0
+                game_controller.board, -1, commentate_timeout, 1.0
             )
+            player_b_process.pause_process_and_children()
             outcome.commentary_a = player_a_commentary
             outcome.commentary_b = player_b_commentary
 
