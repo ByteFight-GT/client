@@ -93,6 +93,11 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 		return null;
 	}, [canvasManagerRef.current.mapData]);
 
+	const canChangeMapSize = React.useMemo(() => 
+		!arrayEq1D(mapSizeDraft, canvasManagerRef.current.mapData.size) && mapSizeAllowed(mapSizeDraft),
+		[mapSizeDraft, canvasManagerRef.current.mapData.size]
+	);
+
 	const handleMapSizeChangeConfirm = React.useCallback(() => {
 		// just one more validation bro... just one more validation...
 		if (!mapSizeAllowed(mapSizeDraft)) {
@@ -211,8 +216,9 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<Input 
 					min={0}
 					type="number" 
-					className='bg-background' 
 					value={mapSizeDraft[0]}
+					className='bg-background' 
+					onFocus={e => e.currentTarget.select()}
 					onChange={e => setMapSizeDraft(prev => ([
 						parseInt(e.target.value) || 0,
 						prev[1]
@@ -224,8 +230,9 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<Input 
 					min={0}
 					type="number" 
-					className='bg-background' 
 					value={mapSizeDraft[1]}
+					className='bg-background'
+					onFocus={e => e.currentTarget.select()} 
 					onChange={(e) => setMapSizeDraft(prev => ([
 						prev[0],
 						parseInt(e.target.value) || 0
@@ -233,8 +240,8 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 				</div>
 
 				<Button 
-				variant="outline" 
-				disabled={arrayEq1D(mapSizeDraft, canvasManagerRef.current.mapData.size) || !mapSizeAllowed(mapSizeDraft)}
+				variant={canChangeMapSize? 'default' : 'outline'}
+				disabled={!canChangeMapSize}
 				onClick={() => setChangeSizeDialogOpen(true)}>
 					Update Map Size
 				</Button>
@@ -279,8 +286,8 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 				<div className='flex items-center gap-1'>
 					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup Spawn Count:</span>
 					<Input 
-					className='bg-background' 
 					type="number" 
+					className='bg-background' 
 					value={canvasManagerRef.current.mapData.powerupSpawnNum} 
 					onChange={(e) => { 
 						updateMapData(canvasManagerRef, {
