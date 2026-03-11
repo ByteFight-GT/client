@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import Image from 'next/image';
 
 import './page.css'
 import { TileType, type TileType_t, type MapData, type MapLoc, type MapDataOptionalSpawnpts, type GamePGN } from '../../../common/types';
@@ -9,10 +8,7 @@ import { MapbuilderSidebar } from './components/MapbuilderSidebar';
 import { GameRenderer } from '@/gamerenderer/GameRenderer';
 import { useVisualizer, VisualizerProvider } from '@/gamerenderer/useVisualizer';
 
-import { applySymmetry, arrayEq1D } from '../../../common/utils';
-
-import _DEFAULT_MAP_DATA from '../../gamerenderer/defaults/DEFAULT_MAP_DATA.json';
-const DEFAULT_MAP_DATA = _DEFAULT_MAP_DATA as unknown as MapData;
+import { getTileTypeAtLoc, placeTile, updateMapData } from './mapBuilderUtils';
 
 export default function MapBuilderPageWrapper() {
 	return (
@@ -25,107 +21,53 @@ export default function MapBuilderPageWrapper() {
 export type MapBuilderEditorState = {
 	mapName: string;
 	selectedTileType: TileType_t;
-	mouseDown: boolean;
+	mouseDownButton: number;
 	hillId: number;
 };
 
-/** returns a new MapData after changing the tiletype at loc based on whats selected in editorState. */
-function placeTile(
-	mapData: MapDataOptionalSpawnpts, 
-	loc: MapLoc, 
-	editorState: MapBuilderEditorState,
-): MapDataOptionalSpawnpts {
-
-	
-	// make copy and check everything to see if we needa clear it first
-	const newMapData = {...mapData};
-	const symmetricLoc = applySymmetry(loc, mapData.size, mapData.symmetry);
-	
-	const shouldntBeCleared = editorState.selectedTileType !== TileType.HILL?
-		(tile: MapLoc) => !arrayEq1D(tile, loc) && !arrayEq1D(tile, symmetricLoc)
-	:
-		(tile: MapLoc) => !arrayEq1D(tile, loc); // no need to clear otherside on hills, since they arent symmetric
-	
-	// CLEARING CURRENT TILE if needed
-	newMapData.wallLocs = mapData.wallLocs.filter(shouldntBeCleared);
-	for (const hillId in mapData.hillLocs) {
-		newMapData.hillLocs[hillId] = mapData.hillLocs[hillId].filter(shouldntBeCleared);
-	}
-	if (mapData.spawnpointBlue && !shouldntBeCleared(mapData.spawnpointBlue)) {
-		newMapData.spawnpointBlue = null;
-	}
-	if (mapData.spawnpointGreen && !shouldntBeCleared(mapData.spawnpointGreen)) {
-		newMapData.spawnpointGreen = null;
-	}
-
-	switch (editorState.selectedTileType) {
-		case TileType.EMPTY: // already handled!
-			return newMapData;
-
-		case TileType.WALL:
-			newMapData.wallLocs.push(loc);
-			newMapData.wallLocs.push(symmetricLoc);
-			return newMapData;
-
-		case TileType.HILL:
-			if (!newMapData.hillLocs[editorState.hillId]) {
-				newMapData.hillLocs[editorState.hillId] = [];
-			}
-			newMapData.hillLocs[editorState.hillId].push(loc); // NOTE - hills not symmetric!
-			return newMapData;
-
-		case TileType.BLUE_SPAWN:
-			newMapData.spawnpointBlue = loc;
-			newMapData.spawnpointGreen = symmetricLoc;
-			return newMapData;
-
-		case TileType.GREEN_SPAWN:
-			newMapData.spawnpointGreen = loc;
-			newMapData.spawnpointBlue = symmetricLoc;
-			return newMapData;
-	}
-}
-
 function MapBuilderPage() {
 
-	const {setVisualizerState, subscribeToCanvasMouseEvents} = useVisualizer();
+	const {canvasManagerRef, subscribeToCanvasMouseEvents} = useVisualizer();
 
-	const [mapData, setMapData] = React.useState<MapDataOptionalSpawnpts>(DEFAULT_MAP_DATA);
 	const [editorState, setEditorState] = React.useState<MapBuilderEditorState>({
 		mapName: '',
 		selectedTileType: TileType.EMPTY,
-		mouseDown: false,
+		mouseDownButton: -1,
 		hillId: 0,
 	});
-
 
 	// click handler
 	React.useEffect(() => {
 		return subscribeToCanvasMouseEvents((mapLoc, event) => {
 			if (event.type === "mousedown") {
-				setEditorState(prev => ({...prev, mouseDown: true}));
-			} else if (event.type === "mouseup") {
-				setEditorState(prev => ({...prev, mouseDown: false}));
+				setEditorState(prev => ({...prev, mouseDownButton: event.button}));
+			} else if (event.type === "mouseup" || event.type === "mouseleave" || event.type === "mouseout") {
+				setEditorState(prev => ({...prev, mouseDownButton: -1}));
+				return;
 			}
 
-			if (event.type === "mousemove" && !editorState.mouseDown) {
-				return; // only place tiles on click or click+drag, not just hover
+			if (editorState.mouseDownButton === -1) {
+				return; // only place tiles when mouse is being clicked
 			}
-			setMapData(prevMapData => placeTile(prevMapData, mapLoc, editorState));
+
+			const tileToPlace = editorState.mouseDownButton === 2? // 2 = rightclick = erase. otherwise use selection
+				TileType.EMPTY : editorState.selectedTileType; 
+
+			if (tileToPlace === getTileTypeAtLoc(canvasManagerRef.current.mapData, mapLoc)) {
+				return;
+			}
+
+			updateMapData(canvasManagerRef, placeTile(canvasManagerRef.current.mapData, mapLoc, {
+				...editorState,
+				selectedTileType: tileToPlace,
+			}));
 		});
-	}, [editorState.mouseDown, editorState.hillId, editorState.selectedTileType]);
-
-	// updating the visualizer state whenever mapData or editorState changes
-	React.useEffect(() => {
-		setVisualizerState({mapData});
-	}, [mapData]);
+	}, [editorState.mouseDownButton, editorState.hillId, editorState.selectedTileType]);
 
 	return (
 		<div className='mapbuilder-container'>
 
 			<MapbuilderSidebar 
-			mapData={mapData} 
-			setMapData={setMapData} 
 			editorState={editorState} 
 			setEditorState={setEditorState} />
 

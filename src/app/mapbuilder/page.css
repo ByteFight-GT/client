@@ -28,13 +28,14 @@
 .mapbuilder-sidebar-selected-tile  {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 1rem;
 	image-rendering: pixelated;
 }
 .mapbuilder-sidebar-tile-select {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(32px, 1fr));
 	gap: 1rem;
+	margin-top: 0.5rem;
 }
 
 .mapbuilder-tile-option {

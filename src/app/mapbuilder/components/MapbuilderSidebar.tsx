@@ -10,71 +10,99 @@ import {
 	Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components';
 import { SidebarItem } from '@/components/SidebarItem';
-import { MapData, type MapDataOptionalSpawnpts, Symmetry, TileType, type TileType_t } from '../../../../common/types';
+import { MapData, MapLoc, Symmetry, Symmetry_t, TileType, TileType_t } from '../../../../common/types';
 import { useMaps } from '@/hooks/useMaps';
 import { OverwriteEditorDialog } from './OverwriteEditorDialog';
 import { DeleteMapsDialog } from './DeleteMapsDialog';
 import { MapList } from './MapList';
 import { MapBuilderEditorState } from '../page';
+import { SwitchSymmetryDialog } from './SwitchSymmetryDialog';
+import { ChangeMapSizeDialog } from './ChangeMapSizeDialog';
+import { toastError } from '@/hooks/useToast';
+
+import { getEmptyMapWithSizeAndSym, mapSizeAllowed, MAX_MAP_SIZE, MIN_MAP_SIZE, updateMapData } from '../mapBuilderUtils';
+import { arrayEq1D } from '../../../../common/utils';
+import { ClearMapDialog } from './ClearMapDialog';
+import { useVisualizer } from '@/gamerenderer/useVisualizer';
 
 const TILE_TYPE_DESCS = {
 	EMPTY: {
 		name: "Empty",
-		desc: "Use to erase map features. You can also right click on tiles to erase, or hover and press delete!",
+		desc: "Use to erase map features. You can also right click on tiles to erase!",
 	},
 	WALL: {
 		name: "Wall",
-		desc: "Blocks movement and cannot be painted on.",
+		desc: "Blocks all movement and cannot be painted on.",
 	},
 	HILL: {
 		name: "Hill",
-		desc: "Hill description",
+		desc: "Hills are the primary objectives of the game. Hills will also belong to distinct ID groups.",
 	},
 	BLUE_SPAWN: {
 		name: "Blue Spawn",
-		desc: "The location where the blue player spawns at the start of the game. Green's spawn will be determined symmetrically when this is placed!",
+		desc: "Blue's Location at game start. Green's spawn will be determined symmetrically when this is placed.",
 	},
 	GREEN_SPAWN: {
 		name: "Green Spawn",
-		desc: "The location where the green player spawns at the start of the game. Blue's spawn will be determined symmetrically when this is placed!",
+		desc: "Green's Location at game start. Blue's spawn will be determined symmetrically when this is placed.",
 	},
 }
 
 type MapbuilderSidebarProps = {
-	mapData: MapDataOptionalSpawnpts;
 	editorState: MapBuilderEditorState,
-	setMapData: React.Dispatch<React.SetStateAction<MapDataOptionalSpawnpts>>;
 	setEditorState: React.Dispatch<React.SetStateAction<MapBuilderEditorState>>;
 };
 export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
-
 	const {maps, readMap, handleSaveMap, handleDeleteMaps} = useMaps();
 	const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
+
+	const {canvasManagerRef} = useVisualizer();
+
 	const [deleteMapsDialogOpen, setDeleteMapsDialogOpen] = React.useState(false);
+	const [changeSizeDialogOpen, setChangeSizeDialogOpen] = React.useState(false);
+	const [clearMapDialogOpen, setClearMapDialogOpen] = React.useState(false);
 	const [askingToLoadMapToEditor, setAskingToLoadMapToEditor] = React.useState<string | null>(null);
+	const [askingToSwitchSymmetryTo, setAskingToSwitchSymmetryTo] = React.useState<Symmetry_t | null>(null);
+
+	// whats held in the inputs rn. just a draft till they confirm
+	const [mapSizeDraft, setMapSizeDraft] = React.useState<MapLoc>(canvasManagerRef.current.mapData.size);
 
 	const handleLoadMapToEditor = React.useCallback(async (mapName: string) => {
 		const res = await readMap(mapName);
 		if (res) {
-			props.setMapData(res);
+			updateMapData(canvasManagerRef, res);
 		} // else: readMap should handle displaying error
 	}, [readMap, props]);
 
 	const mapDataInvalidReason = React.useMemo(() => {
-		if (props.mapData.size[0] <= 0 || props.mapData.size[1] <= 0) {
-			return "Size must be positive";
+		if (
+			canvasManagerRef.current.mapData.size[0] <= MIN_MAP_SIZE 
+			|| canvasManagerRef.current.mapData.size[1] <= MIN_MAP_SIZE
+		) {
+			return `Map dimensions must both be at least ${MIN_MAP_SIZE}.`;
 		}
 
-		if (props.mapData.symmetry === undefined) {
-			return "No symmetry selected";
-		}
-
-		if (!props.mapData.spawnpointBlue || !props.mapData.spawnpointGreen) {
+		if (!canvasManagerRef.current.mapData.spawnpointBlue || !canvasManagerRef.current.mapData.spawnpointGreen) {
 			return "Both spawn points must be placed";
 		}
 
 		return null;
-	}, [props.mapData]);
+	}, [canvasManagerRef.current.mapData]);
+
+	const handleMapSizeChangeConfirm = React.useCallback(() => {
+		// just one more validation bro... just one more validation...
+		if (!mapSizeAllowed(mapSizeDraft)) {
+			toastError(
+				"Invalid map size",
+				`Map dimensions must both be between ${MIN_MAP_SIZE} and ${MAX_MAP_SIZE}. No changes made.`,
+			);
+		} else {
+			// reset!
+			updateMapData(canvasManagerRef, getEmptyMapWithSizeAndSym(mapSizeDraft, canvasManagerRef.current.mapData.symmetry));
+		}
+
+		setChangeSizeDialogOpen(false);
+	}, [mapSizeDraft]);
 
 	return (
 		<div className='mapbuilder-sidebar'>
@@ -99,6 +127,27 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					setSelectedMaps(new Set());
 				})
 			} />
+
+			<SwitchSymmetryDialog
+			open={askingToSwitchSymmetryTo !== null}
+			onCancel={() => setAskingToSwitchSymmetryTo(null)}
+			onConfirm={() => {
+				updateMapData(canvasManagerRef, getEmptyMapWithSizeAndSym(canvasManagerRef.current.mapData.size, askingToSwitchSymmetryTo!));
+				setAskingToSwitchSymmetryTo(null);
+			}} />
+
+			<ChangeMapSizeDialog
+			open={changeSizeDialogOpen}
+			onCancel={() => setChangeSizeDialogOpen(false)}
+			onConfirm={handleMapSizeChangeConfirm} />
+
+			<ClearMapDialog
+			open={clearMapDialogOpen}
+			onCancel={() => setClearMapDialogOpen(false)}
+			onConfirm={() => {
+				updateMapData(canvasManagerRef, getEmptyMapWithSizeAndSym(mapSizeDraft, canvasManagerRef.current.mapData.symmetry));
+				setClearMapDialogOpen(false);
+			}} />
 
 			<h2>Map Builder</h2>
 
@@ -151,13 +200,55 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 				)}
 			</SidebarItem>
 
+			<SidebarItem label="Map Size">
+				<div className='flex items-center gap-1'>
+					<span className='text-sm text-muted-foreground flex-shrink-0'>Rows:</span>
+					<Input 
+					min={0}
+					type="number" 
+					className='bg-background' 
+					value={mapSizeDraft[0]}
+					onChange={e => setMapSizeDraft(prev => ([
+						parseInt(e.target.value) || 0,
+						prev[1]
+					]))} />
+
+					&ensp;
+
+					<span className='text-sm text-muted-foreground flex-shrink-0'>Columns:</span>
+					<Input 
+					min={0}
+					type="number" 
+					className='bg-background' 
+					value={mapSizeDraft[1]}
+					onChange={(e) => setMapSizeDraft(prev => ([
+						prev[0],
+						parseInt(e.target.value) || 0
+					]))} />
+				</div>
+
+				<Button 
+				variant="outline" 
+				disabled={arrayEq1D(mapSizeDraft, canvasManagerRef.current.mapData.size) || !mapSizeAllowed(mapSizeDraft)}
+				onClick={() => setChangeSizeDialogOpen(true)}>
+					Update Map Size
+				</Button>
+
+				<p className={`
+					text-xs text-center 
+					${mapSizeAllowed(mapSizeDraft)? 'text-muted-foreground' : 'text-destructiveBright'}
+				`}>
+					Map dimensions must be between {MIN_MAP_SIZE} and {MAX_MAP_SIZE}.
+				</p>
+			</SidebarItem>
+
 			<SidebarItem label="Map Settings">
 				<div className='flex items-center gap-1'>
-				<span className='text-sm text-muted-foreground'>Symmetry:</span>
-					<Select onValueChange={(val: keyof typeof Symmetry) => props.setMapData({...props.mapData, symmetry: val})} value={props.mapData.symmetry}>
-						<SelectTrigger>
-							<SelectValue placeholder="Select symmetry..." />
-						</SelectTrigger>
+					<span className='text-sm text-muted-foreground'>Symmetry:</span>
+					<Select 
+					value={canvasManagerRef.current.mapData.symmetry} 
+					onValueChange={val => setAskingToSwitchSymmetryTo(val as Symmetry_t)}>
+						<SelectTrigger><SelectValue placeholder="Select symmetry..." /></SelectTrigger>
 						<SelectContent>
 							{Object.entries(Symmetry).map(([k, v]) => (
 								<SelectItem key={k} value={k}>{v}</SelectItem>
@@ -167,30 +258,39 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 				</div>
 
 				<div className='flex items-center gap-1'>
-					<span className='text-sm text-muted-foreground flex-shrink-0'>Width:</span>
-					<Input className='bg-background' type="number" value={props.mapData.size[0]} onChange={(e) => props.setMapData({...props.mapData, size: [parseInt(e.target.value) || 0, props.mapData.size[1]]})} />
-					&ensp;
-					<span className='text-sm text-muted-foreground flex-shrink-0'>Height:</span>
-					<Input className='bg-background' type="number" value={props.mapData.size[1]} onChange={(e) => props.setMapData({...props.mapData, size: [props.mapData.size[0], parseInt(e.target.value) || 0]})} />
-				</div>
-
-				<div className='flex items-center gap-1'>
-					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup Spawn Intervai:</span>
-					<Input className='bg-background' type="number" value={props.mapData.powerupSpawnInterval} onChange={(e) => props.setMapData({...props.mapData, powerupSpawnInterval: parseInt(e.target.value) || 0})} />
+					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup Spawn Interval:</span>
+					<Input 
+					type="number" 
+					className='bg-background' 
+					value={canvasManagerRef.current.mapData.powerupSpawnInterval} 
+					onChange={(e) => { 
+						updateMapData(canvasManagerRef, {
+							...canvasManagerRef.current.mapData, 
+							powerupSpawnInterval: parseInt(e.target.value) || 0
+						});
+					}} />
 				</div>
 
 				<div className='flex items-center gap-1'>
 					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup Spawn Count:</span>
-					<Input className='bg-background' type="number" value={props.mapData.powerupSpawnNum} onChange={(e) => props.setMapData({...props.mapData, powerupSpawnNum: parseInt(e.target.value) || 0})} />
+					<Input 
+					className='bg-background' 
+					type="number" 
+					value={canvasManagerRef.current.mapData.powerupSpawnNum} 
+					onChange={(e) => { 
+						updateMapData(canvasManagerRef, {
+							...canvasManagerRef.current.mapData, 
+							powerupSpawnNum: parseInt(e.target.value) || 0
+						});
+					}} />
 				</div>
-
-				
 			</SidebarItem>
 
 			<hr />
 			
 			<SidebarItem label="Map Name">
 				<Input className='bg-background'
+				placeholder="Enter save name"
 				value={props.editorState.mapName} 
 				onChange={(e) => props.setEditorState(prev => ({...prev, mapName: e.target.value}))} />
 			</SidebarItem>
@@ -204,7 +304,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					disabled={!props.editorState.mapName || !!mapDataInvalidReason} 
 					onClick={() => {
 						if (!mapDataInvalidReason) {
-							handleSaveMap(props.editorState.mapName, props.mapData as MapData);
+							handleSaveMap(props.editorState.mapName, canvasManagerRef.current.mapData as MapData);
 						}
 					}}>
 						Save
@@ -214,6 +314,10 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 				</div>
 			</SidebarItem>
+
+			<Button variant='destructive' onClick={() => setClearMapDialogOpen(true)}>
+				Clear Map
+			</Button>
 
 		</div>
 	);
