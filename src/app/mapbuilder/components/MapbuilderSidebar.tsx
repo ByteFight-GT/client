@@ -58,14 +58,18 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 	const {canvasManagerRef} = useVisualizer();
 
+	const [mapSaveName, setMapSaveName] = React.useState('');
+
+	// whats held in the inputs rn. just a draft till they confirm
+	const [mapSizeDraft, setMapSizeDraft] = React.useState<MapLoc>(canvasManagerRef.current.mapData.size);
+
+	// stuff for all the dialogs
 	const [deleteMapsDialogOpen, setDeleteMapsDialogOpen] = React.useState(false);
 	const [changeSizeDialogOpen, setChangeSizeDialogOpen] = React.useState(false);
 	const [clearMapDialogOpen, setClearMapDialogOpen] = React.useState(false);
 	const [askingToLoadMapToEditor, setAskingToLoadMapToEditor] = React.useState<string | null>(null);
 	const [askingToSwitchSymmetryTo, setAskingToSwitchSymmetryTo] = React.useState<Symmetry_t | null>(null);
 
-	// whats held in the inputs rn. just a draft till they confirm
-	const [mapSizeDraft, setMapSizeDraft] = React.useState<MapLoc>(canvasManagerRef.current.mapData.size);
 
 	const handleLoadMapToEditor = React.useCallback(async (mapName: string) => {
 		const res = await readMap(mapName);
@@ -103,6 +107,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 		setChangeSizeDialogOpen(false);
 	}, [mapSizeDraft]);
+
 
 	return (
 		<div className='mapbuilder-sidebar'>
@@ -291,8 +296,8 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			<SidebarItem label="Map Name">
 				<Input className='bg-background'
 				placeholder="Enter save name"
-				value={props.editorState.mapName} 
-				onChange={(e) => props.setEditorState(prev => ({...prev, mapName: e.target.value}))} />
+				value={mapSaveName} 
+				onChange={(e) => setMapSaveName(e.target.value)} />
 			</SidebarItem>
 
 			<SidebarItem label="Save">
@@ -301,10 +306,10 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<Button 
 					className='w-1/2'
 					tooltip={mapDataInvalidReason ?? undefined}
-					disabled={!props.editorState.mapName || !!mapDataInvalidReason} 
+					disabled={!mapSaveName || !!mapDataInvalidReason} 
 					onClick={() => {
 						if (!mapDataInvalidReason) {
-							handleSaveMap(props.editorState.mapName, canvasManagerRef.current.mapData as MapData);
+							handleSaveMap(mapSaveName, canvasManagerRef.current.mapData as MapData);
 						}
 					}}>
 						Save

@@ -61,6 +61,11 @@ export function arrayEq1D<T>(arr1: T[], arr2: T[], eqFn?: (a: T, b: T) => boolea
   }
 }
 
+export function oob(loc: MapLoc, mapSize: MapLoc): boolean {
+  return loc[0] < 0 || loc[0] >= mapSize[0] || loc[1] < 0 || loc[1] >= mapSize[1];
+}
+
+
 /**
  * Format a number of milliseconds into human-readable format
  * Forms:

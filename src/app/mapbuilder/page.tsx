@@ -9,6 +9,7 @@ import { GameRenderer } from '@/gamerenderer/GameRenderer';
 import { useVisualizer, VisualizerProvider } from '@/gamerenderer/useVisualizer';
 
 import { getTileTypeAtLoc, placeTile, updateMapData } from './mapBuilderUtils';
+import { oob } from '../../../common/utils';
 
 export default function MapBuilderPageWrapper() {
 	return (
@@ -19,9 +20,7 @@ export default function MapBuilderPageWrapper() {
 }
 
 export type MapBuilderEditorState = {
-	mapName: string;
 	selectedTileType: TileType_t;
-	mouseDownButton: number;
 	hillId: number;
 };
 
@@ -29,10 +28,11 @@ function MapBuilderPage() {
 
 	const {canvasManagerRef, subscribeToCanvasMouseEvents} = useVisualizer();
 
+	// -1 means no button down, 0 = left, 2 = right. (1 = middle but we dont use that)
+	const mouseDownButtonRef = React.useRef<number>(-1); 
+
 	const [editorState, setEditorState] = React.useState<MapBuilderEditorState>({
-		mapName: '',
 		selectedTileType: TileType.EMPTY,
-		mouseDownButton: -1,
 		hillId: 0,
 	});
 
@@ -40,29 +40,47 @@ function MapBuilderPage() {
 	React.useEffect(() => {
 		return subscribeToCanvasMouseEvents((mapLoc, event) => {
 			if (event.type === "mousedown") {
-				setEditorState(prev => ({...prev, mouseDownButton: event.button}));
-			} else if (event.type === "mouseup" || event.type === "mouseleave" || event.type === "mouseout") {
-				setEditorState(prev => ({...prev, mouseDownButton: -1}));
+				event.stopPropagation(); // prevents accidental panning when mouse leaves
+				mouseDownButtonRef.current = event.button;
+			} else if (event.type === "mouseup") {
+				mouseDownButtonRef.current = -1;
+				return;
+			} else if (event.type === "mouseenter") {
+				mouseDownButtonRef.current = -1; // reset on enter since we dont know if they let go when outside canvas ;-;
 				return;
 			}
 
-			if (editorState.mouseDownButton === -1) {
-				return; // only place tiles when mouse is being clicked
+			if (oob(mapLoc, canvasManagerRef.current.mapData.size)) {
+				return;
 			}
 
-			const tileToPlace = editorState.mouseDownButton === 2? // 2 = rightclick = erase. otherwise use selection
+			if (mouseDownButtonRef.current === -1) {
+				return; // only change map when mouse is being clicked
+			}
+
+			const tileAtLoc = getTileTypeAtLoc(canvasManagerRef.current.mapData, mapLoc);
+
+			// middle click selects the tile ;)
+			if (mouseDownButtonRef.current === 1) {
+				setEditorState(prev => ({
+					...prev,
+					selectedTileType: tileAtLoc,
+				}));
+				return;
+			}
+
+			// actually placing the tile
+			const tileToPlace = mouseDownButtonRef.current === 2? // 2 = rightclick = erase. otherwise use selection
 				TileType.EMPTY : editorState.selectedTileType; 
-
-			if (tileToPlace === getTileTypeAtLoc(canvasManagerRef.current.mapData, mapLoc)) {
+			if (tileToPlace === tileAtLoc) {
 				return;
 			}
-
 			updateMapData(canvasManagerRef, placeTile(canvasManagerRef.current.mapData, mapLoc, {
 				...editorState,
 				selectedTileType: tileToPlace,
 			}));
 		});
-	}, [editorState.mouseDownButton, editorState.hillId, editorState.selectedTileType]);
+	}, [editorState]);
 
 	return (
 		<div className='mapbuilder-container'>
@@ -73,7 +91,6 @@ function MapBuilderPage() {
 
 			<div className='mapbuilder-gamerenderer'>
 				<GameRenderer 
-				disablePanning
 				shouldShowSpawnpoints
 				transformComponentProps={{
 					wrapperStyle: { 

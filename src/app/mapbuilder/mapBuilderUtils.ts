@@ -5,9 +5,9 @@ import { toastError } from '@/hooks/useToast';
 import { MapBuilderEditorState } from './page';
 
 import _DEFAULT_MAP_DATA from '../../gamerenderer/defaults/DEFAULT_MAP_DATA.json';
+const DEFAULT_MAP_DATA = _DEFAULT_MAP_DATA as unknown as MapData;
 import { clamp } from '@/gamerenderer/utils';
 import { CanvasManager } from '@/gamerenderer/CanvasManager';
-const DEFAULT_MAP_DATA = _DEFAULT_MAP_DATA as unknown as MapData;
 
 export const MIN_MAP_SIZE = 5;
 export const MAX_MAP_SIZE = 32;
