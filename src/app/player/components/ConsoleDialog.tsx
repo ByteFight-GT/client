@@ -22,7 +22,7 @@ export const ConsoleDialog = (props: ConsoleDialogProps) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent aria-describedby='console-title-aria-sybau'>
+      <DialogContent className="max-w-4xl" aria-describedby='console-title-aria-sybau'>
         <DialogTitle>Console Output</DialogTitle>
 
         {props.stdOutChunks.length > 0?
