@@ -7,6 +7,7 @@ import { TileType, type TileType_t, type MapData, type MapLoc, type MapDataOptio
 import { MapbuilderSidebar } from './components/MapbuilderSidebar';
 import { GameRenderer } from '@/gamerenderer/GameRenderer';
 import { useVisualizer, VisualizerProvider } from '@/gamerenderer/useVisualizer';
+import { useMaps } from '@/hooks/useMaps';
 
 import { getTileTypeAtLoc, placeTile, updateMapData } from './mapBuilderUtils';
 import { oob } from '../../../common/utils';
@@ -26,7 +27,11 @@ export type MapBuilderEditorState = {
 
 function MapBuilderPage() {
 
-	const {canvasManagerRef, subscribeToCanvasMouseEvents} = useVisualizer();
+	const {canvasManagerRef, subscribeToCanvasMouseEvents, setVisualizerState} = useVisualizer();
+	
+	// restoring state when coming back from previous sesh
+	const {mapbuilderSavedState, setMapbuilderSavedState} = useMaps();
+	const shouldCheckForSavedProgress = React.useRef(true);
 
 	// -1 means no button down, 0 = left, 2 = right. (1 = middle but we dont use that)
 	const mouseDownButtonRef = React.useRef<number>(-1); 
@@ -35,6 +40,25 @@ function MapBuilderPage() {
 		selectedTileType: TileType.EMPTY,
 		hillId: 0,
 	});
+	const [mapSizeDraft, setMapSizeDraft] = React.useState<MapLoc>(canvasManagerRef.current.mapData.size);
+
+	// If there is unsaved progress from a previous visit, restore it once on mount.
+	React.useEffect(() => {
+		if (!shouldCheckForSavedProgress.current) return;
+		shouldCheckForSavedProgress.current = false;
+
+		if (mapbuilderSavedState) {
+			setVisualizerState({ mapData: mapbuilderSavedState });
+			setMapSizeDraft(mapbuilderSavedState.size);
+		}
+	}, [mapbuilderSavedState, setVisualizerState]);
+
+	// save progress when unmounting (navving away)
+	React.useEffect(() => {
+		return () => {
+			setMapbuilderSavedState(canvasManagerRef.current.mapData);
+		};
+	}, [canvasManagerRef, setMapbuilderSavedState]);
 
 	// click handler
 	React.useEffect(() => {
@@ -87,7 +111,9 @@ function MapBuilderPage() {
 
 			<MapbuilderSidebar 
 			editorState={editorState} 
-			setEditorState={setEditorState} />
+			setEditorState={setEditorState}
+			mapSizeDraft={mapSizeDraft}
+			setMapSizeDraft={setMapSizeDraft} />
 
 			<div className='mapbuilder-gamerenderer'>
 				<GameRenderer 

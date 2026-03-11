@@ -3,11 +3,13 @@
 import React from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useLoadings } from './useLoadings';
-import { type MapData } from '../../common/types';
+import { MapDataOptionalSpawnpts, type MapData } from '../../common/types';
 import { word } from '../../common/utils';
 
 export type UseMapsValue = {
   maps: string[];
+  mapbuilderSavedState: MapDataOptionalSpawnpts | null;
+  setMapbuilderSavedState: React.Dispatch<React.SetStateAction<MapDataOptionalSpawnpts | null>>;
   fetchMapList: () => void;
   readMap: (mapName: string) => Promise<MapData | null>;
   handleImportMaps: () => Promise<void>;
@@ -24,6 +26,9 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [maps, setMaps] = React.useState<string[]>([]);
   const {loadings, toggleLoading, asyncLoadingWrapper} = useLoadings();
   const {toast, toastError} = useToast();
+
+  // used for saving progress in the map builder when navigating off the page
+  const [mapbuilderSavedState, setMapbuilderSavedState] = React.useState<MapDataOptionalSpawnpts | null>(null);
 
   // >>> HANDLERS
 
@@ -130,6 +135,8 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value = React.useMemo(() => ({
     maps,
+    mapbuilderSavedState,
+    setMapbuilderSavedState,
     fetchMapList,
     readMap,
     handleImportMaps,
@@ -137,6 +144,7 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     handleSaveMap,
   } satisfies UseMapsValue), [
     maps, 
+    mapbuilderSavedState,
     fetchMapList, 
     readMap,
     handleImportMaps, 

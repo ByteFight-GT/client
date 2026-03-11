@@ -51,17 +51,17 @@ const TILE_TYPE_DESCS = {
 type MapbuilderSidebarProps = {
 	editorState: MapBuilderEditorState,
 	setEditorState: React.Dispatch<React.SetStateAction<MapBuilderEditorState>>;
+	mapSizeDraft: MapLoc;
+	setMapSizeDraft: React.Dispatch<React.SetStateAction<MapLoc>>;
 };
 export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 	const {maps, readMap, handleSaveMap, handleDeleteMaps} = useMaps();
 	const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
 
 	const {canvasManagerRef} = useVisualizer();
+	const {mapSizeDraft, setMapSizeDraft} = props;
 
 	const [mapSaveName, setMapSaveName] = React.useState('');
-
-	// whats held in the inputs rn. just a draft till they confirm
-	const [mapSizeDraft, setMapSizeDraft] = React.useState<MapLoc>(canvasManagerRef.current.mapData.size);
 
 	// stuff for all the dialogs
 	const [deleteMapsDialogOpen, setDeleteMapsDialogOpen] = React.useState(false);
@@ -75,8 +75,9 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 		const res = await readMap(mapName);
 		if (res) {
 			updateMapData(canvasManagerRef, res);
+			setMapSizeDraft(res.size);
 		} // else: readMap should handle displaying error
-	}, [readMap, props]);
+	}, [readMap, canvasManagerRef, setMapSizeDraft]);
 
 	const mapDataInvalidReason = React.useMemo(() => {
 		if (
