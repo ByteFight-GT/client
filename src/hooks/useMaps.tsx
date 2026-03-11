@@ -106,7 +106,7 @@ export const MapsProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.success) {
           toast({
             toastTitle: "Map Saved",
-            toastDescription: <p>Successfully saved map as "<span className='text-foreground'>{mapName}</span>."</p>
+            toastDescription: <p>Successfully saved map as "<span className='text-foreground'>{mapName}</span>"</p>
           });
           if (!maps.includes(mapName)) {
             setMaps(prev => [...prev, mapName]);
