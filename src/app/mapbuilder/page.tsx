@@ -3,13 +3,14 @@
 import React from 'react';
 
 import './page.css'
-import { TileType, type TileType_t, type MapData, type MapLoc, type MapDataOptionalSpawnpts, type GamePGN } from '../../../common/types';
+import { TileType, type TileType_t, type MapData, type MapLoc, type MapDataOptionalSpawnpts, type GamePGN, type Symmetry_t } from '../../../common/types';
 import { MapbuilderSidebar } from './components/MapbuilderSidebar';
+import { InitialMapSetupDialog } from './components/InitialMapSetupDialog';
 import { GameRenderer } from '@/gamerenderer/GameRenderer';
 import { useVisualizer, VisualizerProvider } from '@/gamerenderer/useVisualizer';
 import { useMaps } from '@/hooks/useMaps';
 
-import { getTileTypeAtLoc, placeTile, updateMapData } from './mapBuilderUtils';
+import { getEmptyMapWithSizeAndSym, getTileTypeAtLoc, placeTile, updateMapData } from './mapBuilderUtils';
 import { oob } from '../../../common/utils';
 
 export default function MapBuilderPageWrapper() {
@@ -42,7 +43,11 @@ function MapBuilderPage() {
 	});
 	const [mapSizeDraft, setMapSizeDraft] = React.useState<MapLoc>(canvasManagerRef.current.mapData.size);
 
+	// show initial setup dialog on first ever visit (no saved state yet)
+	const [showInitialSetup, setShowInitialSetup] = React.useState(false);
+
 	// If there is unsaved progress from a previous visit, restore it once on mount.
+	// Otherwise, show the initial setup dialog.
 	React.useEffect(() => {
 		if (!shouldCheckForSavedProgress.current) return;
 		shouldCheckForSavedProgress.current = false;
@@ -50,8 +55,17 @@ function MapBuilderPage() {
 		if (mapbuilderSavedState) {
 			setVisualizerState({ mapData: mapbuilderSavedState });
 			setMapSizeDraft(mapbuilderSavedState.size);
+		} else {
+			setShowInitialSetup(true);
 		}
 	}, [mapbuilderSavedState, setVisualizerState]);
+
+	const handleInitialSetupConfirm = React.useCallback((size: MapLoc, symmetry: Symmetry_t) => {
+		const newMapData = getEmptyMapWithSizeAndSym(size, symmetry);
+		updateMapData(canvasManagerRef, newMapData);
+		setMapSizeDraft(size);
+		setShowInitialSetup(false);
+	}, [canvasManagerRef]);
 
 	// save progress when unmounting (navving away)
 	React.useEffect(() => {
@@ -108,6 +122,13 @@ function MapBuilderPage() {
 
 	return (
 		<div className='mapbuilder-container'>
+
+			<InitialMapSetupDialog
+			open={showInitialSetup}
+			defaultSize={canvasManagerRef.current.mapData.size}
+			defaultSymmetry={canvasManagerRef.current.mapData.symmetry}
+			onConfirm={handleInitialSetupConfirm}
+			onDismiss={() => setShowInitialSetup(false)} />
 
 			<MapbuilderSidebar 
 			editorState={editorState} 
