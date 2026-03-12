@@ -22,13 +22,14 @@ export function useIPC() {
     handleMatchEnd,
   } = useRunner();
 
-  const {updateGamePGN} = useVisualizer();
+  const {currentMatchData, updateGamePGN} = useVisualizer();
 
   // REFS
   // only for the unstable stuff from useRunner so we dont need to reregister all the time
-
   const currentlyRunningMatchRef = React.useRef(currentlyRunningMatch);
+  const currentMatchDataRef = React.useRef(currentMatchData);
   React.useEffect(() => {currentlyRunningMatchRef.current = currentlyRunningMatch}, [currentlyRunningMatch]);
+  React.useEffect(() => {currentMatchDataRef.current = currentMatchData}, [currentMatchData]);
 
   const handleMatchEndRef = React.useRef(handleMatchEnd);
   React.useEffect(() => {handleMatchEndRef.current = handleMatchEnd}, [handleMatchEnd]);
@@ -57,7 +58,10 @@ export function useIPC() {
         } break;
 
         case 'update': {
-          updateGamePGN(data);
+          // update visualizer, ONLY if we are viewing the running match
+          if (currentMatchDataRef.current?.matchId === currentlyRunningMatchRef.current?.matchId) {
+            updateGamePGN(data);
+          }
         } break;
 
         case 'game_complete': {
