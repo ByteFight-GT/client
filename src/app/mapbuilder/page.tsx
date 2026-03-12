@@ -78,7 +78,11 @@ function MapBuilderPage() {
 	React.useEffect(() => {
 		return subscribeToCanvasMouseEvents((mapLoc, event) => {
 			if (event.type === "mousedown") {
-				event.stopPropagation(); // prevents accidental panning when mouse leaves
+				if (event.button !== 1) {
+					// prevents accidental panning when mouse leaves
+					// UNLESS we are middle clicking which is used for panning specifically
+					event.stopPropagation();
+				}
 				mouseDownButtonRef.current = event.button;
 			} else if (event.type === "mouseup") {
 				mouseDownButtonRef.current = -1;
@@ -92,20 +96,11 @@ function MapBuilderPage() {
 				return;
 			}
 
-			if (mouseDownButtonRef.current === -1) {
-				return; // only change map when mouse is being clicked
+			if (![0, 2].includes(mouseDownButtonRef.current)) {
+				return; // only do things on right/left click
 			}
 
 			const tileAtLoc = getTileTypeAtLoc(canvasManagerRef.current.mapData, mapLoc);
-
-			// middle click selects the tile ;)
-			if (mouseDownButtonRef.current === 1) {
-				setEditorState(prev => ({
-					...prev,
-					selectedTileType: tileAtLoc,
-				}));
-				return;
-			}
 
 			// actually placing the tile
 			const tileToPlace = mouseDownButtonRef.current === 2? // 2 = rightclick = erase. otherwise use selection
