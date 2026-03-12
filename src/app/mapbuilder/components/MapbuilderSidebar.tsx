@@ -230,7 +230,6 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					type="number" 
 					value={props.mapSizeDraft[0]}
 					className='bg-background' 
-					onFocus={e => e.currentTarget.select()}
 					onChange={e => props.setMapSizeDraft(prev => ([
 						parseInt(e.target.value) || 0,
 						prev[1]
@@ -244,7 +243,6 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					type="number" 
 					value={props.mapSizeDraft[1]}
 					className='bg-background'
-					onFocus={e => e.currentTarget.select()} 
 					onChange={(e) => props.setMapSizeDraft(prev => ([
 						prev[0],
 						parseInt(e.target.value) || 0

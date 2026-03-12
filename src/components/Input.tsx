@@ -3,10 +3,12 @@ import React from "react"
 import { cn } from "@/lib/utils";
 import { FolderIcon } from "lucide-react";
 
-export interface InputProps extends React.ComponentProps<"input"> {}
+export interface InputProps extends React.ComponentProps<"input"> {
+	dontSelectNumbersOnFocus?: boolean;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-	({ className = "", ...props }, ref) => {
+	({ className = "", onFocus, dontSelectNumbersOnFocus = false, ...props }, ref) => {
 		const [selectedFile, setSelectedFile] = React.useState<string>("");
 		
 		// special file input
@@ -38,6 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 						style={{ display: "none" }}
 					/>
 					<div
+						onFocus={onFocus}
 						onClick={handleClick}
 						className={cn(
 							"w-full border border-border bg-secondary text-sm px-3 py-1 transition-all duration-100 cursor-pointer flex items-center gap-2",
@@ -57,6 +60,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 		// all other (non-file) types
 		return (
 			<input
+			onFocus={e => {
+				if (props.type === 'number' && !dontSelectNumbersOnFocus) {
+					// full-select by default since number input is annoying lol
+					e.currentTarget.select();
+				}
+				onFocus?.(e);
+			}}
 			className={cn(
 				"w-full border border-border bg-secondary text-sm px-3 py-1 transition-all duration-100",
 				"placeholder:text-muted-foreground",
