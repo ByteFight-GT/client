@@ -3,7 +3,7 @@
 import React from 'react';
 
 import './page.css'
-import { TileType, type TileType_t, type MapData, type MapLoc, type MapDataOptionalSpawnpts, type GamePGN, type Symmetry_t } from '../../../common/types';
+import { TileType, type TileType_t, type MapLoc, type MapDataOptionalSpawnpts, type Symmetry_t } from '../../../common/types';
 import { MapbuilderSidebar } from './components/MapbuilderSidebar';
 import { InitialMapSetupDialog } from './components/InitialMapSetupDialog';
 import { GameRenderer } from '@/gamerenderer/GameRenderer';
@@ -100,14 +100,17 @@ function MapBuilderPage() {
 				return; // only do things on right/left click
 			}
 
-			const tileAtLoc = getTileTypeAtLoc(canvasManagerRef.current.mapData, mapLoc);
+			const {tileType, hillId} = getTileTypeAtLoc(canvasManagerRef.current.mapData, mapLoc);
 
-			// actually placing the tile
-			const tileToPlace = mouseDownButtonRef.current === 2? // 2 = rightclick = erase. otherwise use selection
-				TileType.EMPTY : editorState.selectedTileType; 
-			if (tileToPlace === tileAtLoc) {
+			// button 2 = rightclick = erase
+			const tileToPlace = mouseDownButtonRef.current === 2? TileType.EMPTY : editorState.selectedTileType; 
+
+			// dont rerun expensive placing logic if tiles are the same
+			// ^ UNLESS: for hills the id might be different bruh, so we gotta check for that
+			if (tileToPlace === tileType && (tileType !== TileType.HILL || hillId === editorState.hillId)) {
 				return;
 			}
+
 			updateMapData(canvasManagerRef, placeTile(canvasManagerRef.current.mapData, mapLoc, {
 				...editorState,
 				selectedTileType: tileToPlace,

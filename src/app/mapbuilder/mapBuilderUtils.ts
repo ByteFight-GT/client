@@ -40,7 +40,7 @@ export function placeTile(
 	// UNLESS we are placing something symmetry-obeying (spawnpoints & walls) since those DO need a matching counterpart
 	
 	const shouldntBeCleared =
-		getTileTypeAtLoc(mapData, symmetricLoc) === TileType.HILL &&
+		getTileTypeAtLoc(mapData, symmetricLoc).tileType === TileType.HILL &&
 		(editorState.selectedTileType === TileType.EMPTY || editorState.selectedTileType === TileType.HILL)?
 		(tile: MapLoc) => !arrayEq1D(tile, loc)
 	:
@@ -86,25 +86,28 @@ export function placeTile(
 	}
 }
 
-export function getTileTypeAtLoc(mapData: MapDataOptionalSpawnpts, loc: MapLoc): TileType_t {
+export function getTileTypeAtLoc(mapData: MapDataOptionalSpawnpts, loc: MapLoc): {
+	tileType: TileType_t,
+	hillId: number | null,
+} {
 	if (mapData.spawnpointBlue && arrayEq1D(mapData.spawnpointBlue, loc)) {
-		return TileType.BLUE_SPAWN;
+		return { tileType: TileType.BLUE_SPAWN, hillId: null };
 	}
 	if (mapData.spawnpointGreen && arrayEq1D(mapData.spawnpointGreen, loc)) {
-		return TileType.GREEN_SPAWN;
+		return { tileType: TileType.GREEN_SPAWN, hillId: null };
 	}
 
 	if (mapData.wallLocs.some(wall => arrayEq1D(wall, loc))) {
-		return TileType.WALL;
+		return { tileType: TileType.WALL, hillId: null };
 	}
 
 	for (const hillId in mapData.hillLocs) {
 		if (mapData.hillLocs[hillId].some(hillLoc => arrayEq1D(hillLoc, loc))) {
-			return TileType.HILL;
+			return { tileType: TileType.HILL, hillId: parseInt(hillId) };
 		}
 	}
 
-	return TileType.EMPTY;
+	return { tileType: TileType.EMPTY, hillId: null };
 }
 
 /** Note: blue spawn will always be at (1,1) for empty maps. */
