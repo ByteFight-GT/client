@@ -35,11 +35,17 @@ export function placeTile(
 		return mapData; // do nothing cuz illegal operation
 	}
 	
-	const shouldntBeCleared = editorState.selectedTileType !== TileType.HILL?
-		(tile: MapLoc) => !arrayEq1D(tile, loc) && !arrayEq1D(tile, symmetricLoc)
-	:
-		(tile: MapLoc) => !arrayEq1D(tile, loc); // no need to clear otherside on hills, since they arent symmetric
+	// all tiles shouldnt be cleared except the clicked one and its symmetric counterpart (if different)
+	// HOWEVER - if the symmetric counterpart turns out to be a hill then dont delete since hills arent symmetric,
+	// UNLESS we are placing something symmetry-obeying (spawnpoints & walls) since those DO need a matching counterpart
 	
+	const shouldntBeCleared =
+		getTileTypeAtLoc(mapData, symmetricLoc) === TileType.HILL &&
+		(editorState.selectedTileType === TileType.EMPTY || editorState.selectedTileType === TileType.HILL)?
+		(tile: MapLoc) => !arrayEq1D(tile, loc)
+	:
+		(tile: MapLoc) => !arrayEq1D(tile, loc) && !arrayEq1D(tile, symmetricLoc);
+
 	// CLEARING CURRENT TILE if needed
 	newMapData.wallLocs = mapData.wallLocs.filter(shouldntBeCleared);
 	for (const hillId in mapData.hillLocs) {
