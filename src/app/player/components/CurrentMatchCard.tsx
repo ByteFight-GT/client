@@ -52,10 +52,12 @@ export const CurrentMatchCard = () => {
         <h3 className='match-card-blue-header ellipsis' title={currentMatchData.teamBlue}>
           <Image className='inline' src="/blue_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
           {currentMatchData.teamBlue}
+          <span className='float-right font-bold'>{Object.keys(currentMatchData.blueWins).length}</span>
         </h3>
         <h3 className='match-card-green-header ellipsis' title={currentMatchData.teamGreen}>
           <Image className='inline' src="/green_team_icon.svg" alt="*" width={12} height={12} />&nbsp;
           {currentMatchData.teamGreen}
+          <span className='float-right font-bold'>{Object.keys(currentMatchData.greenWins).length}</span>
         </h3>
       </div>
 
