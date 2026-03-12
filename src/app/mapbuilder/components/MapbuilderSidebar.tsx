@@ -59,7 +59,6 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 	const [selectedMaps, setSelectedMaps] = React.useState<Set<string>>(new Set());
 
 	const {canvasManagerRef} = useVisualizer();
-	const {mapSizeDraft, setMapSizeDraft} = props;
 
 	const [mapSaveName, setMapSaveName] = React.useState('');
 
@@ -70,14 +69,26 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 	const [askingToLoadMapToEditor, setAskingToLoadMapToEditor] = React.useState<string | null>(null);
 	const [askingToSwitchSymmetryTo, setAskingToSwitchSymmetryTo] = React.useState<Symmetry_t | null>(null);
 
+	// need to be loaded on init but using value={} doesnt work cuz canvasmanager ref doesnt trigger rerender
+	const powerupIntervalRef = React.useRef<HTMLInputElement>(null);
+	const powerupNumRef = React.useRef<HTMLInputElement>(null);
+	React.useEffect(() => {
+		if (powerupIntervalRef.current) {
+			powerupIntervalRef.current.value = canvasManagerRef.current.mapData.powerupSpawnInterval.toString();
+		}
+		if (powerupNumRef.current) {
+			powerupNumRef.current.value = canvasManagerRef.current.mapData.powerupSpawnNum.toString();
+		}
+	}, [canvasManagerRef.current.mapData]);
+
 
 	const handleLoadMapToEditor = React.useCallback(async (mapName: string) => {
 		const res = await readMap(mapName);
 		if (res) {
 			updateMapData(canvasManagerRef, res);
-			setMapSizeDraft(res.size);
+			props.setMapSizeDraft(res.size);
 		} // else: readMap should handle displaying error
-	}, [readMap, canvasManagerRef, setMapSizeDraft]);
+	}, [readMap, canvasManagerRef, props.setMapSizeDraft]);
 
 	const mapDataInvalidReason = React.useMemo(() => {
 		if (
@@ -95,24 +106,24 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 	}, [canvasManagerRef.current.mapData]);
 
 	const canChangeMapSize = React.useMemo(() => 
-		!arrayEq1D(mapSizeDraft, canvasManagerRef.current.mapData.size) && mapSizeAllowed(mapSizeDraft),
-		[mapSizeDraft, canvasManagerRef.current.mapData.size]
+		!arrayEq1D(props.mapSizeDraft, canvasManagerRef.current.mapData.size) && mapSizeAllowed(props.mapSizeDraft),
+		[props.mapSizeDraft, canvasManagerRef.current.mapData.size]
 	);
 
 	const handleMapSizeChangeConfirm = React.useCallback(() => {
 		// just one more validation bro... just one more validation...
-		if (!mapSizeAllowed(mapSizeDraft)) {
+		if (!mapSizeAllowed(props.mapSizeDraft)) {
 			toastError(
 				"Invalid map size",
 				`Map dimensions must both be between ${MIN_MAP_SIZE} and ${MAX_MAP_SIZE}. No changes made.`,
 			);
 		} else {
 			// reset!
-			updateMapData(canvasManagerRef, getEmptyMapWithSizeAndSym(mapSizeDraft, canvasManagerRef.current.mapData.symmetry));
+			updateMapData(canvasManagerRef, getEmptyMapWithSizeAndSym(props.mapSizeDraft, canvasManagerRef.current.mapData.symmetry));
 		}
 
 		setChangeSizeDialogOpen(false);
-	}, [mapSizeDraft]);
+	}, [props.mapSizeDraft]);
 
 
 	return (
@@ -156,7 +167,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 			open={clearMapDialogOpen}
 			onCancel={() => setClearMapDialogOpen(false)}
 			onConfirm={() => {
-				updateMapData(canvasManagerRef, getEmptyMapWithSizeAndSym(mapSizeDraft, canvasManagerRef.current.mapData.symmetry));
+				updateMapData(canvasManagerRef, getEmptyMapWithSizeAndSym(props.mapSizeDraft, canvasManagerRef.current.mapData.symmetry));
 				setClearMapDialogOpen(false);
 			}} />
 
@@ -217,10 +228,10 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<Input 
 					min={0}
 					type="number" 
-					value={mapSizeDraft[0]}
+					value={props.mapSizeDraft[0]}
 					className='bg-background' 
 					onFocus={e => e.currentTarget.select()}
-					onChange={e => setMapSizeDraft(prev => ([
+					onChange={e => props.setMapSizeDraft(prev => ([
 						parseInt(e.target.value) || 0,
 						prev[1]
 					]))} />
@@ -231,10 +242,10 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<Input 
 					min={0}
 					type="number" 
-					value={mapSizeDraft[1]}
+					value={props.mapSizeDraft[1]}
 					className='bg-background'
 					onFocus={e => e.currentTarget.select()} 
-					onChange={(e) => setMapSizeDraft(prev => ([
+					onChange={(e) => props.setMapSizeDraft(prev => ([
 						prev[0],
 						parseInt(e.target.value) || 0
 					]))} />
@@ -249,7 +260,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 				<p className={`
 					text-xs text-center 
-					${mapSizeAllowed(mapSizeDraft)? 'text-muted-foreground' : 'text-destructiveBright'}
+					${mapSizeAllowed(props.mapSizeDraft)? 'text-muted-foreground' : 'text-destructiveBright'}
 				`}>
 					Map dimensions must be between {MIN_MAP_SIZE} and {MAX_MAP_SIZE}.
 				</p>
@@ -274,8 +285,8 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<span className='text-sm text-muted-foreground flex-shrink-0'>Powerup Spawn Interval:</span>
 					<Input 
 					type="number" 
-					className='bg-background' 
-					value={canvasManagerRef.current.mapData.powerupSpawnInterval} 
+					className='bg-background'  
+					ref={powerupIntervalRef}
 					onChange={(e) => { 
 						updateMapData(canvasManagerRef, {
 							...canvasManagerRef.current.mapData, 
@@ -289,7 +300,7 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 					<Input 
 					type="number" 
 					className='bg-background' 
-					value={canvasManagerRef.current.mapData.powerupSpawnNum} 
+					ref={powerupNumRef}
 					onChange={(e) => { 
 						updateMapData(canvasManagerRef, {
 							...canvasManagerRef.current.mapData, 
