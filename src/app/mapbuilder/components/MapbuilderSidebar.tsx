@@ -90,21 +90,6 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 		} // else: readMap should handle displaying error
 	}, [readMap, canvasManagerRef, props.setMapSizeDraft]);
 
-	const mapDataInvalidReason = React.useMemo(() => {
-		if (
-			canvasManagerRef.current.mapData.size[0] <= MIN_MAP_SIZE 
-			|| canvasManagerRef.current.mapData.size[1] <= MIN_MAP_SIZE
-		) {
-			return `Map dimensions must both be at least ${MIN_MAP_SIZE}.`;
-		}
-
-		if (!canvasManagerRef.current.mapData.spawnpointBlue || !canvasManagerRef.current.mapData.spawnpointGreen) {
-			return "Both spawn points must be placed";
-		}
-
-		return null;
-	}, [canvasManagerRef.current.mapData]);
-
 	const canChangeMapSize = React.useMemo(() => 
 		!arrayEq1D(props.mapSizeDraft, canvasManagerRef.current.mapData.size) && mapSizeAllowed(props.mapSizeDraft),
 		[props.mapSizeDraft, canvasManagerRef.current.mapData.size]
@@ -322,11 +307,19 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 
 					<Button 
 					className='w-1/2'
-					tooltip={mapDataInvalidReason ?? undefined}
-					disabled={!mapSaveName || !!mapDataInvalidReason} 
+					disabled={!mapSaveName} 
 					onClick={() => {
+						let mapDataInvalidReason: string | null = null;
+						if (!mapSizeAllowed(canvasManagerRef.current.mapData.size)) {
+							mapDataInvalidReason = `Map dimensions must both be between ${MIN_MAP_SIZE} and ${MAX_MAP_SIZE}.`;
+						} else if (!canvasManagerRef.current.mapData.spawnpointBlue || !canvasManagerRef.current.mapData.spawnpointGreen) {
+							mapDataInvalidReason = "Both spawn points must be placed.";
+						}
+
 						if (!mapDataInvalidReason) {
 							handleSaveMap(mapSaveName, canvasManagerRef.current.mapData as MapData);
+						} else {
+							toastError("Map invalid", mapDataInvalidReason);
 						}
 					}}>
 						Save
