@@ -361,7 +361,7 @@ def _run_match(
         
     if display_game:
         print(f"{result.name} wins by {reason.name}")
-    outcome = GameOutcome(game_controller, result or Result.TIE, reason or WinReason.MATCH_ISSUE, message_a, message_b)
+    outcome = GameOutcome(game_controller, result or Result.TIE, reason if reason is not None else WinReason.MATCH_ISSUE, message_a, message_b)
     return outcome
 
 
