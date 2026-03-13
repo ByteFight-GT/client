@@ -737,6 +737,10 @@ class Board:
                 min(GameConstants.MAX_PAINT_VALUE, candidate.paint_value + opponent_parity)
             )
         
+
+        if cell.owner_parity != player_parity:
+            self._claim_square(cell, player_parity)
+            
         cell.set_beacon(player_parity)
         player.beacon_count += 1
         
