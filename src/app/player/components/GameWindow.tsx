@@ -10,7 +10,7 @@ export const GameWindow = () => {
 			<GameRenderer transformComponentProps={{
 				wrapperStyle: { 
 					width: '100%', 
-					height: '100%',
+					height: '100vh',
 					backgroundImage: `url(/gamerenderer-bg.webp)`,
 					backgroundSize: 'cover',
 				},
