@@ -2,9 +2,8 @@
 
 import { useVisualizer } from '@/gamerenderer/useVisualizer';
 import React from 'react';
-import { GamePGN } from '../../../../common/types';
+import { GamePGN } from '../../../../../common/types';
 import Image from 'next/image';
-import { FilledBar } from '@/components';
 import { GameInfoRow } from './GameInfoRow';
 
 type GameInfoVisibleState = {

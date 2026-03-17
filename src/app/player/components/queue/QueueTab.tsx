@@ -2,7 +2,7 @@
 
 import { useRunner } from '@/hooks/useRunner';
 import React from 'react';
-import { QueuedMatchCard } from '../QueuedMatchCard';
+import { QueuedMatchCard } from './QueuedMatchCard';
 import { word } from '../../../../../common/utils';
 import { Button } from '@/components';
 

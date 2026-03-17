@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { fmtTime, word } from '../../../../common/utils';
+import { fmtTime, word } from '../../../../../common/utils';
 import Image from 'next/image';
 import { SidebarItem } from '@/components/SidebarItem';
 import { useVisualizer } from '@/gamerenderer/useVisualizer';

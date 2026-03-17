@@ -3,7 +3,7 @@
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components';
 import { ArrowRightIcon } from 'lucide-react';
 import React from 'react';
-import { Team_t } from '../../../../common/types';
+import { Team_t } from '../../../../../common/types';
 import Image from 'next/image';
 
 type BotSelectorProps = {

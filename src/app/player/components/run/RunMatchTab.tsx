@@ -2,7 +2,7 @@
 
 import { SidebarItem } from '@/components/SidebarItem';
 import React from 'react';
-import { BotSelector } from '../BotSelector';
+import { BotSelector } from './BotSelector';
 import { Button } from '@/components';
 import { ArrowLeftRightIcon, ClockIcon, FolderIcon, ImportIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
 import { useMaps } from '@/hooks/useMaps';

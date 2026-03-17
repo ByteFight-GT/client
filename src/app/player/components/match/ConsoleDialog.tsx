@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components';
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from 'lucide-react';
-import { word } from '../../../../common/utils';
+import { word } from '../../../../../common/utils';
 
 type ConsoleDialogProps = {
   stdOutChunks: string[];

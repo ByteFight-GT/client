@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import { MatchMetadata } from '../../../../common/types';
-import { fmtTime, word } from '../../../../common/utils';
+import { MatchMetadata } from '../../../../../common/types';
+import { fmtTime, word } from '../../../../../common/utils';
 import { Button } from '@/components';
 import { useRunner } from '@/hooks/useRunner';
 import { ChevronDownIcon, ChevronsUpIcon, ChevronUpIcon } from 'lucide-react';
