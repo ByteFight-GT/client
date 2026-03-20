@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { DownloadIcon } from 'lucide-react';
+import { CopyIcon } from 'lucide-react';
 
 import { 
 	Button, 
@@ -11,6 +11,7 @@ import {
 } from '@/components';
 import { SidebarItem } from '@/components/SidebarItem';
 import { MapData, MapLoc, Symmetry, Symmetry_t, TileType, TileType_t } from '../../../../common/types';
+import { stringFromMapData } from '../../../../common/mapconvert';
 import { useMaps } from '@/hooks/useMaps';
 import { OverwriteEditorDialog } from './OverwriteEditorDialog';
 import { DeleteMapsDialog } from './DeleteMapsDialog';
@@ -18,7 +19,7 @@ import { MapList } from './MapList';
 import { MapBuilderEditorState } from '../page';
 import { SwitchSymmetryDialog } from './SwitchSymmetryDialog';
 import { ChangeMapSizeDialog } from './ChangeMapSizeDialog';
-import { toastError } from '@/hooks/useToast';
+import { toast, toastError } from '@/hooks/useToast';
 
 import { getEmptyMapWithSizeAndSym, mapSizeAllowed, MAX_MAP_SIZE, MIN_MAP_SIZE, updateMapData } from '../mapBuilderUtils';
 import { arrayEq1D } from '../../../../common/utils';
@@ -325,7 +326,34 @@ export const MapbuilderSidebar = (props: MapbuilderSidebarProps) => {
 						Save
 					</Button>
 
-					<Button variant='outline' className='w-1/2'><DownloadIcon /> Export</Button>
+					<Button 
+					variant='outline' 
+					className='w-1/2'
+					onClick={() => {
+						let mapDataInvalidReason: string | null = null;
+						if (!mapSizeAllowed(canvasManagerRef.current.mapData.size)) {
+							mapDataInvalidReason = `Map dimensions must both be between ${MIN_MAP_SIZE} and ${MAX_MAP_SIZE}.`;
+						} else if (!canvasManagerRef.current.mapData.spawnpointBlue || !canvasManagerRef.current.mapData.spawnpointGreen) {
+							mapDataInvalidReason = "Both spawn points must be placed.";
+						}
+
+						if (!mapDataInvalidReason) {
+							navigator.clipboard.writeText(
+								stringFromMapData(canvasManagerRef.current.mapData as MapData)
+							).then(() => {
+								toast({
+									toastTitle: "Copy Successful",
+									toastDescription: "Map string copied to clipboard as the engine format!",
+								});
+							}).catch((err) => {
+								toastError("Copy failed", `Failed to copy map string to clipboard: ${err}`);
+							});
+						} else {
+							toastError("Map invalid", mapDataInvalidReason);
+						}
+					}}>
+						<CopyIcon /> Copy String
+					</Button>
 
 				</div>
 			</SidebarItem>
