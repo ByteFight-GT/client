@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 async function updateIndexHtml() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
-  const indexPath = path.join(__dirname, 'out', 'index.html');
+  const indexPath = path.join(__dirname, '../out', 'index.html');
 
   try {
     const data = await readFile(indexPath, 'utf8');
