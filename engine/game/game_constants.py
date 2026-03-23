@@ -17,9 +17,9 @@ class GameConstants:
 	# BEACON_REGEN_BONUS: int = 0
 	
 	EXTRA_MOVE_COST: int = 10
-	ERASE_STEP_EXTRA_COST: int = 50
+	ERASE_STEP_EXTRA_COST: int = 40
 	BEACON_COST: int = 0
-	BEACON_REQUIREMENT_Q: int = 7
+	BEACON_REQUIREMENT_Q: int = 6
 	BEACON_WINDOW_SIZE_P: int = 3
 	BEACON_CONSUME_LEFTOVER_PAINT: int = 1
 
@@ -41,5 +41,5 @@ class GameConstants:
 	# endgame / global regen decay settings
 	GLOBAL_DECAY_TURN_THRESHOLD: int = 1000
 	GLOBAL_DECAY_INTERVAL: int = 100
-	GLOBAL_DECAY_REGEN_PENALTY: int = 1  # amount subtracted from base regen each interval
+	GLOBAL_DECAY_REGEN_PENALTY: int = 2  # amount subtracted from base regen each interval
 

@@ -41,8 +41,20 @@ def drop_priveliges(user_name=None, group_name=None):
     import os
     import pwd
     import grp
-
-    os.environ.clear()
+    
+    keys = [
+        'AUTH_TOKEN', 
+        'PIKA_URL', 
+        'WEBSERVER_URL', 
+        'UPDATE_QUEUE', 
+        'RESULT_QUEUE',
+        'MATCH_ROUTING_KEY',
+        'EXCHANGE_NAME'
+    ]
+    
+    for key in keys:
+        if key in os.environ:
+            del os.environ[key]
 
     if not user_name is None and not group_name is None:
         uid = pwd.getpwnam(user_name).pw_uid
