@@ -41,5 +41,5 @@ class GameConstants:
 	# endgame / global regen decay settings
 	GLOBAL_DECAY_TURN_THRESHOLD: int = 1000
 	GLOBAL_DECAY_INTERVAL: int = 100
-	GLOBAL_DECAY_REGEN_PENALTY: int = 2  # amount subtracted from base regen each interval
+	GLOBAL_DECAY_REGEN_PENALTY: int = 3  # amount subtracted from base regen each interval
 
