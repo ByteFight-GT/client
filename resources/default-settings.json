@@ -41,11 +41,5 @@
 		"__showExplorerOptions": true,
 		"__addSeparatorBelow": true,
 		"value": "$/logs"
-	},
-	"Reload Default Maps on Startup": {
-		"__type": "toggle",
-		"__desc": "Whether default maps should always be re-populated upon app startup, even if you've deleted them before. This does NOT overwrite any edits made to default maps, only restores deleted ones.",
-		"__addSeparatorBelow": true,
-		"value": true
 	}
 }
