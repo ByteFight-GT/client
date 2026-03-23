@@ -14,7 +14,7 @@
     "next:build": "next build",
     "next:start": "next start",
     "next:lint": "next lint",
-    "fixindex": "node update-index.js",
+    "fixindex": "node scripts/update-index.js",
     "package": "npm run compile-preload && next build && npm run fixindex && electron-builder build --publish never && npm run build:dll",
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "compile-preload": "esbuild electron/preload.ts --bundle --platform=node --outfile=build/preload.js --external:electron",
