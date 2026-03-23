@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 import packageJson from "./package.json";
+import engineVersion from "./engine/ENGINE_VERSION.json";
 
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
+    NEXT_PUBLIC_ENGINE_VERSION: engineVersion,
   },
   webpack: (config) => {
     config.resolve.fallback = { fs: false };

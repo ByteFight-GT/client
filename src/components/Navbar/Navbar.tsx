@@ -51,6 +51,7 @@ function Navbar() {
 
   const pathName = usePathname();
   const appVersion = process.env.NEXT_PUBLIC_APP_VERSION ?? 'dev';
+  const engineVersion = process.env.NEXT_PUBLIC_ENGINE_VERSION ?? 'dev';
 
 
   return (
@@ -74,7 +75,10 @@ function Navbar() {
         )}
         
         <p className='navbar-bottom-version'>
-          {appVersion}
+          C-{appVersion}
+        </p>
+        <p className='navbar-bottom-version'>
+          E-{engineVersion}
         </p>
       </div>
 
