@@ -455,12 +455,11 @@ class Board:
                 action_iterable = [actions]
         
         # keeps track of the number of moves thave have already executed this turn
-        moves_this_turn = 0
+        self.moves_this_turn = 0
         for action in action_iterable:
             if isinstance(action, Action.Move):
-                if not self._execute_move(player_parity, action, moves_this_turn):
+                if not self._execute_move(player_parity, action):
                     return False
-                moves_this_turn += 1
             elif isinstance(action, Action.Paint):
                 if not self._execute_paint(player_parity, action):
                     return False
@@ -472,10 +471,13 @@ class Board:
             
             if self.get_opponent(player_parity).is_dead():
                 return True
-        
+
+
+
+        ok = self.moves_this_turn > 0
         self.end_turn()
 
-        return moves_this_turn > 0
+        return ok
     
     def forecast_turn(self, player_parity: int, actions: Action | Iterable[Action]) -> Tuple["Board", bool]:
         """
@@ -521,7 +523,7 @@ class Board:
             Tuple[Board, bool]: Copied board and success flag.
         """
         world_copy = self.get_copy()
-        ok = world_copy.apply_action(player_parity, action, self.moves_this_turn)
+        ok = world_copy.apply_action(player_parity, action)
         return world_copy, ok
     
     
@@ -581,12 +583,9 @@ class Board:
         # Beacon decay: decrease paint by 1 layer when teleporting to a beacon
         if move.move_type == MoveType.BEACON_TRAVEL:
             prev_paint = target_cell.paint_value
-            if prev_paint != 0 and Parity.owned(prev_paint, target_cell.beacon_parity):
+            if Parity.owned(prev_paint, target_cell.beacon_parity):
                 # Decrease paint value by 1 toward zero
-                if prev_paint > 0:
-                    target_cell.paint_value -= 1
-                else:
-                    target_cell.paint_value += 1
+                target_cell.paint_value += -1 * target_cell.beacon_parity
                 
                 # Release square if paint reaches 0
                 if target_cell.paint_value == 0:
@@ -753,15 +752,17 @@ class Board:
             cell.clear_beacon()
             return True
         
+        # painting the cell by increment always captures
+        if cell.owner_parity != player_parity:
+            self._claim_square(cell, player_parity)
+        
         # this you are setting your own beacon   
         cell.set_beacon(player_parity)  
         cell.paint_value += math.ceil(len(friendly_cells) * 0.5) * player_parity
         cell.paint_value = max(-GameConstants.MAX_PAINT_VALUE, min(GameConstants.MAX_PAINT_VALUE, cell.paint_value))
         player.beacon_count += 1
         
-        # painting the cell by increment always captures
-        if cell.owner_parity != player_parity:
-            self._claim_square(cell, player_parity)
+        
 
         return True
 
