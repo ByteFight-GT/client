@@ -39,7 +39,7 @@ function MapBuilderPage() {
 
 	const [editorState, setEditorState] = React.useState<MapBuilderEditorState>({
 		selectedTileType: TileType.EMPTY,
-		hillId: 0,
+		hillId: 1,
 	});
 	const [mapSizeDraft, setMapSizeDraft] = React.useState<MapLoc>(canvasManagerRef.current.mapData.size);
 
