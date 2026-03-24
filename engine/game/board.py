@@ -648,7 +648,7 @@ class Board:
         #dest_cell.clear_beacon(GameConstants.BEACON_CONSUME_LEFTOVER_PAINT)
         #player.beacon_count = max(0, player.beacon_count - 1)
 
-        self.moves_this_turn = 1
+        self.moves_this_turn = 0
 
         return dest
     
@@ -963,9 +963,9 @@ class Board:
         regen += min(self.get_territory_count(player_parity) // GameConstants.GLOBAL_PAINT_REGEN_RATIO,
                       GameConstants.GLOBAL_PAINT_REGEN_CAP) 
 
-        if self.turn_count > GameConstants.GLOBAL_DECAY_TURN_THRESHOLD:
-            delta = self.turn_count - GameConstants.GLOBAL_DECAY_TURN_THRESHOLD - 1
-            intervals = (delta // GameConstants.GLOBAL_DECAY_INTERVAL) + 1
+        if self.turn_count >= GameConstants.GLOBAL_DECAY_TURN_THRESHOLD + 200:
+            delta = self.turn_count - (GameConstants.GLOBAL_DECAY_TURN_THRESHOLD + 200)
+            intervals = (delta // 200) + 1
             regen -= intervals * GameConstants.GLOBAL_DECAY_REGEN_PENALTY
             regen = max(0, regen)
 
