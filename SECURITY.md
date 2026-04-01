@@ -24,9 +24,15 @@ If you are using an unsupported version, please upgrade to the latest release.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability, **please do not open a public issue**.
+If you discover a security vulnerability, please report it using **GitHub Private Vulnerability Reporting**.
 
-Instead, report it responsibly using our Email: [bytefightgt@gmail.com](bytefightgt@gmail.com)
+### How to report
+
+1. Go to the repository's **Security** tab
+2. Click **"Report a vulnerability"**
+3. Fill out the private report form and submit
+
+This will create a **private report visible only to maintainers**, allowing us to investigate and fix the issue before any public disclosure.
 
 ### What to include
 
@@ -37,6 +43,8 @@ To help us resolve the issue quickly, please include:
 * Potential impact
 * Any proof-of-concept code or screenshots
 * Suggested fix (optional)
+
+> ⚠️ Please avoid opening public issues for security vulnerabilities unless explicitly instructed.
 
 ---
 
@@ -93,9 +101,7 @@ We appreciate responsible disclosure and will acknowledge contributors who repor
 
 ## Contact
 
-For any security-related concerns, contact:
-
-[bytefightgt@gmail.com](mailto:bytefightgt@gmail.com)
+For any additional security-related concerns, you may use GitHub Discussions or contact maintainers directly if necessary.
 
 ---
 
