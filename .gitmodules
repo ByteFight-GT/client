@@ -1,3 +1,4 @@
 [submodule "src/gamerenderer"]
 	path = src/gamerenderer
 	url = https://github.com/ByteFight-GT/gamerenderer.git
+	branch = 2026_v2
